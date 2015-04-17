@@ -33,6 +33,11 @@ Author URI: http://automattic.com/
 class Jetpack_Fonts_Typekit {
 	public static function init() {
 		add_action( 'jetpack_fonts_register', array( get_called_class(), 'register_provider' ) );
+		add_action( 'wp_enqueue_scripts', array( get_called_class(), 'enqueue_scripts' ) );
+	}
+
+	public static function enqueue_scripts() {
+		wp_enqueue_script( 'jetpack-fonts-typekit', plugins_url( 'js/providers/typekit.js', __FILE__ ), array(), '20150417', true );
 	}
 
 	public static function register_provider( $jetpack_fonts ) {
