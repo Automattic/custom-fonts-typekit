@@ -3,16 +3,30 @@
 		return;
 	}
 
-	var loadedFontIds = [];
+	var loggedIn,
+		loadedFontIds = [];
 
 	// This will be called first in the context of the Customizer sidebar and
 	// second in the context of the preview window iframe.
 	function addFontToPage( font ) {
+		enableTypekitPreview();
 		if ( ~ loadedFontIds.indexOf( font.id ) ) {
 			return;
 		}
 		loadedFontIds.push( font.id );
 		// TODO: add font using TypekitPreview
+	}
+
+	function enableTypekitPreview() {
+		if ( loggedIn ) {
+			return;
+		}
+		if ( ! window.TypekitPreview || ! window._JetpackFontsTypekitAuth ) {
+			return;
+		}
+		var data = window._JetpackFontsTypekitAuth;
+		window.TypekitPreview.setup( data );
+		loggedIn = true;
 	}
 
 	var TypekitProviderView = api.JetpackFonts.ProviderView.extend({
