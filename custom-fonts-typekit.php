@@ -31,6 +31,10 @@ Author URI: http://automattic.com/
  */
 
 class Jetpack_Fonts_Typekit {
+
+	const PREVIEWKIT_AUTH_ID = 'wp';
+	const PREVIEWKIT_PRIMARY_AUTH_TOKEN = ''; // TODO: store this somewhere
+
 	public static function init() {
 		add_action( 'jetpack_fonts_register', array( get_called_class(), 'register_provider' ) );
 		// Note: for some reason using wp_enqueue_scripts does not work for the sidebar window
@@ -40,6 +44,43 @@ class Jetpack_Fonts_Typekit {
 	public static function enqueue_scripts() {
 		wp_enqueue_script( 'typekit-preview', 'http://use.typekit.net/previewkits/pk-v1.js', array(), '20150417', true );
 		wp_enqueue_script( 'jetpack-fonts-typekit', plugins_url( 'js/providers/typekit.js', __FILE__ ), array( 'typekit-preview' ), '20150417', true );
+		wp_localize_script( 'jetpack-fonts-typekit', '_JetpackFontsTypekitAuth', array(
+			'auth_id' => self::PREVIEWKIT_AUTH_ID,
+			'auth_token' => self::get_preview_token()
+		) );
+	}
+
+	public static function get_preview_token() {
+		$primary_host = self::primary_site_host();
+
+		if ( ! $primary_host ) {
+			return null;
+		}
+
+		if ( is_admin() || is_customize_preview() || preg_match( '/\.wordpress\.com$/', $primary_host ) ) {
+			return rawurlencode( self::PREVIEWKIT_PRIMARY_AUTH_TOKEN );
+		}
+		// TODO: generate a temp token for custom domains
+	}
+
+	/**
+	 * Gets the primary hostname (domain or subdomain) that this blog is hosted
+	 * on. Any other domains for the blog should redirect to this one.
+	 *
+	 * @return string|null Returns the primary hostname for the blog
+	 */
+	public static function primary_site_host() {
+		if ( function_exists( 'get_primary_redirect' ) ) {
+			// Get the primary redirect host for a wordpress.com blog
+			return get_primary_redirect( get_current_blog_id() );
+		} else {
+			// Get the host from the standalone wordpress 'home' option
+			$parsed = parse_url( get_option( 'home' ) );
+			if ( is_array( $parsed ) && array_key_exists( 'host', $parsed ) ) {
+				return $parsed['host'];
+			}
+		}
+		return null;
 	}
 
 	public static function register_provider( $jetpack_fonts ) {
