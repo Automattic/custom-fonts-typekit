@@ -1,4 +1,8 @@
 ( function( api ) {
+	if ( ! api ) {
+		return;
+	}
+
 	var loadedFontIds = [];
 
 	// This will be called first in the context of the Customizer sidebar and
@@ -36,4 +40,4 @@
 	api.JetpackFonts.providerViews.typekit = TypekitProviderView;
 
 	return TypekitProviderView;
-})( window.wp.customize );
+})( window.wp ? window.wp.customize : null );
