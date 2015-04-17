@@ -1,7 +1,7 @@
 <?php
 class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 
-	protected $api_base = '';
+	protected $api_base = 'https://typekit.com/api/v1/json';
 
 	public $id = 'typekit';
 
@@ -11,7 +11,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 */
 	public function __construct( Jetpack_Fonts $custom_fonts ) {
 		parent::__construct( $custom_fonts );
-		add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ), 9 );
+		// add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ), 9 );
 	}
 
 	public function body_font_whitelist(){
@@ -112,6 +112,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 * @return void
 	 */
 	public function render_fonts( $fonts ) {
+		//TODO: add css
 	}
 
 	/**
@@ -187,7 +188,22 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			$this->set_cached_fonts( $fonts );
 			return $fonts;
 		}
-		return array();
+		// TODO: the api request is not correctly configured.
+		// These are just temporary fonts for testing.
+		return array(
+			array(
+				'id' => 'yvxn',
+				'name' => 'Brandon Grotesque',
+				'provider' => 'typekit',
+				'fvds' => array(
+					'n4'
+				),
+				'subsets' => array(
+					'0' => 'latin'
+				)
+			)
+		);
+		// return array();
 	}
 
 	/**
@@ -196,7 +212,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 * @return boolean|WP_Error true on success, WP_Error instance on failure.
 	 */
 	public function save_fonts( $fonts ) {
-		// it always works!
 		return true;
 	}
 }

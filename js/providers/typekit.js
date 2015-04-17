@@ -8,7 +8,13 @@
 
 	// This will be called first in the context of the Customizer sidebar and
 	// second in the context of the preview window iframe.
-	function addFontToPage( font ) {
+	function addFontToPage( font, text ) {
+		// No need to do anything if this is the sidebar, because we will be using
+		// images. We can assume that if specific characters are passed in, we are
+		// in the sidebar.
+		if ( text ) {
+			return;
+		}
 		enableTypekitPreview();
 		if ( ! loggedIn ) {
 			return;
@@ -18,11 +24,23 @@
 		}
 		loadedFontIds.push( font.id );
 		// TODO: we may need to do something different here for custom domains?
+		// TODO: remove all these debug statements
+		console.log( 'loading typekit font', font );
 		window.TypekitPreview.load([{
 			'id': font.id,
 			'variations': font.fvds,
 			'subset': 'all'
-		}]);
+		}], {
+			loading: function() {
+				console.log('typekit font loading...');
+			},
+			active: function() {
+				console.log('typekit font', font.id, 'is active');
+			},
+			inactive: function() {
+				console.log('failed to load typekit font', font.id);
+			}
+		});
 	}
 
 	function enableTypekitPreview() {
