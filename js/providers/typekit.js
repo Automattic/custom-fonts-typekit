@@ -10,11 +10,19 @@
 	// second in the context of the preview window iframe.
 	function addFontToPage( font ) {
 		enableTypekitPreview();
+		if ( ! loggedIn ) {
+			return;
+		}
 		if ( ~ loadedFontIds.indexOf( font.id ) ) {
 			return;
 		}
 		loadedFontIds.push( font.id );
-		// TODO: add font using TypekitPreview
+		// TODO: we may need to do something different here for custom domains?
+		window.TypekitPreview.load([{
+			'id': font.id,
+			'variations': font.fvds,
+			'subset': 'all'
+		}]);
 	}
 
 	function enableTypekitPreview() {
