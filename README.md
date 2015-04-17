@@ -11,5 +11,9 @@ plugin installed and active for this plugin to work.
 Download or clone this repository into the `plugins/` directory of your
 WordPress installation.
 
-Open the Customizer and you should see the `Fonts` section in the sidebar.
-Typekit fonts should be included in the list of available fonts.
+Visit the **Plugins** page in wp-admin and Activate the "Custom Fonts Typekit"
+plugin.
+
+Open the Customizer (**Appearance > Customize**) and you should see the `Fonts`
+section in the sidebar.  Typekit fonts should be included in the list of
+available fonts.
