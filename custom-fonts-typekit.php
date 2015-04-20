@@ -42,7 +42,7 @@ class Jetpack_Fonts_Typekit {
 	}
 
 	public static function enqueue_scripts() {
-		wp_enqueue_script( 'typekit-preview', 'http://use.typekit.net/previewkits/pk-v1.js', array(), '20150417', true );
+		wp_enqueue_script( 'typekit-preview', '//use.typekit.net/previewkits/pk-v1.js', array(), '20150417', true );
 		wp_enqueue_script( 'jetpack-fonts-typekit', plugins_url( 'js/providers/typekit.js', __FILE__ ), array( 'typekit-preview' ), '20150417', true );
 		wp_localize_script( 'jetpack-fonts-typekit', '_JetpackFontsTypekitAuth', array(
 			'auth_id' => self::PREVIEWKIT_AUTH_ID,
