@@ -29,6 +29,7 @@
 		window.TypekitPreview.load([{
 			'id': font.id,
 			'variations': font.fvds,
+			'css_name': font.name,
 			'subset': 'all'
 		}], {
 			loading: function() {
