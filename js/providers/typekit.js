@@ -29,7 +29,7 @@
 		window.TypekitPreview.load([{
 			'id': font.id,
 			'variations': font.fvds,
-			'css_name': font.name,
+			'css_name': font.cssName,
 			'subset': 'all'
 		}], {
 			loading: function() {
@@ -59,13 +59,13 @@
 	var TypekitProviderView = api.JetpackFonts.ProviderView.extend({
 		render: function() {
 			// Even though this will be done with images, leave html here as a fallback
-			this.$el.html( this.model.get( 'name' ) );
+			this.$el.html( this.model.get( 'displayName' ) );
 
 			// TODO: add image for font
 
-			this.$el.css( 'font-family', '"' + this.model.get( 'name' ) + '"' );
+			this.$el.css( 'font-family', '"' + this.model.get( 'cssName' ) + '"' );
 
-			if ( this.currentFont && this.currentFont.get( 'name' ) === this.model.get( 'name' ) ) {
+			if ( this.currentFont && this.currentFont.get( 'id' ) === this.model.get( 'id' ) ) {
 				this.$el.addClass( 'active' );
 			} else {
 				this.$el.removeClass( 'active' );
