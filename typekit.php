@@ -34,7 +34,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 * @return array List of fonts
 	 */
 	public function retrieve_fonts() {
-		return array(
+		$fonts = array(
 			array(
 				'displayName' => 'Abril Text',
 				'id' => 'gjst',
@@ -888,6 +888,8 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'smallTextLegibility' => true,
 			),
 		);
+		$fonts = array_map( array( $this, 'format_font' ), $fonts );
+		return $fonts;
 	}
 
 	// TEMP
