@@ -39,7 +39,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Abril Text',
 				'id' => 'gjst',
 				'cssName' => 'abril-text',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n6',
@@ -56,7 +56,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Adelle Web',
 				'id' => 'gmsj',
 				'cssName' => 'adelle-web',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -69,7 +69,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Ambroise STD',
 				'id' => 'sskw',
 				'cssName' => 'ambroise-std',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'n7',
 				),
@@ -80,7 +80,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Anonymous Pro',
 				'id' => 'fbln',
 				'cssName' => 'anonymous-pro',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -93,7 +93,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Arimo',
 				'id' => 'nlwf',
 				'cssName' => 'arimo',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -106,7 +106,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Arvo',
 				'id' => 'tsyb',
 				'cssName' => 'arvo',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -119,7 +119,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Brandon Grotesque',
 				'id' => 'yvxn',
 				'cssName' => 'brandon-grotesque',
-				'variations' => array(
+				'variants' => array(
 					'n1',
 					'i1',
 					'n3',
@@ -140,7 +140,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Bree Web',
 				'id' => 'ymzk',
 				'cssName' => 'bree-web',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -153,7 +153,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Calluna',
 				'id' => 'vybr',
 				'cssName' => 'calluna',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -166,7 +166,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Calluna Sans',
 				'id' => 'wgzc',
 				'cssName' => 'calluna-sans',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -179,7 +179,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Chaparral Pro',
 				'id' => 'hrpf',
 				'cssName' => 'chaparral-pro',
-				'variations' => array(
+				'variants' => array(
 					'n3',
 					'i3',
 					'n4',
@@ -196,7 +196,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Chunk',
 				'id' => 'klcb',
 				'cssName' => 'chunk',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 				),
 				'shortname' => 'Chunk',
@@ -206,7 +206,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Coquette',
 				'id' => 'drjf',
 				'cssName' => 'coquette',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'n7',
 				),
@@ -217,7 +217,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Droid Sans',
 				'id' => 'gkmg',
 				'cssName' => 'droid-sans',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'n7',
 				),
@@ -228,7 +228,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Droid Sans Mono',
 				'id' => 'vqgt',
 				'cssName' => 'droid-sans-mono',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 				),
 				'shortname' => 'Droid Sans Mono',
@@ -238,7 +238,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Droid Serif',
 				'id' => 'pcpv',
 				'cssName' => 'droid-serif',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -251,7 +251,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Eigerdals',
 				'id' => 'gckq',
 				'cssName' => 'eigerdals',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -264,7 +264,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FF Basic Gothic Web Pro',
 				'id' => 'snqb',
 				'cssName' => 'ff-basic-gothic-web-pro',
-				'variations' => array(
+				'variants' => array(
 					'n3',
 					'i3',
 					'n7',
@@ -277,7 +277,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FF Brokenscript Web Condensed',
 				'id' => 'gwsq',
 				'cssName' => 'ff-brokenscript-web-condensed',
-				'variations' => array(
+				'variants' => array(
 					'n7',
 				),
 				'shortname' => 'FF Brokenscript Condensed',
@@ -287,7 +287,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FF Dagny Web Pro',
 				'id' => 'rlxq',
 				'cssName' => 'ff-dagny-web-pro',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -300,7 +300,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FF Dax Web Pro',
 				'id' => 'dbqg',
 				'cssName' => 'ff-dax-web-pro',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -313,7 +313,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FF Market Web',
 				'id' => 'fytf',
 				'cssName' => 'ff-market-web',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 				),
 				'shortname' => 'FF Market',
@@ -323,7 +323,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FF Meta Web Pro',
 				'id' => 'brwr',
 				'cssName' => 'ff-meta-web-pro',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -336,7 +336,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FF Meta Serif Web Pro',
 				'id' => 'rrtc',
 				'cssName' => 'ff-meta-serif-web-pro',
-				'variations' => array(
+				'variants' => array(
 					'n5',
 					'i5',
 					'n7',
@@ -349,7 +349,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FF Netto Web',
 				'id' => 'rgzb',
 				'cssName' => 'ff-netto-web',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 				),
 				'shortname' => 'FF Netto',
@@ -359,7 +359,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FF Prater Block Web',
 				'id' => 'sbsp',
 				'cssName' => 'ff-prater-block-web',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 				),
 				'shortname' => 'FF Prater Block',
@@ -369,7 +369,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FF Tisa Web Pro',
 				'id' => 'xwmz',
 				'cssName' => 'ff-tisa-web-pro',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -382,7 +382,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'FacitWeb',
 				'id' => 'ttyp',
 				'cssName' => 'facitweb',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -395,7 +395,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Fertigo Pro',
 				'id' => 'pzyv',
 				'cssName' => 'fertigo-pro',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 				),
@@ -406,7 +406,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Fertigo Pro Script',
 				'id' => 'twbx',
 				'cssName' => 'fertigo-pro-script',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 				),
 				'shortname' => 'Fertigo Pro Script',
@@ -416,7 +416,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Futura PT',
 				'id' => 'ftnk',
 				'cssName' => 'futura-pt',
-				'variations' => array(
+				'variants' => array(
 					'n3',
 					'i3',
 					'n4',
@@ -435,7 +435,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Herb Condensed',
 				'id' => 'lmgn',
 				'cssName' => 'herb-condensed',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'n7',
 				),
@@ -446,7 +446,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Inconsolata',
 				'id' => 'gmvz',
 				'cssName' => 'inconsolata',
-				'variations' => array(
+				'variants' => array(
 					'n5',
 				),
 				'shortname' => 'Inconsolata',
@@ -456,7 +456,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Jubilat',
 				'id' => 'cwfk',
 				'cssName' => 'jubilat',
-				'variations' => array(
+				'variants' => array(
 					'n1',
 					'i1',
 					'n2',
@@ -479,7 +479,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Kaffeesatz',
 				'id' => 'jgfl',
 				'cssName' => 'kaffeesatz',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'n7',
 				),
@@ -490,7 +490,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'LFT Etica Display Web',
 				'id' => 'vyvm',
 				'cssName' => 'lft-etica-display-web',
-				'variations' => array(
+				'variants' => array(
 					'n2',
 					'n9',
 				),
@@ -501,7 +501,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'LTC Bodoni 175',
 				'id' => 'mrnw',
 				'cssName' => 'ltc-bodoni-175',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 				),
@@ -512,7 +512,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Lapture',
 				'id' => 'rvnd',
 				'cssName' => 'lapture',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -525,7 +525,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Le Monde Journal STD',
 				'id' => 'mvgb',
 				'cssName' => 'le-monde-journal-std',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -538,7 +538,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Le Monde Sans STD',
 				'id' => 'rshz',
 				'cssName' => 'le-monde-sans-std',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -551,7 +551,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'League Gothic',
 				'id' => 'kmpm',
 				'cssName' => 'league-gothic',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 				),
 				'shortname' => 'League Gothic',
@@ -561,7 +561,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Liberation Sans',
 				'id' => 'zsyz',
 				'cssName' => 'liberation-sans',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -574,7 +574,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Liberation Serif',
 				'id' => 'lcny',
 				'cssName' => 'liberation-serif',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -587,7 +587,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Minion Pro',
 				'id' => 'nljb',
 				'cssName' => 'minion-pro',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n5',
@@ -604,7 +604,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Museo',
 				'id' => 'htrh',
 				'cssName' => 'museo',
-				'variations' => array(
+				'variants' => array(
 					'n3',
 					'i3',
 					'n7',
@@ -617,7 +617,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Museo Sans',
 				'id' => 'ycvr',
 				'cssName' => 'museo-sans',
-				'variations' => array(
+				'variants' => array(
 					'n3',
 					'i3',
 					'n7',
@@ -630,7 +630,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Museo Slab',
 				'id' => 'llxb',
 				'cssName' => 'museo-slab',
-				'variations' => array(
+				'variants' => array(
 					'n3',
 					'i3',
 					'n7',
@@ -643,7 +643,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Omnes Pro',
 				'id' => 'mpmb',
 				'cssName' => 'omnes-pro',
-				'variations' => array(
+				'variants' => array(
 					'n1',
 					'i1',
 					'n2',
@@ -668,7 +668,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Open Sans',
 				'id' => 'jtcj',
 				'cssName' => 'open-sans',
-				'variations' => array(
+				'variants' => array(
 					'n3',
 					'i3',
 					'n4',
@@ -687,7 +687,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Orbitron',
 				'id' => 'rfss',
 				'cssName' => 'orbitron',
-				'variations' => array(
+				'variants' => array(
 					'n5',
 					'n7',
 				),
@@ -698,7 +698,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'PT Serif',
 				'id' => 'xcqq',
 				'cssName' => 'pt-serif',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -711,7 +711,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Proxima Nova',
 				'id' => 'vcsm',
 				'cssName' => 'proxima-nova',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -724,7 +724,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Puritan',
 				'id' => 'ccqc',
 				'cssName' => 'puritan',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -737,7 +737,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Raleway',
 				'id' => 'nqdy',
 				'cssName' => 'raleway',
-				'variations' => array(
+				'variants' => array(
 					'n1',
 				),
 				'shortname' => 'Raleway',
@@ -747,7 +747,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Refrigerator Deluxe',
 				'id' => 'snjm',
 				'cssName' => 'refrigerator-deluxe',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'n7',
 				),
@@ -758,7 +758,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Ronnia Web',
 				'id' => 'rtgb',
 				'cssName' => 'ronnia-web',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -771,7 +771,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Ronnia Web Condensed',
 				'id' => 'hzlv',
 				'cssName' => 'ronnia-web-condensed',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'n7',
 				),
@@ -782,7 +782,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Skolar Web',
 				'id' => 'wbmp',
 				'cssName' => 'skolar-web',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -795,7 +795,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Snicker',
 				'id' => 'mkrf',
 				'cssName' => 'snicker',
-				'variations' => array(
+				'variants' => array(
 					'n7',
 				),
 				'shortname' => 'Snicker',
@@ -805,7 +805,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Sommet Slab',
 				'id' => 'qlvb',
 				'cssName' => 'sommet-slab',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -818,7 +818,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Source Sans Pro',
 				'id' => 'bhyf',
 				'cssName' => 'source-sans-pro',
-				'variations' => array(
+				'variants' => array(
 					'n2',
 					'i2',
 					'n3',
@@ -839,7 +839,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Sorts Mill Goudy',
 				'id' => 'yrwy',
 				'cssName' => 'sorts-mill-goudy',
-				'variations' => array(
+				'variants' => array(
 					'n5',
 					'i5',
 				),
@@ -850,7 +850,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Tekton Pro',
 				'id' => 'fkjd',
 				'cssName' => 'tekton-pro',
-				'variations' => array(
+				'variants' => array(
 					'n3',
 					'i3',
 					'n4',
@@ -865,7 +865,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Tinos',
 				'id' => 'plns',
 				'cssName' => 'tinos',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -878,7 +878,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				'displayName' => 'Ubuntu',
 				'id' => 'jhhw',
 				'cssName' => 'ubuntu',
-				'variations' => array(
+				'variants' => array(
 					'n4',
 					'i4',
 					'n7',
@@ -904,53 +904,14 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 */
 	public function format_font( $font ) {
 		$formatted = array(
-			'id'   => urlencode( $font['family'] ),
-			'cssName' => $font['family'],
-			'displayName' => $font['family'],
-			'fvds' => $this->variants_to_fvds( $font['variants'] ),
-			'subsets' => $font['subsets'],
-			'bodyText' => in_array( urlencode( $font['family'] ), $this->body_font_whitelist() )
+			'id'   => urlencode( $font['id'] ),
+			'cssName' => $font['cssName'],
+			'displayName' => $font['displayName'],
+			'fvds' => $font['variants'],
+			'subsets' => array(),
+			'bodyText' => in_array( urlencode( $font['id'] ), $this->body_font_whitelist() )
 		);
 		return $formatted;
-	}
-
-	/**
-	 * Converts API variants to Font Variant Descriptions
-	 * @param  array $variants
-	 * @return array           FVDs
-	 */
-	private function variants_to_fvds( $variants ) {
-		$fvds = array();
-		foreach( $variants as $variant ) {
-			array_push( $fvds, $this->variant_to_fvd( $variant ) );
-		}
-		return $fvds;
-	}
-
-	/**
-	 * Convert an API variant to a Font Variant Description
-	 * @param  string $variant API variant
-	 * @return string          FVD
-	 */
-	private function variant_to_fvd( $variant ) {
-		$variant = strtolower( $variant );
-
-		if ( false !== strpos( $variant, 'italic' ) ) {
-			$style = 'i';
-			$weight = str_replace( 'italic', '', $variant );
-		} elseif ( false !== strpos( $variant, 'oblique' ) ) {
-			$style = 'o';
-			$weight = str_replace( 'oblique', '', $variant );
-		} else {
-			$style = 'n';
-			$weight = $variant;
-		}
-
-		if ( 'regular' === $weight || 'normal' === $weight || '' === $weight ) {
-			$weight = '400';
-		}
-		$weight = substr( $weight, 0, 1 );
-		return $style . $weight;
 	}
 
 	/**
