@@ -57,7 +57,8 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	public function format_font( $font ) {
 		$formatted = array(
 			'id'   => urlencode( $font['family'] ),
-			'name' => $font['family'],
+			'cssName' => $font['family'],
+			'displayName' => $font['family'],
 			'fvds' => $this->variants_to_fvds( $font['variants'] ),
 			'subsets' => $font['subsets'],
 			'bodyText' => in_array( urlencode( $font['family'] ), $this->body_font_whitelist() )
@@ -113,20 +114,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 */
 	public function render_fonts( $fonts ) {
 		//TODO: add css
-	}
-
-	/**
-	 * Take a list of fonts and return the list with a `css_name` property
-	 * on each font array for rendering CSS rules.
-	 * @param array  $fonts List of fonts
-	 * @return array List of fonts with a `css_name` property.
-	 */
-	public function font_list_with_css_names( $fonts ) {
-		foreach( $fonts as $i => $font ) {
-			$font_data = $this->get_font( $font['id'] );
-			$fonts[ $i ]['css_name'] = $font_data['name'];
-		}
-		return $fonts;
 	}
 
 	/**
@@ -193,7 +180,8 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return array(
 			array(
 				'id' => 'yvxn',
-				'name' => 'Brandon Grotesque',
+				'displayName' => 'Brandon Grotesque',
+				'cssName' => 'yvxn',
 				'provider' => 'typekit',
 				'fvds' => array(
 					'n4'
@@ -215,4 +203,3 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return true;
 	}
 }
-
