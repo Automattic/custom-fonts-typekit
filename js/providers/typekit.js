@@ -51,20 +51,24 @@
 		if ( ! window.TypekitPreview || ! window._JetpackFontsTypekitAuth ) {
 			return;
 		}
-		var data = window._JetpackFontsTypekitAuth;
+		var data = window._options;
 		window.TypekitPreview.setup( data );
 		loggedIn = true;
 	}
 
 	var TypekitProviderView = api.JetpackFonts.ProviderView.extend({
+
 		render: function() {
-			// Even though this will be done with images, leave html here as a fallback
-			this.$el.html( this.model.get( 'displayName' ) );
+			var options = window._options;
+			var slots = this.model.get( 'variations').length * 2;
+			var height = slots * 60;
+			var url = options.imageDir + '/2x' + '/font_' + this.model.get( 'id' ) + '.png';
+			this.$el.css( 'backgroundImage', 'url(' + url + ')' );
 
-			// TODO: add image for font
+			this.$el.css( 'background-position', '0px 5px' );
+			this.$el.css( 'background-size', 'auto ' + height.toString() + 'px' );
 
-			this.$el.css( 'font-family', '"' + this.model.get( 'cssName' ) + '"' );
-
+			//TODO show selected font by changing background position
 			if ( this.currentFont && this.currentFont.get( 'id' ) === this.model.get( 'id' ) ) {
 				this.$el.addClass( 'active' );
 			} else {
