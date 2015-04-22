@@ -1021,23 +1021,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			$this->set_cached_fonts( $fonts );
 			return $fonts;
 		}
-		// TODO: the api request is not correctly configured.
-		// These are just temporary fonts for testing.
-		return array(
-			array(
-				'id' => 'yvxn',
-				'displayName' => 'Brandon Grotesque',
-				'cssName' => 'yvxn',
-				'provider' => 'typekit',
-				'fvds' => array(
-					'n4'
-				),
-				'subsets' => array(
-					'0' => 'latin'
-				)
-			)
-		);
-		// return array();
+		return array();
 	}
 
 	/**
