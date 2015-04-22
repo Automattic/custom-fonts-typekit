@@ -60,7 +60,7 @@
 
 		render: function() {
 			var options = window._options;
-			var slots = this.model.get( 'variations').length * 2;
+			var slots = this.model.get( 'fvds').length * 2;
 			var height = slots * 60;
 			var url = options.imageDir + '/2x' + '/font_' + this.model.get( 'id' ) + '.png';
 			this.$el.css( 'backgroundImage', 'url(' + url + ')' );
