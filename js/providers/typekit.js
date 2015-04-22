@@ -26,6 +26,12 @@
 		// TODO: we may need to do something different here for custom domains?
 		// TODO: remove all these debug statements
 		console.log( 'loading typekit font', font );
+		// TEMP: fake data
+		if ( font.id === 'drjf' ) {
+			var el = jQuery( '<link rel="stylesheet" href="/wp-content/plugins/custom-fonts-typekit/coquette-font.css">' );
+			jQuery( 'head' ).append( el );
+			return;
+		}
 		window.TypekitPreview.load([{
 			'id': font.id,
 			'variations': font.fvds,
