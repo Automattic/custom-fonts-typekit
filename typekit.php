@@ -921,7 +921,12 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 * @return void
 	 */
 	public function render_fonts( $fonts ) {
-		//TODO: add css
+		$typekit_domain = 'use.typekit.net';
+		$kit_id = ''; // TODO: get that
+		if ( $kit_id ) {
+			echo '<script type="text/javascript" src="//' . $typekit_domain. '/' . $kit_id . '.js"></script>';
+			echo '<script type="text/javascript">try{Typekit.load();}catch(e){}</script>' . "\n";
+		}
 	}
 
 	/**
