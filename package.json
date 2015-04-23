@@ -1,0 +1,28 @@
+{
+  "name": "jetpack-custom-fonts-typekit",
+  "version": "0.0.1",
+  "description": "A WordPress plugin that adds Typekit fonts to the custom-fonts plugin.",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Automattic/custom-fonts-typekit"
+  },
+  "author": "Automattic",
+  "license": "GPL-v2",
+  "bugs": {
+    "url": "https://github.com/Automattic/custom-fonts-typekit/issues"
+  },
+  "homepage": "https://github.com/Automattic/custom-fonts-typekit",
+  "devDependencies": {
+    "chai": "^2.2.0",
+    "grunt": "~0.4.5",
+    "grunt-mocha-test": "^0.12.7",
+    "grunt-phpunit": "^0.3.6",
+    "load-grunt-tasks": "~0.5.0",
+    "mocha": "^2.2.1",
+    "sinon": "^1.14.1",
+    "sinon-chai": "^2.7.0"
+  },
+  "dependencies": {
+    "debug": "~1.0.2"
+  }
+}
