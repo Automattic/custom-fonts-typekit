@@ -131,6 +131,18 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 		$this->assertContains( 'n7', $font[ 'fvds' ] );
 	}
 
+	public function test_render_fonts_outputs_kit_javascript() {
+		$this->markTestIncomplete();
+	}
+
+	public function test_render_fonts_outputs_kit_javascript_with_kit_id_in_config() {
+		$this->markTestIncomplete();
+	}
+
+	public function test_render_fonts_outputs_nothing_when_there_is_no_kit_id() {
+		$this->markTestIncomplete();
+	}
+
 }
 
 
