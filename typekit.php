@@ -165,7 +165,7 @@ EMBED;
 	}
 
 	private function get_kit_id() {
-		$this->get( 'kit_id' );
+		return $this->get( 'kit_id' );
 	}
 
 	/**
