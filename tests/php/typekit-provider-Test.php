@@ -153,11 +153,14 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 		$jetpack_fonts = new Jetpack_Fonts();
 		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
 		$provider->render_fonts( array() );
-		$this->expectOutputRegex( '<script type="text\/javascript" id="custom-fonts-js">' );
+		$this->expectOutputRegex( '/<script type="text\/javascript" id="custom-fonts-js">/' );
 	}
 
 	public function test_render_fonts_outputs_kit_javascript_with_kit_id_in_config() {
-		$this->markTestIncomplete();
+		$jetpack_fonts = new Jetpack_Fonts();
+		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
+		$provider->render_fonts( array() );
+		$this->expectOutputRegex( '/"kitId":"foobar"/' );
 	}
 
 	public function test_render_fonts_outputs_nothing_when_there_is_no_kit_id() {
