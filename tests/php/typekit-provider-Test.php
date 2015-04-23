@@ -18,10 +18,11 @@ function esc_js( $str ) {
 }
 
 $kit_id = 'foobar';
+$return_option = true;
 
 function get_option( $key ) {
-	global $kit_id;
-	if ( $key === 'typekit_data' ) {
+	global $kit_id, $return_option;
+	if ( $return_option && $key === 'typekit_data' ) {
 		return array(
 			'kit_id' => $kit_id
 		);
@@ -162,7 +163,9 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 	}
 
 	public function test_render_fonts_outputs_kit_javascript_with_kit_id_in_config() {
-		global $kit_id;
+		global $kit_id, $return_option;
+		$kit_id = null;
+		$return_option = true;
 		$kit_id = 'foobar';
 		$jetpack_fonts = new Jetpack_Fonts();
 		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
@@ -171,8 +174,18 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 	}
 
 	public function test_render_fonts_outputs_nothing_when_there_is_no_kit_id() {
-		global $kit_id;
+		global $kit_id, $return_option;
 		$kit_id = null;
+		$return_option = true;
+		$jetpack_fonts = new Jetpack_Fonts();
+		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
+		$provider->render_fonts( array() );
+		$this->expectOutputString( '' );
+	}
+
+	public function test_render_fonts_outputs_nothing_when_there_is_no_option_set() {
+		global $return_option;
+		$return_option = false;
 		$jetpack_fonts = new Jetpack_Fonts();
 		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
 		$provider->render_fonts( array() );
