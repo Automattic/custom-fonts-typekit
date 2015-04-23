@@ -189,7 +189,10 @@ EMBED;
 	 */
 	private function get( $key ) {
 		$data = $this->data();
-		return array_key_exists( $key, $data ) ? $data[$key] : null;
+		if ( $data && is_array( $data ) && array_key_exists( $key, $data ) ) {
+			return $data[ $key ];
+		}
+		return null;
 	}
 
 	/**
