@@ -13,6 +13,24 @@ class Jetpack_Font_Provider {
 	public function set_cached_fonts() {}
 }
 
+function esc_js( $str ) {
+	return $str;
+}
+
+function get_option( $key ) {
+	if ( $key === 'typekit_data' ) {
+		return array(
+			'kit_id' => 'foobar'
+		);
+	}
+	return;
+}
+
+function wp_parse_args( $args, $defaults ) {
+	$defaults;
+	return $args;
+}
+
 function add_filter() {}
 
 function test_fonts() {
@@ -132,7 +150,10 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 	}
 
 	public function test_render_fonts_outputs_kit_javascript() {
-		$this->markTestIncomplete();
+		$jetpack_fonts = new Jetpack_Fonts();
+		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
+		$provider->render_fonts( array() );
+		$this->expectOutputRegex( '<script type="text\/javascript" id="custom-fonts-js">' );
 	}
 
 	public function test_render_fonts_outputs_kit_javascript_with_kit_id_in_config() {
