@@ -35,16 +35,16 @@ function test_fonts() {
 			'smallTextLegibility' => true
 		),
 		array(
-			'displayName' => 'Adelle Web',
-			'id' => 'gmsj',
-			'cssName' => 'adelle-web',
+			'displayName' => 'Special Adelle Web',
+			'id' => 'xxxx',
+			'cssName' => 'special-adelle-web',
 			'variants' => array(
 				'n4',
 				'i4',
 				'n7',
 				'i7',
 			),
-			'shortname' => 'Adelle',
+			'shortname' => 'Special Adelle',
 			'smallTextLegibility' => false,
 		),
 	);
