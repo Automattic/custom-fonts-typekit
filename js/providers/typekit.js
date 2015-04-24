@@ -58,7 +58,7 @@
 
 	var TypekitProviderView = api.JetpackFonts.ProviderView.extend({
 
-		options: window._JetpackFontsTypekitOptions,
+		imageDir: window._JetpackFontsTypekitOptions.imageDir,
 		slotHeight: 128,
 
 		calculateClosestFvd: function( availableFvds, currentFvd) {
@@ -113,7 +113,7 @@
 		},
 
 		render: function() {
-			var url = this.options.imageDir + '/2x' + '/font_' + this.model.get( 'id' ) + '.png';
+			var url = this.imageDir + '/2x' + '/font_' + this.model.get( 'id' ) + '.png';
 			this.$el.css( 'backgroundImage', 'url(' + url + ')' );
 			var closestFvd;
 			if ( this.model.get('currentFvd')) {
