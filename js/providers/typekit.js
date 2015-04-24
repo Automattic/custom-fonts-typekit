@@ -64,7 +64,7 @@
 		calculateClosestFvd: function( availableFvds, currentFvd) {
 			var shownFvd = currentFvd;
 			var variant = shownFvd.match(/[in]/)[0];
-			var weight = parseInt( shownFvd.match(/\d/)[0], 1 );
+			var weight = parseInt( shownFvd.match(/\d/)[0], 10 );
 			var valence = -1;
 
 			// iterate 16 times, this is the highest # of iterations necessary to cover 1...9
@@ -84,7 +84,7 @@
 				variant = 'i';
 			}
 
-			weight = parseInt( currentFvd.match(/\d/)[0], 1 );
+			weight = parseInt( currentFvd.match(/\d/)[0], 10 );
 			for ( var y=0; y<18; y++ ) {
 				if ( availableFvds.indexOf( shownFvd ) > -1 ) {
 					return shownFvd;
