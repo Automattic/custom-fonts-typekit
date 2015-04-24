@@ -48,17 +48,17 @@
 		if ( loggedIn ) {
 			return;
 		}
-		if ( ! window.TypekitPreview || ! window._JetpackFontsTypekitAuth ) {
+		if ( ! window.TypekitPreview || ! window._JetpackFontsTypekitOptions ) {
 			return;
 		}
-		var data = window._options;
-		window.TypekitPreview.setup( data );
+		var data = window._JetpackFontsTypekitOptions;
+		window.TypekitPreview.setup( data.authentication );
 		loggedIn = true;
 	}
 
 	var TypekitProviderView = api.JetpackFonts.ProviderView.extend({
 
-		options: window._options,
+		options: window._JetpackFontsTypekitOptions,
 		slotHeight: 128,
 
 		calculateClosestFvd: function( availableFvds, currentFvd) {
