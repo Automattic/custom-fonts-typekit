@@ -58,22 +58,79 @@
 
 	var TypekitProviderView = api.JetpackFonts.ProviderView.extend({
 
-		render: function() {
-			var options = window._options;
-			var slots = this.model.get( 'fvds').length * 2;
-			var height = slots * 60;
-			var url = options.imageDir + '/2x' + '/font_' + this.model.get( 'id' ) + '.png';
-			this.$el.css( 'backgroundImage', 'url(' + url + ')' );
+		options: window._options,
+		slotHeight: 128,
 
-			this.$el.css( 'background-position', '0px 5px' );
-			this.$el.css( 'background-size', 'auto ' + height.toString() + 'px' );
+		calculateClosestFvd: function( availableFvds, currentFvd) {
+			var shownFvd = currentFvd;
+			var v = shownFvd.match(/[in]/)[0];
+			var w = parseInt( shownFvd.match(/\d/)[0] );
+			var i = -1;
 
-			//TODO show selected font by changing background position
-			if ( this.currentFont && this.currentFont.get( 'id' ) === this.model.get( 'id' ) ) {
-				this.$el.addClass( 'active' );
-			} else {
-				this.$el.removeClass( 'active' );
+			// iterate 16 times, this is the highest # of iterations necessary to cover 1...9
+			for ( var x=1; x<18; x++ ) {
+				if ( availableFvds.indexOf( shownFvd ) > -1 ) {
+					return shownFvd;
+				}
+				w = w+(i*x);
+				shownFvd = v + w.toString();
+				i = i*-1;
 			}
+
+			// Reassign font-variant and recalculate
+			if ( v === 'i' ) {
+				v = 'n';
+			} else {
+				v = 'i';
+			}
+
+			w = parseInt( currentFvd.match(/\d/)[0] );
+			for ( var y=0; y<18; y++ ) {
+				if ( availableFvds.indexOf( shownFvd ) > -1 ) {
+					return shownFvd;
+				}
+				w = w+(i*x);
+				shownFvd = v + w.toString();
+				i = i*-1;
+			}
+
+			return false;
+		},
+
+		calculateBackgroundPosition: function( slotPosition, isActive ) {
+			var position = 8;
+			if ( slotPosition > -1 ) {
+				position = position - ( this.slotHeight*slotPosition );
+			}
+			if ( isActive ) {
+				position = position - this.slotHeight/2;
+			}
+			return position;
+		},
+
+		calculateBackgroundHeight: function( slots ) {
+			return slots * this.slotHeight - 32;
+		},
+
+		render: function() {
+			var url = this.options.imageDir + '/2x' + '/font_' + this.model.get( 'id' ) + '.png';
+			this.$el.css( 'backgroundImage', 'url(' + url + ')' );
+			var closestFvd;
+			if ( this.model.get('currentFvd')) {
+				closestFvd = this.calculateClosestFvd( this.model.get('fvds'), this.model.get('currentFvd'));
+			} else if ( this.currentFont && this.currentFont.get('currentFvd') ) {
+				closestFvd = this.calculateClosestFvd( this.model.get('fvds'), this.currentFont.get('currentFvd'));
+			}
+			this.$el.attr( 'data-fvd', closestFvd || 'n4' );
+
+			var position = this.calculateBackgroundPosition(
+				this.model.get('fvds').indexOf( closestFvd ),
+				this.currentFont && this.currentFont.get( 'id' ) === this.model.get( 'id' )
+			);
+			this.$el.css( 'background-position', '0px ' + position.toString() + 'px' );
+
+			var height = this.calculateBackgroundHeight( this.model.get( 'fvds').length );
+			this.$el.css( 'background-size', 'auto ' + height.toString() + 'px' );
 
 			addFontToPage( this.model.toJSON(), this.model.get( 'id' ) );
 			return this;
