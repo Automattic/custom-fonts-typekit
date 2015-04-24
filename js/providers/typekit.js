@@ -60,6 +60,7 @@
 
 		imageDir: window._JetpackFontsTypekitOptions.imageDir,
 		slotHeight: 128,
+		preload: {},
 
 		calculateClosestFvd: function( availableFvds, currentFvd) {
 			var shownFvd = currentFvd;
@@ -118,9 +119,20 @@
 			return url;
 		},
 
+		maybePreloadImage: function( id, url ) {
+			if ( this.preload.id ) {
+				return;
+			}
+			var image = new Image();
+			image.src = url;
+			this.preload[id] = url;
+		},
+
 		render: function() {
 			var url = this.findImageFile( this.model.get( 'id' ) );
 			this.$el.css( 'backgroundImage', 'url(' + url + ')' );
+
+			this.maybePreloadImage( this.model.get( 'id' ), url );
 
 			var closestFvd;
 			if ( this.model.get( 'currentFvd' ) ) {
