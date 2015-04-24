@@ -112,9 +112,16 @@
 			return slots * this.slotHeight - 32;
 		},
 
+		findImageFile: function( id ) {
+			var hiRes = ( window.devicePixelRatio && window.devicePixelRatio >= 1.25 ) ? '2x': '1x';
+			var url = this.imageDir + hiRes + '/font_' + id + '.png';
+			return url;
+		},
+
 		render: function() {
-			var url = this.imageDir + '/2x' + '/font_' + this.model.get( 'id' ) + '.png';
+			var url = this.findImageFile( this.model.get( 'id' ) );
 			this.$el.css( 'backgroundImage', 'url(' + url + ')' );
+
 			var closestFvd;
 			if ( this.model.get( 'currentFvd' ) ) {
 				closestFvd = this.calculateClosestFvd( this.model.get( 'fvds' ), this.model.get( 'currentFvd' ) );
