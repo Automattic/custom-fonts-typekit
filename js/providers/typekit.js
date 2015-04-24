@@ -63,35 +63,35 @@
 
 		calculateClosestFvd: function( availableFvds, currentFvd) {
 			var shownFvd = currentFvd;
-			var v = shownFvd.match(/[in]/)[0];
-			var w = parseInt( shownFvd.match(/\d/)[0], 1 );
-			var i = -1;
+			var variant = shownFvd.match(/[in]/)[0];
+			var weight = parseInt( shownFvd.match(/\d/)[0], 1 );
+			var valence = -1;
 
 			// iterate 16 times, this is the highest # of iterations necessary to cover 1...9
 			for ( var x=1; x<18; x++ ) {
 				if ( availableFvds.indexOf( shownFvd ) > -1 ) {
 					return shownFvd;
 				}
-				w = w+(i*x);
-				shownFvd = v + w.toString();
-				i = i*-1;
+				weight = weight + ( valence * x );
+				shownFvd = variant + weight.toString();
+				valence = valence * -1;
 			}
 
 			// Reassign font-variant and recalculate
-			if ( v === 'i' ) {
-				v = 'n';
+			if ( variant === 'i' ) {
+				variant = 'n';
 			} else {
-				v = 'i';
+				variant = 'i';
 			}
 
-			w = parseInt( currentFvd.match(/\d/)[0], 1 );
+			weight = parseInt( currentFvd.match(/\d/)[0], 1 );
 			for ( var y=0; y<18; y++ ) {
 				if ( availableFvds.indexOf( shownFvd ) > -1 ) {
 					return shownFvd;
 				}
-				w = w+(i*x);
-				shownFvd = v + w.toString();
-				i = i*-1;
+				weight = weight + ( valence * x );
+				shownFvd = variant + weight.toString();
+				valence = valence * -1;
 			}
 
 			return false;
@@ -100,10 +100,10 @@
 		calculateBackgroundPosition: function( slotPosition, isActive ) {
 			var position = 8;
 			if ( slotPosition > -1 ) {
-				position = position - ( this.slotHeight*slotPosition );
+				position = position - ( this.slotHeight * slotPosition );
 			}
 			if ( isActive ) {
-				position = position - this.slotHeight/2;
+				position = position - this.slotHeight / 2;
 			}
 			return position;
 		},
@@ -116,15 +116,15 @@
 			var url = this.imageDir + '/2x' + '/font_' + this.model.get( 'id' ) + '.png';
 			this.$el.css( 'backgroundImage', 'url(' + url + ')' );
 			var closestFvd;
-			if ( this.model.get('currentFvd')) {
-				closestFvd = this.calculateClosestFvd( this.model.get('fvds'), this.model.get('currentFvd'));
-			} else if ( this.currentFont && this.currentFont.get('currentFvd') ) {
-				closestFvd = this.calculateClosestFvd( this.model.get('fvds'), this.currentFont.get('currentFvd'));
+			if ( this.model.get( 'currentFvd' ) ) {
+				closestFvd = this.calculateClosestFvd( this.model.get( 'fvds' ), this.model.get( 'currentFvd' ) );
+			} else if ( this.currentFont && this.currentFont.get( 'currentFvd' ) ) {
+				closestFvd = this.calculateClosestFvd( this.model.get( 'fvds' ), this.currentFont.get( 'currentFvd' ) );
 			}
 			this.$el.attr( 'data-fvd', closestFvd || 'n4' );
 
 			var position = this.calculateBackgroundPosition(
-				this.model.get('fvds').indexOf( closestFvd ),
+				this.model.get( 'fvds' ).indexOf( closestFvd ),
 				this.currentFont && this.currentFont.get( 'id' ) === this.model.get( 'id' )
 			);
 			this.$el.css( 'background-position', '0px ' + position.toString() + 'px' );
