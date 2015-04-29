@@ -33,7 +33,7 @@ Author URI: http://automattic.com/
 class Jetpack_Fonts_Typekit {
 
 	const PREVIEWKIT_AUTH_ID = 'wp';
-	const PREVIEWKIT_PRIMARY_AUTH_TOKEN = ''; // TODO: store this somewhere
+	const PREVIEWKIT_PRIMARY_AUTH_TOKEN = '3bb2a6e53c9684ffdc9a9aff185b2a62b09b6f5189114fc2b7a762d37126575957cc2be9ed2cf64258c2828e5d92d94602695c102ffcecb6fa701fe59ba9e9fee2253aa8ba8e355def1b980688bb77aa2d22dba28934c842d6375ecd';
 
 	public static function init() {
 		add_action( 'jetpack_fonts_register', array( get_called_class(), 'register_provider' ) );
@@ -48,23 +48,10 @@ class Jetpack_Fonts_Typekit {
 		wp_localize_script( 'jetpack-fonts-typekit', '_JetpackFontsTypekitOptions', array(
 			'authentication' => array(
 				'auth_id' => self::PREVIEWKIT_AUTH_ID,
-				'auth_token' => self::get_preview_token()
+				'auth_token' => self::PREVIEWKIT_PRIMARY_AUTH_TOKEN
 			),
 			'imageDir' => plugins_url( '/img/', __FILE__ )
 		) );
-	}
-
-	public static function get_preview_token() {
-		$primary_host = self::primary_site_host();
-
-		if ( ! $primary_host ) {
-			return null;
-		}
-
-		if ( is_admin() || is_customize_preview() || preg_match( '/\.wordpress\.com$/', $primary_host ) ) {
-			return rawurlencode( self::PREVIEWKIT_PRIMARY_AUTH_TOKEN );
-		}
-		// TODO: generate a temp token for custom domains
 	}
 
 	/**
