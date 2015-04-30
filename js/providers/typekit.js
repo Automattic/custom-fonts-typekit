@@ -60,7 +60,15 @@
 
 		imageDir: window._JetpackFontsTypekitOptions.imageDir,
 		slotHeight: 128,
-		preload: {},
+		preloaded: false,
+
+		mouseenter: function() {
+			this.setImageFile( true );
+		},
+
+		mouseleave: function () {
+			this.setImageFile();
+		},
 
 		calculateClosestFvd: function( availableFvds, currentFvd) {
 			var shownFvd = currentFvd;
@@ -113,26 +121,30 @@
 			return slots * this.slotHeight - 32;
 		},
 
-		findImageFile: function( id ) {
+		findImageFile: function( hover ) {
+			var prefix = hover ? 'light' : 'dark';
+			var id = this.model.get( 'id' );
 			var hiRes = ( window.devicePixelRatio && window.devicePixelRatio >= 1.25 ) ? '2x': '1x';
-			var url = this.imageDir + hiRes + '/font_' + id + '.png';
-			return url;
+			var dir = prefix + '-' + hiRes;
+			return this.imageDir + dir + '/font_' + id + '.png';
 		},
 
-		maybePreloadImage: function( id, url ) {
-			if ( this.preload.id ) {
+		setImageFile: function( hover ) {
+			this.$el.css( 'backgroundImage', 'url(' + this.findImageFile( hover ) + ')' );
+		},
+
+		maybePreloadImage: function() {
+			if ( this.preloaded ) {
 				return;
 			}
 			var image = new Image();
-			image.src = url;
-			this.preload[id] = url;
+			image.src = this.findImageFile();
+			this.preloaded = true;
 		},
 
 		render: function() {
-			var url = this.findImageFile( this.model.get( 'id' ) );
-			this.$el.css( 'backgroundImage', 'url(' + url + ')' );
-
-			this.maybePreloadImage( this.model.get( 'id' ), url );
+			this.maybePreloadImage();
+			this.setImageFile();
 
 			var closestFvd;
 			if ( this.model.get( 'currentFvd' ) ) {
