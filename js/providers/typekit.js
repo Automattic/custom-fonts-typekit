@@ -3,45 +3,122 @@
 		return;
 	}
 
-	var loggedIn,
-		loadedFontIds = [];
+	var $ = jQuery,
+		loggedIn = false,
+		loadedFontIds = [],
+		opts = window._JetpackFontsTypekitOptions,
+		isWebkit = /webkit/.test( window.navigator.userAgent.toLowerCase() ),
+		iframeHelper,
+		isShimLoaded = false,
+		toLoadInShim = [],
+		$html = $( 'html' ),
+		timeout,
+		loadingClass = 'wf-loading',
+		activeClass = 'wf-active',
+		dataType = 'TypekitPreviewShim';
 
 	// This will be called first in the context of the Customizer sidebar and
 	// second in the context of the preview window iframe.
 	function addFontToPage( font, text ) {
-		// No need to do anything if this is the sidebar, because we will be using
-		// images. We can assume that if specific characters are passed in, we are
-		// in the sidebar.
-		if ( text ) {
+		// No need to do anything if this is the sidebar,
+		// because we will be using images.
+		if ( opts.isAdmin ) {
 			return;
 		}
-		enableTypekitPreview();
-		if ( ! loggedIn ) {
-			return;
-		}
+
 		if ( ~ loadedFontIds.indexOf( font.id ) ) {
 			return;
 		}
-		loadedFontIds.push( font.id );
-		// TODO: we may need to do something different here for custom domains?
-		// TODO: remove all these debug statements
-		console.log( 'loading typekit font', font );
-		window.TypekitPreview.load([{
+
+		font = formatFont( font );
+
+		if ( isWebkit ) {
+			loadViaShim( font );
+		} else {
+			loadFont( font );
+		}
+	};
+
+	// get ready for previewing, either with `TypekitPreview` or the Webkit Shim
+	if ( ! opts.isAdmin ) {
+		if ( isWebkit ) {
+			setupWebKit();
+		} else {
+			enableTypekitPreview();
+		}
+	}
+
+	function setupWebKit() {
+		var url = opts.webKitShim + '?' + $.param( opts.authentication );
+		iframeHelper = $( '<iframe id="webkit-iframe-shim" src="' + url + '" />' )
+			.css( {width: 0, height: 0} ).appendTo( 'body' ).get( 0 );
+
+		$( iframeHelper ).load( function(){
+			isShimLoaded = true;
+			// clear the loading queue, if any
+			if ( toLoadInShim.length ) {
+				$.map( toLoadInShim, loadViaShim );
+				toLoadInShim = [];
+			}
+		});
+
+		$( window ).on( 'message', function( ev ) {
+			ev = ev.originalEvent;
+			if ( ! /wordpress\.com$/.test( ev.origin ) || ev.data[0] !== '{' ) {
+				return;
+			}
+			var data = JSON.parse( ev.data );
+			if ( data.type !== dataType ) {
+				return;
+			}
+
+			clearTimeout( timeout );
+
+			if ( data.status === 'active' ) {
+				addFontStylesheet( data );
+			}
+		});
+	}
+
+	function addFontStylesheet( data ) {
+		// remove loading class, add loaded class
+		$html.removeClass( loadingClass ).addClass( activeClass );
+		$( '<link />', { rel: 'stylesheet', href: data.styleURL } ).appendTo( 'head' );
+		loadedFontIds.push( data.fonts[0].id );
+	}
+
+	function loadViaShim( font ) {
+		// queue fonts if the shim hasn't loaded yet
+		if ( ! isShimLoaded ) {
+			toLoadInShim.push( font );
+			return;
+		}
+
+		// fake the font event
+		$html.addClass( loadingClass );
+		// set a timeout of 5 secs to ensure we don't leave the wf-loading class forever if something goes squirrely
+		clearTimeout( timeout );
+		timeout = setTimeout( function() {
+			$html.removeClass( loadingClass );
+		}, 5000 );
+		iframeHelper.contentWindow.postMessage( JSON.stringify( { type: dataType, fonts: [ font ] } ), '*' );
+	};
+
+	function loadFont( font ) {
+		TypekitPreview.load( [ font ], {
+			active: function() {
+				loadedFontIds.push( font.id );
+			}
+		});
+	}
+
+	function formatFont( font ) {
+		return {
 			'id': font.id,
 			'variations': font.fvds,
 			'css_name': font.cssName,
 			'subset': 'all'
-		}], {
-			loading: function() {
-				console.log('typekit font loading...');
-			},
-			active: function() {
-				console.log('typekit font', font.id, 'is active');
-			},
-			inactive: function() {
-				console.log('failed to load typekit font', font.id);
-			}
-		});
+		};
 	}
 
 	function enableTypekitPreview() {
@@ -58,7 +135,7 @@
 
 	var TypekitProviderView = api.JetpackFonts.ProviderView.extend({
 
-		imageDir: window._JetpackFontsTypekitOptions.imageDir,
+		imageDir: opts.imageDir,
 		slotHeight: 128,
 		preloaded: false,
 
