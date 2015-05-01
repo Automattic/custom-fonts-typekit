@@ -58,6 +58,10 @@ class Jetpack_Fonts_Typekit {
 			'webKitShim' => 'https://wordpress.com/wp-content/mu-plugins/custom-fonts/webkit-shim.html',
 			'isAdmin' => is_admin()
 		) );
+
+		if ( is_admin() ) {
+			wp_enqueue_style( 'jetpack-fonts-typekit', plugins_url( 'css/jetpack-fonts-typekit.css', __FILE__ ), array(), '20150501', 'screen' );
+		}
 	}
 
 	/**
