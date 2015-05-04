@@ -17,27 +17,6 @@
 		activeClass = 'wf-active',
 		dataType = 'TypekitPreviewShim';
 
-	// This will be called in the context of the Customizer sidebar
-	function addFontToControls( font ) {
-		// No need to do anything if this is the sidebar,
-		// because we will be using images.
-		if ( opts.isAdmin ) {
-			return;
-		}
-
-		if ( ~ loadedFontIds.indexOf( font.id ) ) {
-			return;
-		}
-
-		font = formatFont( font );
-
-		if ( isWebkit ) {
-			loadViaShim( font );
-		} else {
-			loadFont( font );
-		}
-	}
-
 // This will be called in the context of the preview window iframe.
 	function addFontToPreview( font ) {
 		// No need to do anything if this is the sidebar,
@@ -260,7 +239,6 @@
 			var height = this.calculateBackgroundHeight( this.model.get( 'fvds').length );
 			this.$el.css( 'background-size', 'auto ' + height.toString() + 'px' );
 
-			addFontToControls( this.model.toJSON() );
 			return this;
 		}
 	});
