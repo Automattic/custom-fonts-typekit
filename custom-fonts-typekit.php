@@ -30,6 +30,10 @@ Author URI: http://automattic.com/
  * **********************************************************************
  */
 
+if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+	define( 'WPCOM_TYPEKIT_API_TOKEN', '83285b026d39a1de4d36810211436d39574f0cf4' );
+}
+
 class Jetpack_Fonts_Typekit {
 
 	const PREVIEWKIT_AUTH_ID = 'wp';

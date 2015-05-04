@@ -190,7 +190,93 @@ EMBED;
 	 * @return boolean|WP_Error true on success, WP_Error instance on failure.
 	 */
 	public function save_fonts( $fonts ) {
-		// TODO: save a new kit
+		require_once( __DIR__ . '/typekit-api.php' );
+		/*
+			1. Check for an existing kit id
+			2. If not 1), create a new kit using TypekitApi::create_kit()
+			3. Call TypekitApi::edit_kit()
+			4. The `$families` param in 3) expects the following format:
+				(
+				    [headings] => Array
+				        (
+				            [id] => ftnk
+				            [fvd] => n5
+				        )
+
+				    [body-text] => Array
+				        (
+				            [id] => cwfk
+				            [fvd] =>
+				        )
+				)
+			5. A successful return result looks like:
+				(
+				    [kit] => Array
+				        (
+				            [id] => dwf3clw
+				            [name] => actually a blawg
+				            [analytics] =>
+				            [domains] => Array
+				                (
+				                    [0] => wattmiebe.wordpress.com
+				                    [1] => *.wordpress.com
+				                )
+
+				            [families] => Array
+				                (
+				                    [0] => Array
+				                        (
+				                            [id] => cwfk
+				                            [name] => Jubilat
+				                            [slug] => jubilat
+				                            [css_names] => Array
+				                                (
+				                                    [0] => jubilat-1
+				                                    [1] => jubilat-2
+				                                )
+
+				                            [css_stack] => "jubilat-1","jubilat-2",sans-serif
+				                            [subset] => default
+				                            [variations] => Array
+				                                (
+				                                    [0] => n4
+				                                    [1] => i4
+				                                    [2] => n7
+				                                    [3] => i7
+				                                )
+
+				                        )
+
+				                    [1] => Array
+				                        (
+				                            [id] => ftnk
+				                            [name] => Futura PT
+				                            [slug] => futura-pt
+				                            [css_names] => Array
+				                                (
+				                                    [0] => futura-pt-1
+				                                    [1] => futura-pt-2
+				                                )
+
+				                            [css_stack] => "futura-pt-1","futura-pt-2",sans-serif
+				                            [subset] => default
+				                            [variations] => Array
+				                                (
+				                                    [0] => n5
+				                                )
+
+				                        )
+
+				                )
+
+				        )
+
+				)
+				6. The `css_stack` will need to be shimmed into our saved `cssName` property for those fonts as that is what the Typekit kit will render as.
+				7. Note how an empty `fvd` translates into the [n4,i4,n7,i7] variations for the body-text font automatically.
+				8. a `WP_Error` will be returned from TypekitApi responses if things go wrong.
+				9. See `TypekitAdmin::publish_kit_with_data()` for how the API is called in the current plugin https://wpcom.trac.automattic.com/browser/trunk/wp-content/mu-plugins/custom-fonts/typekit-admin.php#L225
+		*/
 		return true;
 	}
 }
