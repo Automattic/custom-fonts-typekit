@@ -17,15 +17,8 @@
 		activeClass = 'wf-active',
 		dataType = 'TypekitPreviewShim';
 
-	// This will be called first in the context of the Customizer sidebar and
-	// second in the context of the preview window iframe.
-	function addFontToPage( font, text ) {
-		// No need to do anything if this is the sidebar,
-		// because we will be using images.
-		if ( opts.isAdmin ) {
-			return;
-		}
-
+	// This will be called in the context of the preview window iframe.
+	function addFontToPreview( font ) {
 		if ( ~ loadedFontIds.indexOf( font.id ) ) {
 			return;
 		}
@@ -37,7 +30,7 @@
 		} else {
 			loadFont( font );
 		}
-	};
+	}
 
 	// get ready for previewing, either with `TypekitPreview` or the Webkit Shim
 	if ( ! opts.isAdmin ) {
@@ -240,12 +233,11 @@
 			var height = this.calculateBackgroundHeight( this.model.get( 'fvds').length );
 			this.$el.css( 'background-size', 'auto ' + height.toString() + 'px' );
 
-			addFontToPage( this.model.toJSON(), this.model.get( 'id' ) );
 			return this;
 		}
 	});
 
-	TypekitProviderView.addFontToPage = addFontToPage;
+	TypekitProviderView.addFontToPreview = addFontToPreview;
 
 	api.JetpackFonts.providerViews.typekit = TypekitProviderView;
 
