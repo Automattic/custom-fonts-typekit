@@ -8,3 +8,9 @@
   display: inline-block;
   float: right;
 }
+
+.jetpack-fonts__current-font .jetpack-fonts__typekit-option::after{
+  display: none;
+
+}
+
