@@ -224,6 +224,7 @@
 		},
 
 		render: function() {
+			this.$el.addClass( 'jetpack-fonts__typekit-option' );
 			this.maybePreloadImage();
 			this.setImageFile();
 
