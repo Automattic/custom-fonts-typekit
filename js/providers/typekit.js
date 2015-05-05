@@ -50,7 +50,7 @@
 			isShimLoaded = true;
 			// clear the loading queue, if any
 			if ( toLoadInShim.length ) {
-				$.map( toLoadInShim, loadViaShim );
+				loadViaShim( toLoadInShim );
 				toLoadInShim = [];
 			}
 		});
@@ -77,9 +77,14 @@
 		// remove loading class, add loaded class
 		$html.removeClass( loadingClass ).addClass( activeClass );
 		$( '<link />', { rel: 'stylesheet', href: data.styleURL } ).appendTo( 'head' );
-		loadedFontIds.push( data.fonts[0].id );
+		$.each( data.fonts, function( i,font ){
+			loadedFontIds.push( font.id );
+		});
 	}
 
+	/**
+	 * Accepts a single `font` or an array of `font`s
+	 */
 	function loadViaShim( font ) {
 		// queue fonts if the shim hasn't loaded yet
 		if ( ! isShimLoaded ) {
@@ -94,7 +99,13 @@
 		timeout = setTimeout( function() {
 			$html.removeClass( loadingClass );
 		}, 5000 );
-		iframeHelper.contentWindow.postMessage( JSON.stringify( { type: dataType, fonts: [ font ] } ), '*' );
+
+		// Support multiple fonts. We pass in the whole toLoadInShim array when clearing it
+		// Otherwise we get a race condition on the first font if there are multiple.
+		if ( ! $.isArray( font ) ) {
+			font = [ font ];
+		}
+		iframeHelper.contentWindow.postMessage( JSON.stringify( { type: dataType, fonts: font } ), '*' );
 	};
 
 	function loadFont( font ) {
