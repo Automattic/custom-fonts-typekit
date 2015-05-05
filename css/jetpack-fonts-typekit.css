@@ -1,17 +1,10 @@
-.jetpack-fonts__option::after{
-  content: url('/wp-content/plugins/custom-fonts-typekit/img/typekit-icon-32-grayscale.png');
-  font: 400 20px/1 dashicons;
-  cursor: pointer;
-  border-radius: 0 3px 3px 0;
-  color: #555;
-  font-size: 24px;
-  width: 28px;
+.jetpack-fonts__typekit-option::after{
+  width: 16px;
+  height: 16px;
+  margin: 15px 10px 0px 0px;
+  content: "";
+  background: url('/wp-content/plugins/custom-fonts-typekit/img/typekit-logo-64.png') no-repeat 0 0;
+  background-size: 100%;
+  display: inline-block;
   float: right;
-  height: 45px;
-  line-height: 45px;
-  text-align: center;
-  position: relative;
-  right: 1px;
-  top: 1px;
-  text-indent: -1px;
 }
