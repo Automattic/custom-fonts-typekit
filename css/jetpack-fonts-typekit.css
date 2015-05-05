@@ -1,0 +1,17 @@
+.jetpack-fonts__option::after{
+  content: url('/wp-content/plugins/custom-fonts-typekit/img/typekit-icon-32-grayscale.png');
+  font: 400 20px/1 dashicons;
+  cursor: pointer;
+  border-radius: 0 3px 3px 0;
+  color: #555;
+  font-size: 24px;
+  width: 28px;
+  float: right;
+  height: 45px;
+  line-height: 45px;
+  text-align: center;
+  position: relative;
+  right: 1px;
+  top: 1px;
+  text-indent: -1px;
+}
