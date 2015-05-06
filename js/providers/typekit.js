@@ -225,6 +225,9 @@
 		},
 
 		addLogo: function() {
+			if ( this.$el.find( '.jetpack-fonts__typekit-option-logo' ).length > 0 ) {
+				return;
+			}
 			var typekitLogoUrl = this.imageDir + 'typekit-logo-64.png';
 			var logoEl = $( '<div class="jetpack-fonts__typekit-option-logo" />' );
 			logoEl.css( { 'background-image': 'url("' + typekitLogoUrl + '")' } );
