@@ -1,14 +1,15 @@
-.jetpack-fonts__typekit-option::after{
+.jetpack-fonts__typekit-option-logo {
   width: 16px;
   height: 16px;
   margin: 15px 10px 0px 0px;
   content: "";
-  background: url('/wp-content/plugins/custom-fonts-typekit/img/typekit-logo-64.png') no-repeat 0 0;
+  background-repeat: no-repeat;
+  background-position: 0 0;
   background-size: 100%;
   display: inline-block;
   float: right;
 }
 
-.jetpack-fonts__current-font .jetpack-fonts__typekit-option::after{
+.jetpack-fonts__current-font .jetpack-fonts__typekit-option-logo {
   display: none;
 }
