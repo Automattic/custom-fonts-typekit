@@ -46,19 +46,6 @@ class Jetpack_Fonts_List_Typekit {
 			'smallTextLegibility' => false,
 		),
 		array(
-			'displayName' => 'Anonymous Pro',
-			'id' => 'fbln',
-			'cssName' => 'anonymous-pro',
-			'variants' => array(
-				'n4',
-				'i4',
-				'n7',
-				'i7',
-			),
-			'shortname' => 'Anonymous Pro',
-			'smallTextLegibility' => true,
-		),
-		array(
 			'displayName' => 'Arimo',
 			'id' => 'nlwf',
 			'cssName' => 'arimo',
@@ -634,25 +621,6 @@ class Jetpack_Fonts_List_Typekit {
 			'smallTextLegibility' => false
 		),
 		array(
-			'displayName' => 'Open Sans',
-			'id' => 'jtcj',
-			'cssName' => 'open-sans',
-			'variants' => array(
-				'n3',
-				'i3',
-				'n4',
-				'i4',
-				'n6',
-				'i6',
-				'n7',
-				'i7',
-				'n8',
-				'i8',
-			),
-			'shortname' => 'Open Sans',
-			'smallTextLegibility' => true
-		),
-		array(
 			'displayName' => 'Orbitron',
 			'id' => 'rfss',
 			'cssName' => 'orbitron',
@@ -662,19 +630,6 @@ class Jetpack_Fonts_List_Typekit {
 			),
 			'shortname' => 'Orbitron',
 			'smallTextLegibility' => false,
-		),
-		array(
-			'displayName' => 'PT Serif',
-			'id' => 'xcqq',
-			'cssName' => 'pt-serif',
-			'variants' => array(
-				'n4',
-				'i4',
-				'n7',
-				'i7',
-			),
-			'shortname' => 'PT Serif',
-			'smallTextLegibility' => true,
 		),
 		array(
 			'displayName' => 'Proxima Nova',
@@ -784,27 +739,6 @@ class Jetpack_Fonts_List_Typekit {
 			'smallTextLegibility' => false,
 		),
 		array(
-			'displayName' => 'Source Sans Pro',
-			'id' => 'bhyf',
-			'cssName' => 'source-sans-pro',
-			'variants' => array(
-				'n2',
-				'i2',
-				'n3',
-				'i3',
-				'n4',
-				'i4',
-				'n6',
-				'i6',
-				'n7',
-				'i7',
-				'n9',
-				'i9',
-			),
-			'shortname' => 'Source Sans Pro',
-			'smallTextLegibility' => true
-		),
-		array(
 			'displayName' => 'Sorts Mill Goudy',
 			'id' => 'yrwy',
 			'cssName' => 'sorts-mill-goudy',
@@ -841,19 +775,6 @@ class Jetpack_Fonts_List_Typekit {
 				'i7',
 			),
 			'shortname' => 'Tinos',
-			'smallTextLegibility' => true,
-		),
-		array(
-			'displayName' => 'Ubuntu',
-			'id' => 'jhhw',
-			'cssName' => 'ubuntu',
-			'variants' => array(
-				'n4',
-				'i4',
-				'n7',
-				'i7',
-			),
-			'shortname' => 'Ubuntu',
 			'smallTextLegibility' => true,
 		),
 	);
