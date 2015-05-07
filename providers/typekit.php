@@ -133,7 +133,7 @@ EMBED;
 	 * @return array         A potentially modified list of fonts.
 	 */
 	public function save_fonts( $fonts ) {
-		require_once( __DIR__ . '/typekit-api.php' );
+		require_once( __DIR__ . '/../typekit-api.php' );
 		$kit_domains = $this->get_site_hosts();
 		$kit_id = $this->get_kit_id();
 		$kit_name = $this->get_kit_name();
