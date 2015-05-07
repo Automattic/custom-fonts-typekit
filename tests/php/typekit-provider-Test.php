@@ -132,6 +132,21 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 		$this->assertContains( 'n7', $font[ 'fvds' ] );
 	}
 
+	public function test_get_fonts_returns_non_retired_fonts() {
+		$this->assertContains( 'gjst', array_map( function( $font ) { return $font[ 'id' ]; }, $this->get_fonts() ) );
+	}
+
+	public function test_get_fonts_does_not_return_retired_fonts() {
+		\WP_Mock::onFilter( 'jetpack_fonts_list_typekit_retired' )->with( array() )->reply( array( 'gjst' ) );
+		$this->assertNotContains( 'gjst', array_map( function( $font ) { return $font[ 'id' ]; }, $this->get_fonts() ) );
+	}
+
+	public function test_get_fonts_returns_retired_fonts_if_they_are_active() {
+		\WP_Mock::onFilter( 'jetpack_fonts_list_typekit_retired' )->with( array() )->reply( array( 'gjst' ) );
+		// TODO: make this font active
+		$this->assertContains( 'gjst', array_map( function( $font ) { return $font[ 'id' ]; }, $this->get_fonts() ) );
+	}
+
 	public function test_render_fonts_outputs_kit_javascript() {
 		\WP_Mock::wpFunction( 'get_option', array(
 			'return' => array( 'kit_id' => 'foobar' )
@@ -171,7 +186,6 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 		$provider->render_fonts( array() );
 		$this->expectOutputString( '' );
 	}
-
 }
 
 

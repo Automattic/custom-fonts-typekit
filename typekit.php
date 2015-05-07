@@ -51,6 +51,44 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return $whitelist;
 	}
 
+	/**
+	 * Return fonts from the API which are not retired (retired fonts that are
+	 * currently enabled for this site are still included).
+	 * @return array List of fonts
+	 */
+	public function get_available_fonts() {
+		$all_fonts = apply_filters( 'jetpack_fonts_list_typekit', array() );
+		$retired_font_ids = $this->get_retired_font_ids();
+		$active_fonts = array(); // TODO: get active fonts for this site
+		$available_fonts = array();
+		foreach ( $all_fonts as $font ) {
+			if ( ! $this->font_list_contains( $font, $retired_font_ids ) || $this->font_list_contains( $font, $active_fonts ) ) {
+				array_push( $available_fonts, $font );
+			}
+		}
+		return $available_fonts;
+	}
+
+	public function get_retired_font_ids() {
+		return apply_filters( 'jetpack_fonts_list_typekit_retired', array() );
+	}
+
+	/**
+	 * Return true if the a font's ID is present in the list.
+	 * @param array $font API font whose ID to use
+	 * @param array $haystack Array of fonts to search for the ID or an array of IDs
+	 */
+	public function font_list_contains( $font, $haystack ) {
+		foreach ( $haystack as $fnt ) {
+			if ( is_array( $fnt ) && $fnt[ 'id' ] === $font[ 'id' ] ) {
+				return true;
+			}
+			if ( ! is_array( $fnt ) && $fnt === $font[ 'id' ] ) {
+				return true;
+			}
+		}
+		return false;
+	}
 	// TEMP
 	public function get_api_key() {
 		return '';
@@ -179,9 +217,11 @@ EMBED;
 	public function get_fonts() {
 		// we don't bother with caching since it's a static list
 		$fonts = array();
-		$fonts = apply_filters( 'jetpack_fonts_list_typekit', $fonts );
+		$fonts = $this->get_available_fonts();
 		$fonts = array_map( array( $this, 'format_font' ), $fonts );
 		return $fonts;
+		}
+		return array();
 	}
 
 	/**
