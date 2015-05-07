@@ -1,7 +1,10 @@
 <?php
 
 // Begin mocks
-class Jetpack_Fonts {}
+class Jetpack_Fonts {
+	public function get_fonts() { return array(); }
+}
+
 class Jetpack_Font_Provider {
 	public function __construct( Jetpack_Fonts $custom_fonts ) {
 		$custom_fonts;
@@ -9,6 +12,16 @@ class Jetpack_Font_Provider {
 
 	public function get_cached_fonts() {}
 	public function set_cached_fonts() {}
+}
+
+function wp_list_pluck( $list, $field ) {
+	$results = array();
+	foreach( $list as $item ) {
+		if ( $item[ $field ] ) {
+			array_push( $results, $item[ $field ] );
+		}
+	}
+	return $results;
 }
 
 function get_test_fonts() {
@@ -65,6 +78,12 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 		$jetpack_fonts = new Jetpack_Fonts();
 		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
 		return $provider->get_fonts();
+	}
+
+	protected function default_whitelist() {
+		$jetpack_fonts = new Jetpack_Fonts();
+		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
+		return $provider->default_whitelist( array() );
 	}
 
 	protected function get_first_font() {
@@ -132,19 +151,27 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 		$this->assertContains( 'n7', $font[ 'fvds' ] );
 	}
 
-	public function test_get_fonts_returns_non_retired_fonts() {
-		$this->assertContains( 'gjst', array_map( function( $font ) { return $font[ 'id' ]; }, $this->get_fonts() ) );
+	public function test_default_whitelist_returns_non_retired_fonts() {
+		\WP_Mock::wpFunction( 'wp_list_filter', array(
+			'return' => array()
+		) );
+		$this->assertContains( 'gjst', $this->default_whitelist() );
 	}
 
-	public function test_get_fonts_does_not_return_retired_fonts() {
+	public function test_default_whitelist_does_not_return_retired_fonts() {
+		\WP_Mock::wpFunction( 'wp_list_filter', array(
+			'return' => array()
+		) );
 		\WP_Mock::onFilter( 'jetpack_fonts_list_typekit_retired' )->with( array() )->reply( array( 'gjst' ) );
-		$this->assertNotContains( 'gjst', array_map( function( $font ) { return $font[ 'id' ]; }, $this->get_fonts() ) );
+		$this->assertNotContains( 'gjst', $this->default_whitelist() );
 	}
 
-	public function test_get_fonts_returns_retired_fonts_if_they_are_active() {
+	public function test_default_whitelist_returns_retired_fonts_if_they_are_active() {
+		\WP_Mock::wpFunction( 'wp_list_filter', array(
+			'return' => array( array( 'id' => 'gjst' ) )
+		) );
 		\WP_Mock::onFilter( 'jetpack_fonts_list_typekit_retired' )->with( array() )->reply( array( 'gjst' ) );
-		// TODO: make this font active
-		$this->assertContains( 'gjst', array_map( function( $font ) { return $font[ 'id' ]; }, $this->get_fonts() ) );
+		$this->assertContains( 'gjst', $this->default_whitelist() );
 	}
 
 	public function test_render_fonts_outputs_kit_javascript() {

@@ -21,7 +21,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	}
 
 	public function default_whitelist( $whitelist ) {
-		$all_fonts = wp_list_pluck( Jetpack_Fonts_List_Typekit::get_fonts(), 'id' );
+		$all_fonts = wp_list_pluck( $this->get_fonts(), 'id' );
 		$set_fonts = wp_list_filter( $this->manager->get_fonts(), array( 'provider' => $this->id ) );
 		$set_fonts = wp_list_pluck( $set_fonts, 'id' );
 		$retired = apply_filters( 'jetpack_fonts_list_typekit_retired', array() );
