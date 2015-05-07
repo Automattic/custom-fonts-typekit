@@ -70,11 +70,11 @@ class TypekitApi {
 
 		// Return an error if Typekit API failed after six attempts
 		if ( is_wp_error( $result ) ) {
-			wpcom_log_typekit_api_error( $result, $url, $request_args );
+			self::log_error( $result, $url, $request_args );
 			return $result;
 		}
 		elseif ( 200 != $status_code ) {
-			wpcom_log_typekit_api_error( $result, $url, $request_args );
+			self::log_error( $result, $url, $request_args );
 
 			$error_details = ( is_array( $object ) && array_key_exists( 'errors', $object ) ) ? $status_code . ": " . implode( ' ', $object['errors'] ) : $status_code;
 
@@ -149,7 +149,8 @@ class TypekitApi {
 				} elseif( is_array( $family['fvd'] ) ) {
 					$variations = $family['fvd'];
 				} else {
-					$_family = self::get_by_id( $family['id'] );
+					$_family = self::get_font_by_id( $family['id'] );
+					l( 'get_font_by_id', $_family );
 
 					if ( is_array( $_family ) ) {
 						$variations = self::get_family_fvds( $_family, true );
@@ -158,7 +159,6 @@ class TypekitApi {
 
 				// By letting themes specifiy variations, ensure that only valid values are passed in the API requests
 				$variations = array_filter( array_map( array( __CLASS__, 'filter_allowed_variations' ), $variations ) );
-
 				$variation_count = 0;
 				foreach ( $variations as $variation ) {
 					$postdata["families[$family_count][variations][$variation_count]"] = $variation;
@@ -195,23 +195,20 @@ class TypekitApi {
 	 * @return array Returns an array of strings for the fvds defined in this font family.
 	 */
 	private static function get_family_fvds( $family, $reduce = false ) {
-		$fvds = array();
-		if ( isset( $family['variations'] ) ) {
-			$variations = $family['variations'];
+		$variations = array();
+		if ( isset( $family['fvds'] ) ) {
+			$variations = $family['fvds'];
 			// keep big families "regular" when activating.
 			if ( $reduce && count( $variations ) > 4 ) {
 				$allowed = array( 'n4', 'n7', 'i4', 'i7' );
 				foreach( $variations as $i => $variation ) {
-					if ( ! in_array( $variation['fvd'], $allowed ) ) {
+					if ( ! in_array( $variation, $allowed ) ) {
 						unset( $variations[ $i ] );
 					}
 				}
 			}
-			foreach( $variations as $variation ) {
-				$fvds[] = $variation['fvd'];
-			}
 		}
-		return $fvds;
+		return $variations;
 	}
 
 	/**
@@ -254,6 +251,18 @@ class TypekitApi {
 	}
 
 	/**
+	 * Makes an API request to retrieve the private information about a draft
+	 * kit with a given id.
+	 *
+	 * @param string $kit_id The id of the kit to retrieve information about.
+	 * @return array|WP_Error Returns a json_decoded result as an associative array or an error object.
+	 */
+	static function get_kit_info( $kit_id ) {
+		$kit_id = rawurlencode( $kit_id );
+		return self::request( 'GET', "/kits/$kit_id" );
+	}
+
+	/**
 	 * Makes an API request to retrieve a previewkit authentication token valid
 	 * for the given domain. The tokens that are returned are only valid for a
 	 * fixed period of time, and that period is included in the data that's returned.
@@ -289,4 +298,59 @@ class TypekitApi {
 			return false;
 		}
 	}
+
+	private static function log_error( $result, $url, $request ) {
+		if ( empty( $result ) ) {
+			return;
+		}
+		$blog_id = get_current_blog_id();
+		$error_code = wp_remote_retrieve_response_code( $result );
+		$server_uri = esc_url( $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] );
+		$backtrace = self::backtrace();
+		$error_payload = "Typekit API error for $blog_id, triggered by $server_uri\n\nTypekit URI: $url\n\nRequest: " . print_r( $request, true ) . "\n\nResult: " . print_r( $result, true ) . "\n\nBacktrace:\n $backtrace";
+
+		// No mail in WP_CLI
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			WP_CLI::print_value( $error_payload );
+			return;
+		}
+
+		// Only send error reports in production
+		if ( ! function_exists( 'bump_stats_extras' ) ) {
+			return;
+		}
+
+		// Send error report.
+		if ( '404' != $error_code ) {
+			wp_mail(
+				'erick@automattic.com',
+				'TypekitAPI error',
+				$error_payload
+			);
+		}
+		// Log it.
+		error_log( $error_payload );
+		// Bump stats.
+		if ( empty( $error_code ) )
+			$error_code = 'undefined';
+		bump_stats_extras( 'typekit_api_error', $error_code );
+	}
+
+	private static function backtrace() {
+		$trace = debug_backtrace( false );
+			$out = '';
+			foreach($trace as $ent) {
+				if(isset($ent['file']))
+					$out .= $ent['file'];
+				if(isset($ent['function']))
+					$out .= ':'.$ent['function'].'()';
+				if(isset($ent['line']))
+					$out .= ' at line '.$ent['line'].' ';
+				if(isset($ent['file']))
+					$out .= ' in '.$ent['file'];
+				$out .= "\n";
+			}
+			return $out;
+	}
 }
+
