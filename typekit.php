@@ -5,10 +5,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 
 	public $id = 'typekit';
 
-	private static $defaults = array(
-		'kit_id' => null
-	);
-
 	/**
 	 * Constructor
 	 * @param Jetpack_Fonts $custom_fonts Manager instance
@@ -105,53 +101,18 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 EMBED;
 	}
 
-	private function get_kit_id() {
-		return $this->get( 'kit_id' );
-	}
-
-	/**
-	 * Retrieves the associative array where the plugin stores its data from the
-	 * WordPress option.
-	 *
-	 * @return array Returns an associative array of data for the plugin.
-	 */
-	private function data() {
-		$data = get_option( 'typekit_data', self::$defaults );
-		$data = wp_parse_args( $data, self::$defaults );
-		return $data;
-	}
-
-	/**
-	 * Retrieves an individual plugin data value associated with the given key for
-	 * the current user.
-	 *
-	 * @param string $key The key of the plugin data value to get.
-	 * @return string Returns the current value for the given key.
-	 */
-	private function get( $key ) {
-		$data = $this->data();
-		if ( $data && is_array( $data ) && array_key_exists( $key, $data ) ) {
-			return $data[ $key ];
+	public function get_kit_id() {
+		$kit_id = $this->get( 'kit_id' );
+		if ( ! $kit_id ) {
+			$legacy_opt = (array) get_option( 'typekit_data', array() );
+			if ( isset( $legacy_opt['kit_id'] ) && $legacy_opt['kit_id'] ) {
+				$kit_id = $legacy_opt['kit_id'];
+				$this->set( 'kit_id', $kit_id );
+				unset( $legacy_opt['kit_id'] );
+				return $kit_id;
+			}
 		}
-		return null;
-	}
-
-	/**
-	 * Sets the plugin data value associated with the given key for the current
-	 * user.
-	 *
-	 * @param string $key The key of the plugin data value to set.
-	 * @param array|string|boolean|null $value The new value to be associated with this key.
-	 * @return boolean Returns true if the associated key was found and set, or false if the key isn't among the defaults.
-	 */
-	private function set( $key, $value ) {
-		$data = self::data();
-		if ( array_key_exists( $key, self::$defaults ) ) {
-			$data[$key] = $value;
-			update_option( 'typekit_data', $data );
-			return true;
-		}
-		return false;
+		return $kit_id;
 	}
 
 	/**
