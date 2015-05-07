@@ -10,7 +10,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 * @param Jetpack_Fonts $custom_fonts Manager instance
 	 */
 	public function __construct( Jetpack_Fonts $custom_fonts ) {
-		require_once( 'typekit-font-list.php' );
+		require_once( __DIR__ . '/../typekit-font-list.php' );
 		parent::__construct( $custom_fonts );
 		$this->manager = $custom_fonts;
 		add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ) );

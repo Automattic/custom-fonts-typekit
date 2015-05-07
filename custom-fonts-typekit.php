@@ -43,6 +43,14 @@ class Jetpack_Fonts_Typekit {
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 		add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
+		require_once __DIR__ . '/wpcom-compat.php';
+		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
+			add_filter( 'wpcom_font_rules_location_base', array( __CLASS__, 'local_dev_annotations' ) );
+		}
+	}
+
+	public static function local_dev_annotations( $dir ) {
+		return __DIR__ . '/annotations';
 	}
 
 	public static function enqueue_scripts() {
@@ -89,7 +97,7 @@ class Jetpack_Fonts_Typekit {
 	}
 
 	public static function register_provider( $jetpack_fonts ) {
-		$provider_dir = dirname( __FILE__ ) . '/';
+		$provider_dir = dirname( __FILE__ ) . '/providers/';
 		$jetpack_fonts->register_provider( 'typekit', 'Jetpack_Typekit_Font_Provider', $provider_dir . 'typekit.php' );
 	}
 }
