@@ -21,6 +21,12 @@ class Jetpack_Fonts_List_Typekit {
 		'hzlv', // Ronnia Web Condensed
 		'mkrf', // Snicker
 		'qlvb', // Sommet Slab
+		'nlwf', // Arimo
+		'fbln', // Anonymous Pro
+		'jtcj', // Open Sans
+		'xcqq', // PT Serif
+		'bhyf', // Source Sans Pro
+		'jhhw', // Ubuntu
 	);
 
 	public static $fonts = array(
