@@ -89,7 +89,7 @@ class Jetpack_Fonts_Typekit {
 	}
 
 	public static function register_provider( $jetpack_fonts ) {
-		$provider_dir = dirname( __FILE__ ) . '/';
+		$provider_dir = dirname( __FILE__ ) . '/providers/';
 		$jetpack_fonts->register_provider( 'typekit', 'Jetpack_Typekit_Font_Provider', $provider_dir . 'typekit.php' );
 	}
 }
