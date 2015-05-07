@@ -43,6 +43,7 @@ class Jetpack_Fonts_Typekit {
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 		add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
+		require_once __DIR__ . '/wpcom-compat.php';
 	}
 
 	public static function enqueue_scripts() {
