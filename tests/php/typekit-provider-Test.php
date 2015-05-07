@@ -1,7 +1,5 @@
 <?php
 
-include dirname( __FILE__ ) . '/../../typekit.php';
-
 // Begin mocks
 class Jetpack_Fonts {}
 class Jetpack_Font_Provider {
@@ -13,31 +11,7 @@ class Jetpack_Font_Provider {
 	public function set_cached_fonts() {}
 }
 
-function esc_js( $str ) {
-	return $str;
-}
-
-$kit_id = 'foobar';
-$return_option = true;
-
-function get_option( $key ) {
-	global $kit_id, $return_option;
-	if ( $return_option && $key === 'typekit_data' ) {
-		return array(
-			'kit_id' => $kit_id
-		);
-	}
-	return;
-}
-
-function wp_parse_args( $args, $defaults ) {
-	$defaults;
-	return $args;
-}
-
-function add_filter() {}
-
-function test_fonts() {
+function get_test_fonts() {
 	return array(
 		array(
 			'displayName' => 'Abril Text',
@@ -72,16 +46,21 @@ function test_fonts() {
 	);
 }
 
-function apply_filters( $key, $value ) {
-	if ( $key === 'jetpack_fonts_list_typekit' ) {
-		return test_fonts();
-	}
-	return $value;
-}
 // End mocks
 
-
 class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
+	public function setUp() {
+		\WP_Mock::setUp();
+		\WP_Mock::wpPassthruFunction( 'esc_js' );
+		\WP_Mock::wpPassthruFunction( 'wp_parse_args' );
+		\WP_Mock::onFilter( 'jetpack_fonts_list_typekit' )->with( array() )->reply( get_test_fonts() );
+		include_once dirname( __FILE__ ) . '/../../typekit.php';
+	}
+
+	public function tearDown() {
+		\WP_Mock::tearDown();
+	}
+
 	protected function get_fonts() {
 		$jetpack_fonts = new Jetpack_Fonts();
 		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
@@ -154,8 +133,9 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 	}
 
 	public function test_render_fonts_outputs_kit_javascript() {
-		global $kit_id;
-		$kit_id = 'foobar';
+		\WP_Mock::wpFunction( 'get_option', array(
+			'return' => array( 'kit_id' => 'foobar' )
+		) );
 		$jetpack_fonts = new Jetpack_Fonts();
 		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
 		$provider->render_fonts( array() );
@@ -163,10 +143,9 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 	}
 
 	public function test_render_fonts_outputs_kit_javascript_with_kit_id_in_config() {
-		global $kit_id, $return_option;
-		$kit_id = null;
-		$return_option = true;
-		$kit_id = 'foobar';
+		\WP_Mock::wpFunction( 'get_option', array(
+			'return' => array( 'kit_id' => 'foobar' )
+		) );
 		$jetpack_fonts = new Jetpack_Fonts();
 		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
 		$provider->render_fonts( array() );
@@ -174,9 +153,9 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 	}
 
 	public function test_render_fonts_outputs_nothing_when_there_is_no_kit_id() {
-		global $kit_id, $return_option;
-		$kit_id = null;
-		$return_option = true;
+		\WP_Mock::wpFunction( 'get_option', array(
+			'return' => null
+		) );
 		$jetpack_fonts = new Jetpack_Fonts();
 		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
 		$provider->render_fonts( array() );
@@ -184,8 +163,9 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 	}
 
 	public function test_render_fonts_outputs_nothing_when_there_is_no_option_set() {
-		global $return_option;
-		$return_option = false;
+		\WP_Mock::wpFunction( 'get_option', array(
+			'return' => null
+		) );
 		$jetpack_fonts = new Jetpack_Fonts();
 		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
 		$provider->render_fonts( array() );

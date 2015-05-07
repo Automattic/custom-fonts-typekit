@@ -19,7 +19,8 @@ module.exports = function( grunt ) {
 
 		phpunit: {
 			classes: {
-				dir: 'tests/php/'
+				dir: 'tests/php/',
+				bootstrap: 'vendor/autoload.php'
 			},
 			options: {
 				colors: true
