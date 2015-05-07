@@ -5,10 +5,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 
 	public $id = 'typekit';
 
-	private static $defaults = array(
-		'kit_id' => null
-	);
-
 	/**
 	 * Constructor
 	 * @param Jetpack_Fonts $custom_fonts Manager instance
@@ -80,7 +76,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 * @return void
 	 */
 	public function render_fonts( $fonts ) {
-		$fonts;
 		$kit_id = $this->get_kit_id();
 		if ( $kit_id ) {
 			$this->output_typekit_code( $kit_id );
@@ -105,53 +100,18 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 EMBED;
 	}
 
-	private function get_kit_id() {
-		return $this->get( 'kit_id' );
-	}
-
-	/**
-	 * Retrieves the associative array where the plugin stores its data from the
-	 * WordPress option.
-	 *
-	 * @return array Returns an associative array of data for the plugin.
-	 */
-	private function data() {
-		$data = get_option( 'typekit_data', self::$defaults );
-		$data = wp_parse_args( $data, self::$defaults );
-		return $data;
-	}
-
-	/**
-	 * Retrieves an individual plugin data value associated with the given key for
-	 * the current user.
-	 *
-	 * @param string $key The key of the plugin data value to get.
-	 * @return string Returns the current value for the given key.
-	 */
-	private function get( $key ) {
-		$data = $this->data();
-		if ( $data && is_array( $data ) && array_key_exists( $key, $data ) ) {
-			return $data[ $key ];
+	public function get_kit_id() {
+		$kit_id = $this->get( 'kit_id' );
+		if ( ! $kit_id ) {
+			$legacy_opt = (array) get_option( 'typekit_data', array() );
+			if ( isset( $legacy_opt['kit_id'] ) && $legacy_opt['kit_id'] ) {
+				$kit_id = $legacy_opt['kit_id'];
+				$this->set( 'kit_id', $kit_id );
+				unset( $legacy_opt['kit_id'] );
+				return $kit_id;
+			}
 		}
-		return null;
-	}
-
-	/**
-	 * Sets the plugin data value associated with the given key for the current
-	 * user.
-	 *
-	 * @param string $key The key of the plugin data value to set.
-	 * @param array|string|boolean|null $value The new value to be associated with this key.
-	 * @return boolean Returns true if the associated key was found and set, or false if the key isn't among the defaults.
-	 */
-	private function set( $key, $value ) {
-		$data = self::data();
-		if ( array_key_exists( $key, self::$defaults ) ) {
-			$data[$key] = $value;
-			update_option( 'typekit_data', $data );
-			return true;
-		}
-		return false;
+		return $kit_id;
 	}
 
 	/**
@@ -186,11 +146,149 @@ EMBED;
 
 	/**
 	 * Save the kit
-	 * @param  array $fonts     A list of fonts.
-	 * @return boolean|WP_Error true on success, WP_Error instance on failure.
+	 * @param  array $fonts  A list of fonts.
+	 * @return array         A potentially modified list of fonts.
 	 */
 	public function save_fonts( $fonts ) {
-		// TODO: save a new kit
-		return true;
+		require_once( __DIR__ . '/typekit-api.php' );
+		$kit_domains = $this->get_site_hosts();
+		$kit_id = $this->get_kit_id();
+		$kit_name = $this->get_kit_name();
+		$kit_subset = $this->get_subset_for_blog_language();
+		$families = $this->convert_fonts_for_api( $fonts );
+
+		if ( ! $kit_id ) {
+			$response = TypekitApi::create_kit( $kit_domains, $kit_name, $kit_subset, $families );
+			if ( is_wp_error( $response ) ) {
+				return $fonts;
+			}
+			$kit_id = $response['kit']['id'];
+			$this->set( 'kit_id', $kit_id );
+		} else {
+			$response = TypekitApi::edit_kit( $kit_id, $kit_domains, $kit_name, $kit_subset, $families );
+			if ( is_wp_error( $response ) ) {
+				return $fonts;
+			}
+		}
+
+		$families = $response['kit']['families'];
+
+		// We need to modify our `cssName` property for each family we published
+		$modified_fonts = array();
+		foreach( $families as $family ) {
+			$filtered = wp_list_filter( $fonts, array( 'id' => $family['id'] ) );
+			// still need to loop since both "heading" and "body-text" could be the same font
+			foreach( $filtered as $font ) {
+				$font['cssName'] = '"' . implode('","', $family['css_names'] ) . '"';
+				$modified_fonts[] = $font;
+			}
+		}
+
+		// now, publish that kit!
+		TypekitApi::publish_kit( $kit_id );
+
+		return $modified_fonts;
 	}
+
+	/**
+	 * Get the fonts into a format that `TypekitApi` expects
+	 */
+	private function convert_fonts_for_api( $fonts ) {
+		$api_fonts = array();
+		foreach( $fonts as $font ) {
+			$rule_type = $this->get_rule_type( $font['type'] );
+			if ( ! $rule_type ) {
+				continue;
+			}
+			$api_fonts[] = array(
+				'id' => $font['id'],
+				'fvd' => $rule_type['fvdAdjust'] && isset( $font['currentFvd'] ) ? $font['currentFvd'] : null
+			);
+		}
+		return $api_fonts;
+	}
+
+	private function get_rule_type( $type ) {
+		$rule_types = Jetpack_Fonts::get_instance()->get_generator()->get_rule_types();
+		$result = wp_list_filter( $rule_types, array( 'id' => $type ) );
+		if ( ! empty( $result ) ) {
+			return array_shift( $result );
+		}
+		return false;
+	}
+
+	/**
+	 * Gets the primary hostname (domain or subdomain) that this blog is hosted
+	 * on. Any other domains for the blog should redirect to this one.
+	 *
+	 * @return string|null Returns the primary hostname for the blog
+	 */
+	private function primary_site_host() {
+		if ( function_exists( 'get_primary_redirect' ) ) {
+			// Get the primary redirect host for a wordpress.com blog
+			return get_primary_redirect();
+		} else {
+			// Get the host from the standalone wordpress 'home' option
+			$parsed = parse_url( get_option('home') );
+			if ( is_array( $parsed ) && array_key_exists( 'host', $parsed ) ) {
+				return $parsed['host'];
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the unique hosts (domains or subdomains) that should be included in a
+	 * kit for the blog. First the blog's primary site host is included and then
+	 * *.wordpress.com is included just for good measure.
+	 *
+	 * The site's primary host should always be the first host returned in the
+	 * array so that the Typekit app knows how to construct a url for the blog
+	 * in the colophon page.
+	 *
+	 * @return array Returns an array of hosts (domains or subdomains ).
+	 */
+	private function get_site_hosts() {
+		return array( $this->primary_site_host(), '*.wordpress.com' );
+	}
+
+	/**
+	 * Gets a valid kit name based on the name of the blog. Kit names can't be
+	 * empty or more than 50 characters. If the blog name is more than 50
+	 * characters, it's clipped. If the blog name is empty, the primary site
+	 * host is used instead.
+	 *
+	 * @return string Returns the name to use for a kit created for this site.
+	 */
+	private function get_kit_name() {
+		$name = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
+		if ( seems_utf8( $name ) )
+			$name = sanitize_user( $name, true ); // Reduce to ASCII since Typekit can't deal with UTF-8 characters
+		if ( empty( $name ) ) {
+			return $this->primary_site_host();
+		}
+		return substr( $name, 0, 50 );
+	}
+
+	/**
+	 * Returns the Typekit character subset ( 'default' or 'all' ) to use for the
+	 * lanuage that this blog is written in. English, Spanish, Portuguese, and
+	 * Italian are supported by the default character subset. Other languages
+	 * require the all character subset.
+	 *
+	 * @return string Returns 'default' or 'all' depending on the blog language.
+	 */
+	private function get_subset_for_blog_language() {
+		$lang_id = get_option( 'lang_id' );
+		if ( ! $lang_id || ! function_exists( 'get_lang_code_by_id' ) ) {
+			return 'default';
+		}
+		$lang = get_lang_code_by_id( $lang_id );
+		$lang_parts = explode( '-', $lang );
+		if ( in_array( $lang_parts[0], array( 'en', 'it', 'pt', 'es' ) ) ) {
+			return 'default';
+		}
+		return 'all';
+	}
+
 }
