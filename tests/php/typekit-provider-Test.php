@@ -67,7 +67,7 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 		\WP_Mock::wpPassthruFunction( 'esc_js' );
 		\WP_Mock::wpPassthruFunction( 'wp_parse_args' );
 		\WP_Mock::onFilter( 'jetpack_fonts_list_typekit' )->with( array() )->reply( get_test_fonts() );
-		include_once dirname( __FILE__ ) . '/../../typekit.php';
+		include_once dirname( __FILE__ ) . '/../../providers/typekit.php';
 	}
 
 	public function tearDown() {
