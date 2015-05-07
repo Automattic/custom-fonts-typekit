@@ -95,3 +95,8 @@ class Jetpack_Fonts_Typekit {
 }
 
 add_action( 'init', array( 'Jetpack_Fonts_Typekit', 'init' ) );
+
+// Hey wp-cli is fun
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	include dirname( __FILE__ ) . '/wp-cli-command.php';
+}
