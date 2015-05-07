@@ -16,98 +16,39 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	public function __construct( Jetpack_Fonts $custom_fonts ) {
 		require_once( 'typekit-font-list.php' );
 		parent::__construct( $custom_fonts );
-		// add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ), 9 );
-	}
-
-	public function body_font_whitelist() {
-		return array(
-			'gjst',
-			'gmsj',
-			'sskw',
-			'fbln',
-			'nlwf',
-			'tsyb',
-			'yvxn',
-			'ymzk',
-			'vybr',
-			'wgzc',
-			'hrpf',
-			'klcb',
-			'drjf',
-			'gkmg',
-			'vqgt',
-			'pcpv',
-			'gckq',
-			'snqb',
-			'gwsq',
-			'rlxq',
-			'dbqg',
-			'fytf',
-			'brwr',
-			'rrtc',
-			'rgzb',
-			'sbsp',
-			'xwmz',
-			'ttyp',
-			'pzyv',
-			'twbx',
-			'ftnk',
-			'lmgn',
-			'gmvz',
-			'cwfk',
-			'jgfl',
-			'vyvm',
-			'mrnw',
-			'rvnd',
-			'mvgb',
-			'rshz',
-			'kmpm',
-			'zsyz',
-			'lcny',
-			'nljb',
-			'htrh',
-			'ycvr',
-			'llxb',
-			'mpmb',
-			'jtcj',
-			'rfss',
-			'xcqq',
-			'vcsm',
-			'ccqc',
-			'nqdy',
-			'snjm',
-			'rtgb',
-			'hzlv',
-			'wbmp',
-			'mkrf',
-			'qlvb',
-			'bhyf',
-			'yrwy',
-			'fkjd',
-			'plns',
-			'jhhw',
-		);
-	}
-
-	public function headings_font_whitelist(){
-		return array(
-		);
+		$this->manager = $custom_fonts;
+		add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ) );
 	}
 
 	public function default_whitelist( $whitelist ) {
-		$all_fonts = array_merge ( $this->body_font_whitelist(), $this->headings_font_whitelist() );
-		return $all_fonts;
-	}
-
-	/**
-	 * Retrieve fonts from the API
-	 * @return array List of fonts
-	 */
-	public function retrieve_fonts() {
-		$fonts = array();
-		$fonts = apply_filters( 'jetpack_fonts_list_typekit', $fonts );
-		$fonts = array_map( array( $this, 'format_font' ), $fonts );
-		return $fonts;
+		$all_fonts = wp_list_pluck( Jetpack_Fonts_List_Typekit::get_fonts(), 'id' );
+		$set_fonts = wp_list_filter( $this->manager->get_fonts(), array( 'provider' => $this->id ) );
+		$set_fonts = wp_list_pluck( $set_fonts, 'id' );
+		$retired = array(
+			'gkmg', // Droid Sans
+			'pcpv', // Droid Serif
+			'gckq', // Eigerdals
+			'gwsq', // FF Brokenscript Web Condensed
+			'dbqg', // FF Dax
+			'rgzb', // FF Netto
+			'sbsp', // FF Prater Block
+			'rvnd', // Latpure
+			'zsyz', // Liberation Sans
+			'lcny', // Liberation Serif
+			'rfss', // Orbitron
+			'snjm', // Refrigerator Deluxe
+			'rtgb', // Ronnia Web
+			'hzlv', // Ronnia Web Condensed
+			'mkrf', // Snicker
+			'qlvb', // Sommet Slab
+		);
+		$whitelist = array();
+		foreach( $all_fonts as $id ) {
+			if ( in_array( $id, $set_fonts ) || ! in_array( $id, $retired ) ) {
+				$whitelist[] = $id;
+			}
+		}
+		return $whitelist;
 	}
 
 	// TEMP
@@ -127,7 +68,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			'displayName' => $font['displayName'],
 			'fvds' => $font['variants'],
 			'subsets' => array(),
-			'bodyText' => in_array( urlencode( $font['id'] ), $this->body_font_whitelist() )
+			'bodyText' => $font['smallTextLegibility']
 		);
 		return $formatted;
 	}
@@ -236,15 +177,11 @@ EMBED;
 	 * @return array A list of fonts.
 	 */
 	public function get_fonts() {
-		if ( $fonts = $this->get_cached_fonts() ) {
-			return $fonts;
-		}
-		$fonts = $this->retrieve_fonts();
-		if ( $fonts ) {
-			$this->set_cached_fonts( $fonts );
-			return $fonts;
-		}
-		return array();
+		// we don't bother with caching since it's a static list
+		$fonts = array();
+		$fonts = apply_filters( 'jetpack_fonts_list_typekit', $fonts );
+		$fonts = array_map( array( $this, 'format_font' ), $fonts );
+		return $fonts;
 	}
 
 	/**
