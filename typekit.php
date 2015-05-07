@@ -24,24 +24,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		$all_fonts = wp_list_pluck( Jetpack_Fonts_List_Typekit::get_fonts(), 'id' );
 		$set_fonts = wp_list_filter( $this->manager->get_fonts(), array( 'provider' => $this->id ) );
 		$set_fonts = wp_list_pluck( $set_fonts, 'id' );
-		$retired = array(
-			'gkmg', // Droid Sans
-			'pcpv', // Droid Serif
-			'gckq', // Eigerdals
-			'gwsq', // FF Brokenscript Web Condensed
-			'dbqg', // FF Dax
-			'rgzb', // FF Netto
-			'sbsp', // FF Prater Block
-			'rvnd', // Latpure
-			'zsyz', // Liberation Sans
-			'lcny', // Liberation Serif
-			'rfss', // Orbitron
-			'snjm', // Refrigerator Deluxe
-			'rtgb', // Ronnia Web
-			'hzlv', // Ronnia Web Condensed
-			'mkrf', // Snicker
-			'qlvb', // Sommet Slab
-		);
+		$retired = apply_filters( 'jetpack_fonts_list_typekit_retired', array() );
 		$whitelist = array();
 		foreach( $all_fonts as $id ) {
 			if ( in_array( $id, $set_fonts ) || ! in_array( $id, $retired ) ) {
@@ -49,28 +32,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			}
 		}
 		return $whitelist;
-	}
-
-	/**
-	 * Return fonts from the API which are not retired (retired fonts that are
-	 * currently enabled for this site are still included).
-	 * @return array List of fonts
-	 */
-	public function get_available_fonts() {
-		$all_fonts = apply_filters( 'jetpack_fonts_list_typekit', array() );
-		$retired_font_ids = $this->get_retired_font_ids();
-		$active_fonts = array(); // TODO: get active fonts for this site
-		$available_fonts = array();
-		foreach ( $all_fonts as $font ) {
-			if ( ! $this->font_list_contains( $font, $retired_font_ids ) || $this->font_list_contains( $font, $active_fonts ) ) {
-				array_push( $available_fonts, $font );
-			}
-		}
-		return $available_fonts;
-	}
-
-	public function get_retired_font_ids() {
-		return apply_filters( 'jetpack_fonts_list_typekit_retired', array() );
 	}
 
 	/**
@@ -217,11 +178,9 @@ EMBED;
 	public function get_fonts() {
 		// we don't bother with caching since it's a static list
 		$fonts = array();
-		$fonts = $this->get_available_fonts();
+		$fonts = apply_filters( 'jetpack_fonts_list_typekit', $fonts );
 		$fonts = array_map( array( $this, 'format_font' ), $fonts );
 		return $fonts;
-		}
-		return array();
 	}
 
 	/**

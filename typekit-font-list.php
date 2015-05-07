@@ -1,7 +1,27 @@
 <?php
 add_filter( 'jetpack_fonts_list_typekit', array( 'Jetpack_Fonts_List_Typekit', 'get_fonts' ) );
+add_filter( 'jetpack_fonts_list_typekit_retired', array( 'Jetpack_Fonts_List_Typekit', 'get_retired_font_ids' ) );
 
 class Jetpack_Fonts_List_Typekit {
+
+	public static $retired_font_ids = array(
+		'gkmg', // Droid Sans
+		'pcpv', // Droid Serif
+		'gckq', // Eigerdals
+		'gwsq', // FF Brokenscript Web Condensed
+		'dbqg', // FF Dax
+		'rgzb', // FF Netto
+		'sbsp', // FF Prater Block
+		'rvnd', // Latpure
+		'zsyz', // Liberation Sans
+		'lcny', // Liberation Serif
+		'rfss', // Orbitron
+		'snjm', // Refrigerator Deluxe
+		'rtgb', // Ronnia Web
+		'hzlv', // Ronnia Web Condensed
+		'mkrf', // Snicker
+		'qlvb', // Sommet Slab
+	);
 
 	public static $fonts = array(
 		array(
@@ -860,6 +880,10 @@ class Jetpack_Fonts_List_Typekit {
 
 	public static function get_fonts() {
 		return self::$fonts;
+	}
+
+	public static function get_retired_font_ids() {
+		return self::$retired_font_ids;
 	}
 
 }
