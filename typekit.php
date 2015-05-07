@@ -34,22 +34,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return $whitelist;
 	}
 
-	/**
-	 * Return true if the a font's ID is present in the list.
-	 * @param array $font API font whose ID to use
-	 * @param array $haystack Array of fonts to search for the ID or an array of IDs
-	 */
-	public function font_list_contains( $font, $haystack ) {
-		foreach ( $haystack as $fnt ) {
-			if ( is_array( $fnt ) && $fnt[ 'id' ] === $font[ 'id' ] ) {
-				return true;
-			}
-			if ( ! is_array( $fnt ) && $fnt === $font[ 'id' ] ) {
-				return true;
-			}
-		}
-		return false;
-	}
 	// TEMP
 	public function get_api_key() {
 		return '';
