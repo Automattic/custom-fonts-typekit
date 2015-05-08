@@ -29,6 +29,6 @@ module.exports = function( grunt ) {
 
 	});
 
-	grunt.registerTask( 'test', [ 'mochaTest', 'phpunit' ] );
+	grunt.registerTask( 'test', [ 'composer:install', 'mochaTest', 'phpunit' ] );
 };
 
