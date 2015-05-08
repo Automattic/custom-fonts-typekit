@@ -10,8 +10,9 @@ class Jetpack_Font_Provider {
 		$custom_fonts;
 	}
 
-	public function get_cached_fonts() {}
-	public function set_cached_fonts() {}
+	public function get() {}
+	public function set() {}
+
 }
 
 function wp_list_pluck( $list, $field ) {
