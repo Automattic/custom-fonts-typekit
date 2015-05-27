@@ -62,7 +62,7 @@ function wpcom_legacy_fonts( $fonts ) {
 }
 
 function wpcom_get_font_data( $font_id ) {
-	$font_data = Jetpack_Fonts::get_instance()->get_available_fonts();
+	$font_data = Jetpack_Fonts::get_instance()->get_all_fonts();
 	$filtered = wp_list_filter( $font_data, array(
 		'id' => $font_id,
 		'provider' => 'typekit'

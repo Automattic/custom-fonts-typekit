@@ -150,8 +150,6 @@ class TypekitApi {
 					$variations = $family['fvd'];
 				} else {
 					$_family = self::get_font_by_id( $family['id'] );
-					l( 'get_font_by_id', $_family );
-
 					if ( is_array( $_family ) ) {
 						$variations = self::get_family_fvds( $_family, true );
 					}
