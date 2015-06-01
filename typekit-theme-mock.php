@@ -22,6 +22,12 @@ class TypekitTheme {
 
 		$declarations = self::maybe_split_font_shorthand( $declarations );
 
+		// We'll wind up with an empty declaration for `font: inherit` rules.
+		// Empty rules throw Exceptions.
+		if ( empty( $declarations ) ) {
+			return;
+		}
+
 		$rule = array(
 			'type' =>     $category_id,
 			'selector' => $selector,
