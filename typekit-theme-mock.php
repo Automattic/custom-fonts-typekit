@@ -78,7 +78,11 @@ class TypekitTheme {
 			if ( !empty( $matches['style'] ) )   $parts['font-style']   = $matches['style'];
 			if ( !empty( $matches['weight'] ) )  $parts['font-weight']  = $matches['weight'];
 		}
-		return $parts;
+		$rules = array();
+		foreach( $parts as $property => $value ) {
+			array_push( $rules, array( 'property' => $property, 'value' => $value ) );
+		}
+		return $rules;
 	}
 
 }
