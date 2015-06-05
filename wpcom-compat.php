@@ -41,7 +41,7 @@ function wpcom_legacy_fonts( $fonts ) {
 	$families = array();
 
 	foreach ( $typekit_data[ 'families'] as $type => $legacy_font ) {
-		if ( 'site-title' === $type ) {
+		if ( 'site-title' === $type || ! $legacy_font['id'] ) {
 			continue;
 		}
 		$font_data = wpcom_get_font_data( $legacy_font['id'] );
@@ -51,10 +51,13 @@ function wpcom_legacy_fonts( $fonts ) {
 			$font_data['size'] = $legacy_font['size'];
 		}
 
+		$font_data['cssName'] = '"' . implode( '","', $legacy_font['css_names'] ) . '"';
+
 		// body-text won't have an fvd and can keep the above default.
 		if ( $legacy_font['fvd'] ) {
 			$font_data['currentFvd'] = $legacy_font['fvd'];
 		}
+
 		$families[] = $font_data;
 	}
 
