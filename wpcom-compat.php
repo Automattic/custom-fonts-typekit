@@ -41,7 +41,7 @@ function wpcom_legacy_fonts( $fonts ) {
 	$families = array();
 
 	foreach ( $typekit_data[ 'families'] as $type => $legacy_font ) {
-		if ( 'site-title' === $type ) {
+		if ( 'site-title' === $type || ! $legacy_font['id'] ) {
 			continue;
 		}
 		$font_data = wpcom_get_font_data( $legacy_font['id'] );
