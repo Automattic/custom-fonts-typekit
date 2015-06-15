@@ -13,3 +13,26 @@
 .jetpack-fonts__current-font .jetpack-fonts__typekit-option-logo {
   display: none;
 }
+
+/*
+ * Preview Mode: icons
+ */
+.preview-mode #accordion-section-jetpack_fonts h3.accordion-section-title:after {
+	content: '\f101';
+	font-family: 'Noticons';
+	position: relative;
+	top: 0;
+	left: -7px;
+	right: auto;
+	color: #015785;
+	font-size: 18px;
+	width: 10px;
+	height: 10px;
+	display: inline-block;
+	border: none;
+	text-shadow: none;
+}
+.preview-mode #accordion-section-jetpack_fonts.open h3.accordion-section-title:after {
+	color: #78c8e6;
+	text-shadow: none;
+}
