@@ -47,14 +47,16 @@ function wpcom_legacy_fonts( $fonts ) {
 		$font_data = wpcom_get_font_data( $legacy_font['id'] );
 		$font_data['type'] = $type;
 
-		if ( $legacy_font['size'] !== 0 ) {
+		if ( isset( $legacy_font['size'] ) && $legacy_font['size'] !== 0 ) {
 			$font_data['size'] = $legacy_font['size'];
 		}
 
-		$font_data['cssName'] = '"' . implode( '","', $legacy_font['css_names'] ) . '"';
+		if ( isset( $legacy_font['css_names'] ) && is_array( $legacy_font['css_names'] ) ) {
+			$font_data['cssName'] = '"' . implode( '","', $legacy_font['css_names'] ) . '"';
+		}
 
 		// body-text won't have an fvd and can keep the above default.
-		if ( $legacy_font['fvd'] ) {
+		if ( isset( $legacy_font['fvd'] ) && $legacy_font['fvd'] ) {
 			$font_data['currentFvd'] = $legacy_font['fvd'];
 		}
 
