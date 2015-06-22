@@ -29,6 +29,7 @@ function wpcom_jetpack_fonts_save() {
 }
 
 add_filter( 'jetpack_fonts_selected_fonts', 'wpcom_legacy_fonts' );
+// Convert typekit font settings from old plugin to new plugin
 function wpcom_legacy_fonts( $fonts ) {
 	$typekit_data = (array) get_option( 'typekit_data', array( 'families' => null ) );
 
@@ -41,7 +42,7 @@ function wpcom_legacy_fonts( $fonts ) {
 	$families = array();
 
 	foreach ( $typekit_data[ 'families'] as $type => $legacy_font ) {
-		if ( 'site-title' === $type || ! $legacy_font['id'] ) {
+		if ( ! $legacy_font['id'] ) {
 			continue;
 		}
 		$font_data = wpcom_get_font_data( $legacy_font['id'] );
