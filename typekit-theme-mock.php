@@ -15,11 +15,6 @@ class TypekitTheme {
 			return;
 		}
 
-		// No more site-title kthnx
-		if ( 'site-title' === $category_id ) {
-			$category_id = 'headings';
-		}
-
 		$declarations = self::maybe_split_font_shorthand( $declarations );
 
 		// We'll wind up with an empty declaration for `font: inherit` rules.
