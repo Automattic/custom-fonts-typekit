@@ -105,30 +105,6 @@ function wpcom_typekit_data_stat( $old, $new ) {
 	if ( CustomDesign::is_upgrade_active() && null == $old['selected_fonts'] && ( $new['selected_fonts'] != $old['selected_fonts'] ) ) {
 		bump_stats_extras( 'typekit_data', 'families_upgraded' );
 	}
-
-	// User saved a kit id that they entered manually, in advanced mode.
-	// TODO: advanced_mode no longer exists
-	if ( null == $old['advanced_kit_id'] && ( $new['advanced_kit_id'] != $old['advanced_kit_id'] ) ) {
-		bump_stats_extras( 'typekit_data', 'advanced_kit_id' );
-	}
-
-	// User deleted their existing advanced kit id (saved during the Typekit migration).
-	// TODO: advanced_mode no longer exists
-	if ( true === $old['old_user'] && ! empty( $old['advanced_kit_id'] ) && empty( $new['advanced_kit_id'] ) ) {
-		bump_stats_extras( 'typekit_data', 'remove_old_user_kit' );
-	}
-
-	// User switched from standard mode to advanced mode.
-	// TODO: advanced_mode no longer exists
-	if ( false === $old['advanced_mode'] && true === $new['advanced_mode'] ) {
-		bump_stats_extras( 'typekit_data', 'advanced_mode_activate' );
-	}
-
-	// User switched from advanced mode to standard mode.
-	// TODO: advanced_mode no longer exists
-	if ( true === $old['advanced_mode'] && false === $new['advanced_mode'] ) {
-		bump_stats_extras( 'typekit_data', 'advanced_mode_deactivate' );
-	}
 }
 add_action( 'update_option_jetpack_fonts', 'wpcom_typekit_data_stat', 10, 2 );
 
