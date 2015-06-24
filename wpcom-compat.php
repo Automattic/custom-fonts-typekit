@@ -91,7 +91,6 @@ function wpcom_typekit_data_stat( $old, $new ) {
 	}
 
 	// Deleting a kit id happens when the Custom Design upgrade is deactivated.
-	// TODO: kits are never deleted
 	if ( ! empty( $old['typekit_kit_id'] ) && null == $new['typekit_kit_id'] ) {
 		bump_stats_extras( 'typekit_data', 'kit_id_deleted' );
 	}
