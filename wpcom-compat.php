@@ -97,14 +97,12 @@ function wpcom_typekit_data_stat( $old, $new ) {
 	}
 
 	// Previewing fonts by saving them without purchasing the upgrade.
-	// TODO: families no longer exists
-	if ( ! CustomDesign::is_upgrade_active() && ( $new['families'] != $old['families'] ) ) {
+	if ( ! CustomDesign::is_upgrade_active() && ( $new['selected_fonts'] != $old['selected_fonts'] ) ) {
 		bump_stats_extras( 'typekit_data', 'families_preview' );
 	}
 
 	// Upgrade is purchased, and saving families for the first time.
-	// TODO: families no longer exists
-	if ( CustomDesign::is_upgrade_active() && null == $old['families'] && ( $new['families'] != $old['families'] ) ) {
+	if ( CustomDesign::is_upgrade_active() && null == $old['selected_fonts'] && ( $new['selected_fonts'] != $old['selected_fonts'] ) ) {
 		bump_stats_extras( 'typekit_data', 'families_upgraded' );
 	}
 
