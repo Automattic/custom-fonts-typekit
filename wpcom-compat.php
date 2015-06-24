@@ -82,6 +82,57 @@ function wpcom_get_font_data( $font_id ) {
 // make sure the customizer gets the filtered version too
 add_filter( 'customize_sanitize_js_' . Jetpack_Fonts::OPTION . '[selected_fonts]', array( Jetpack_Fonts::get_instance(), 'get_fonts' ) );
 
+// https://mc.a8c.com/s/typekit_data/
+// offers a view into how the typekit plugin is being used and how the options field is being updated
+function wpcom_typekit_data_stat( $old, $new ) {
+	// Creating a kit id = saving fonts in standard mode for the first time.
+	if ( null == $old['kit_id'] && ( $new['kit_id'] != $old['kit_id'] ) ) {
+		bump_stats_extras( 'typekit_data', 'kit_id_added' );
+	}
+
+	// Deleting a kit id happens when the Custom Design upgrade is deactivated.
+	// TODO: kits are never deleted
+	if ( ! empty( $old['kit_id'] ) && null == $new['kit_id'] ) {
+		bump_stats_extras( 'typekit_data', 'kit_id_deleted' );
+	}
+
+	// Previewing fonts by saving them without purchasing the upgrade.
+	// TODO: families no longer exists
+	if ( ! CustomDesign::is_upgrade_active() && ( $new['families'] != $old['families'] ) ) {
+		bump_stats_extras( 'typekit_data', 'families_preview' );
+	}
+
+	// Upgrade is purchased, and saving families for the first time.
+	// TODO: families no longer exists
+	if ( CustomDesign::is_upgrade_active() && null == $old['families'] && ( $new['families'] != $old['families'] ) ) {
+		bump_stats_extras( 'typekit_data', 'families_upgraded' );
+	}
+
+	// User saved a kit id that they entered manually, in advanced mode.
+	// TODO: advanced_mode no longer exists
+	if ( null == $old['advanced_kit_id'] && ( $new['advanced_kit_id'] != $old['advanced_kit_id'] ) ) {
+		bump_stats_extras( 'typekit_data', 'advanced_kit_id' );
+	}
+
+	// User deleted their existing advanced kit id (saved during the Typekit migration).
+	// TODO: advanced_mode no longer exists
+	if ( true === $old['old_user'] && ! empty( $old['advanced_kit_id'] ) && empty( $new['advanced_kit_id'] ) ) {
+		bump_stats_extras( 'typekit_data', 'remove_old_user_kit' );
+	}
+
+	// User switched from standard mode to advanced mode.
+	// TODO: advanced_mode no longer exists
+	if ( false === $old['advanced_mode'] && true === $new['advanced_mode'] ) {
+		bump_stats_extras( 'typekit_data', 'advanced_mode_activate' );
+	}
+
+	// User switched from advanced mode to standard mode.
+	// TODO: advanced_mode no longer exists
+	if ( true === $old['advanced_mode'] && false === $new['advanced_mode'] ) {
+		bump_stats_extras( 'typekit_data', 'advanced_mode_deactivate' );
+	}
+}
+add_action( 'update_option_jetpack_fonts', 'wpcom_typekit_data_stat', 10, 2 );
 
 // uncomment to test with mocked legacy option data
 # include __DIR__ . '/tests/php/legacy-data-mock.php';
