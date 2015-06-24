@@ -86,13 +86,13 @@ add_filter( 'customize_sanitize_js_' . Jetpack_Fonts::OPTION . '[selected_fonts]
 // offers a view into how the typekit plugin is being used and how the options field is being updated
 function wpcom_typekit_data_stat( $old, $new ) {
 	// Creating a kit id = saving fonts in standard mode for the first time.
-	if ( null == $old['kit_id'] && ( $new['kit_id'] != $old['kit_id'] ) ) {
+	if ( null == $old['typekit_kit_id'] && ( $new['typekit_kit_id'] != $old['typekit_kit_id'] ) ) {
 		bump_stats_extras( 'typekit_data', 'kit_id_added' );
 	}
 
 	// Deleting a kit id happens when the Custom Design upgrade is deactivated.
 	// TODO: kits are never deleted
-	if ( ! empty( $old['kit_id'] ) && null == $new['kit_id'] ) {
+	if ( ! empty( $old['typekit_kit_id'] ) && null == $new['typekit_kit_id'] ) {
 		bump_stats_extras( 'typekit_data', 'kit_id_deleted' );
 	}
 
