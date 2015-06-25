@@ -44,10 +44,33 @@ class Jetpack_Fonts_Typekit {
 			add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 			add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 			add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
+		} else if ( $kit_id = self::get_kit_id() ) {
+			// Delete any kit ID if this provider is disabled
+			self::delete_kit( $kit_id );
 		}
 		require_once __DIR__ . '/wpcom-compat.php';
 		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
 			add_filter( 'wpcom_font_rules_location_base', array( __CLASS__, 'local_dev_annotations' ) );
+		}
+	}
+
+	public static function delete_kit( $kit_id ) {
+		require_once( __DIR__ . '/typekit-api.php' );
+		$response = TypekitApi::delete_kit( $kit_id );
+		if ( is_wp_error( $response ) ) {
+			// TODO: log an error
+		}
+		$option = get_option( 'jetpack_fonts' );
+		if ( isset( $option ) && isset( $option['typekit_kit_id'] ) ) {
+			unset( $option['typekit_kit_id'] );
+		}
+		update_option( 'jetpack_fonts', $option );
+	}
+
+	public static function get_kit_id() {
+		$data = get_option( 'jetpack_fonts' );
+		if ( isset( $data ) && isset( $data['typekit_kit_id'] ) ) {
+			return $data['typekit_kit_id'];
 		}
 	}
 
