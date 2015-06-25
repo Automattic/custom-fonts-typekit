@@ -54,6 +54,21 @@ class Jetpack_Fonts_Typekit {
 		}
 	}
 
+	public static function maybe_recreate_kit() {
+		$kit_id = self::get_kit_id();
+		if ( isset( $kit_id ) ) {
+			return;
+		}
+		$fonts = self::get_saved_typekit_fonts();
+		if ( count( $fonts ) > 0 ) {
+			$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
+			if ( ! $provider ) {
+				return;
+			}
+			$provider->save_fonts( $fonts );
+		}
+	}
+
 	public static function delete_kit( $kit_id ) {
 		require_once( __DIR__ . '/typekit-api.php' );
 		$response = TypekitApi::delete_kit( $kit_id );
@@ -72,6 +87,20 @@ class Jetpack_Fonts_Typekit {
 		if ( isset( $data ) && isset( $data['typekit_kit_id'] ) ) {
 			return $data['typekit_kit_id'];
 		}
+	}
+
+	public static function get_saved_typekit_fonts() {
+		$option = get_option( 'jetpack_fonts' );
+		if ( ! isset( $option ) || ! isset( $option['selected_fonts'] ) ) {
+			return array();
+		}
+		$typekit_fonts = array();
+		foreach( $option['selected_fonts'] as $font ) {
+			if ( 'typekit' === $font['provider'] ) {
+				array_push( $typekit_fonts, $font );
+			}
+		}
+		return $typekit_fonts;
 	}
 
 	public static function local_dev_annotations( $dir ) {
@@ -124,6 +153,8 @@ class Jetpack_Fonts_Typekit {
 	public static function register_provider( $jetpack_fonts ) {
 		$provider_dir = dirname( __FILE__ ) . '/providers/';
 		$jetpack_fonts->register_provider( 'typekit', 'Jetpack_Typekit_Font_Provider', $provider_dir . 'typekit.php' );
+		// Re-create the kit if it is missing
+		self::maybe_recreate_kit();
 	}
 }
 
