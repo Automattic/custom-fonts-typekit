@@ -57,13 +57,13 @@ class Jetpack_Fonts_Typekit {
 	public static function maybe_create_or_delete_kit() {
 		$kit_id = self::get_kit_id();
 		$fonts = self::get_saved_typekit_fonts();
-		if ( ! isset( $kit_id) && count( $fonts ) > 0 ) {
+		if ( ! $kit_id && count( $fonts ) > 0 ) {
 			$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
 			if ( ! $provider ) {
 				return;
 			}
 			$provider->save_fonts( $fonts );
-		} else if ( isset( $kit_id ) && count( $fonts ) < 1 ) {
+		} else if ( $kit_id && count( $fonts ) < 1 ) {
 			self::delete_kit( $kit_id );
 		}
 	}
@@ -75,27 +75,17 @@ class Jetpack_Fonts_Typekit {
 			// TODO: log an error
 			return;
 		}
-		$option = get_option( 'jetpack_fonts' );
-		if ( isset( $option ) && isset( $option['typekit_kit_id'] ) ) {
-			unset( $option['typekit_kit_id'] );
-		}
-		update_option( 'jetpack_fonts', $option );
+		Jetpack_Fonts::get_instance()->delete( 'typekit_kit_id' );
 	}
 
 	public static function get_kit_id() {
-		$data = get_option( 'jetpack_fonts' );
-		if ( isset( $data ) && isset( $data['typekit_kit_id'] ) ) {
-			return $data['typekit_kit_id'];
-		}
+		return Jetpack_Fonts::get_instance()->get( 'typekit_kit_id' );
 	}
 
 	public static function get_saved_typekit_fonts() {
-		$option = get_option( 'jetpack_fonts' );
-		if ( ! isset( $option ) || ! isset( $option['selected_fonts'] ) ) {
-			return array();
-		}
+		$selected_fonts = Jetpack_Fonts::get_instance()->get( 'selected_fonts' );
 		$typekit_fonts = array();
-		foreach( $option['selected_fonts'] as $font ) {
+		foreach( $selected_fonts as $font ) {
 			if ( 'typekit' === $font['provider'] ) {
 				array_push( $typekit_fonts, $font );
 			}
