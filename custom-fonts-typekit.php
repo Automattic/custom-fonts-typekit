@@ -73,6 +73,7 @@ class Jetpack_Fonts_Typekit {
 		$response = TypekitApi::delete_kit( $kit_id );
 		if ( is_wp_error( $response ) ) {
 			// TODO: log an error
+			return;
 		}
 		$option = get_option( 'jetpack_fonts' );
 		if ( isset( $option ) && isset( $option['typekit_kit_id'] ) ) {
