@@ -54,18 +54,17 @@ class Jetpack_Fonts_Typekit {
 		}
 	}
 
-	public static function maybe_recreate_kit() {
+	public static function maybe_create_or_delete_kit() {
 		$kit_id = self::get_kit_id();
-		if ( isset( $kit_id ) ) {
-			return;
-		}
 		$fonts = self::get_saved_typekit_fonts();
-		if ( count( $fonts ) > 0 ) {
+		if ( ! isset( $kit_id) && count( $fonts ) > 0 ) {
 			$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
 			if ( ! $provider ) {
 				return;
 			}
 			$provider->save_fonts( $fonts );
+		} else if ( isset( $kit_id ) && count( $fonts ) < 1 ) {
+			self::delete_kit( $kit_id );
 		}
 	}
 
@@ -153,8 +152,8 @@ class Jetpack_Fonts_Typekit {
 	public static function register_provider( $jetpack_fonts ) {
 		$provider_dir = dirname( __FILE__ ) . '/providers/';
 		$jetpack_fonts->register_provider( 'typekit', 'Jetpack_Typekit_Font_Provider', $provider_dir . 'typekit.php' );
-		// Re-create the kit if it is missing
-		self::maybe_recreate_kit();
+		// Re-create the kit if it is missing or remove it if not being used
+		self::maybe_create_or_delete_kit();
 	}
 }
 
