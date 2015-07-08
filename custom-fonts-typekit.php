@@ -72,7 +72,7 @@ class Jetpack_Fonts_Typekit {
 		require_once( __DIR__ . '/typekit-api.php' );
 		$response = TypekitApi::delete_kit( $kit_id );
 		if ( is_wp_error( $response ) ) {
-			// TODO: log an error
+			// The TypekitApi class reports this error
 			return;
 		}
 		Jetpack_Fonts::get_instance()->delete( 'typekit_kit_id' );
@@ -83,14 +83,7 @@ class Jetpack_Fonts_Typekit {
 	}
 
 	public static function get_saved_typekit_fonts() {
-		$selected_fonts = Jetpack_Fonts::get_instance()->get( 'selected_fonts' );
-		$typekit_fonts = array();
-		foreach( $selected_fonts as $font ) {
-			if ( 'typekit' === $font['provider'] ) {
-				array_push( $typekit_fonts, $font );
-			}
-		}
-		return $typekit_fonts;
+		return wp_list_filter( Jetpack_Fonts::get_instance()->get( 'selected_fonts' ), array( 'provider' => 'typekit' ) );
 	}
 
 	public static function local_dev_annotations( $dir ) {
