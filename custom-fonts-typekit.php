@@ -104,7 +104,7 @@ class Jetpack_Fonts_Typekit {
 	}
 }
 
-add_action( 'init', array( 'Jetpack_Fonts_Typekit', 'init' ) );
+add_action( 'setup_theme', array( 'Jetpack_Fonts_Typekit', 'init' ), 9 );
 
 // Hey wp-cli is fun
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
