@@ -55,16 +55,16 @@ class Jetpack_Fonts_Typekit {
 	}
 
 	// Re-create the kit if it is missing or remove it if not being used
-	public static function maybe_create_or_delete_kit() {
+	public static function maybe_create_or_delete_kit( $saved_fonts = null ) {
 		$kit_id = self::get_kit_id();
-		$fonts = self::get_saved_typekit_fonts();
-		if ( ! $kit_id && count( $fonts ) > 0 ) {
+		$typekit_saved_fonts = self::get_saved_typekit_fonts( $saved_fonts );
+		if ( ! $kit_id && count( $typekit_saved_fonts ) > 0 ) {
 			$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
 			if ( ! $provider ) {
 				return;
 			}
-			$provider->save_fonts( $fonts );
-		} else if ( $kit_id && count( $fonts ) < 1 ) {
+			$provider->save_fonts( $typekit_saved_fonts );
+		} else if ( $kit_id && count( $typekit_saved_fonts ) < 1 ) {
 			self::delete_kit( $kit_id );
 		}
 	}
@@ -83,8 +83,11 @@ class Jetpack_Fonts_Typekit {
 		return Jetpack_Fonts::get_instance()->get( 'typekit_kit_id' );
 	}
 
-	public static function get_saved_typekit_fonts() {
-		return wp_list_filter( Jetpack_Fonts::get_instance()->get( 'selected_fonts' ), array( 'provider' => 'typekit' ) );
+	public static function get_saved_typekit_fonts( $saved_fonts = null ) {
+		if ( ! is_array( $saved_fonts ) ) {
+			$saved_fonts = Jetpack_Fonts::get_instance()->get( 'selected_fonts' );
+		}
+		return wp_list_filter( $saved_fonts, array( 'provider' => 'typekit' ) );
 	}
 
 	public static function local_dev_annotations( $dir ) {
