@@ -54,6 +54,7 @@ class Jetpack_Fonts_Typekit {
 		}
 	}
 
+	// Re-create the kit if it is missing or remove it if not being used
 	public static function maybe_create_or_delete_kit() {
 		$kit_id = self::get_kit_id();
 		$fonts = self::get_saved_typekit_fonts();
@@ -136,12 +137,13 @@ class Jetpack_Fonts_Typekit {
 	public static function register_provider( $jetpack_fonts ) {
 		$provider_dir = dirname( __FILE__ ) . '/providers/';
 		$jetpack_fonts->register_provider( 'typekit', 'Jetpack_Typekit_Font_Provider', $provider_dir . 'typekit.php' );
-		// Re-create the kit if it is missing or remove it if not being used
-		self::maybe_create_or_delete_kit();
 	}
 }
 
 add_action( 'setup_theme', array( 'Jetpack_Fonts_Typekit', 'init' ), 9 );
+add_action( 'custom-design-downgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_create_or_delete_kit' ) );
+add_action( 'custom-design-upgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_create_or_delete_kit' ) );
+add_action( 'jetpack_fonts_save', array( 'Jetpack_Fonts_Typekit', 'maybe_create_or_delete_kit' ) );
 
 // Hey wp-cli is fun
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
