@@ -44,9 +44,6 @@ class Jetpack_Fonts_Typekit {
 			add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 			add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 			add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
-		} else if ( $kit_id = self::get_kit_id() ) {
-			// Delete any kit ID if this provider is disabled
-			self::delete_kit( $kit_id );
 		}
 		require_once __DIR__ . '/wpcom-compat.php';
 		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
@@ -58,14 +55,24 @@ class Jetpack_Fonts_Typekit {
 	public static function maybe_create_or_delete_kit( $saved_fonts = null ) {
 		$kit_id = self::get_kit_id();
 		$typekit_saved_fonts = self::get_saved_typekit_fonts( $saved_fonts );
-		if ( ! $kit_id && count( $typekit_saved_fonts ) > 0 ) {
+		$provider = null;
+		if ( apply_filters( 'jetpack_fonts_enable_typekit', true ) ) {
 			$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
-			if ( ! $provider ) {
-				return;
-			}
-			$provider->save_fonts( $typekit_saved_fonts );
-		} else if ( $kit_id && count( $typekit_saved_fonts ) < 1 ) {
+		}
+
+		// If a kit ID exists but the provider is disabled, delete the kit
+		if ( $kit_id && ! $provider ) {
 			self::delete_kit( $kit_id );
+		}
+
+		// If a kit ID exists but there are no saved Typekit fonts, delete the kit
+		if ( $kit_id && $provider && count( $typekit_saved_fonts ) < 1 ) {
+			self::delete_kit( $kit_id );
+		}
+
+		// If no kit ID exists, but there are saved Typekit fonts, publish the kit
+		if ( ! $kit_id && $provider && count( $typekit_saved_fonts ) > 0 ) {
+			$provider->save_fonts( $typekit_saved_fonts );
 		}
 	}
 
