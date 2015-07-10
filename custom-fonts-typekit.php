@@ -41,10 +41,8 @@ class Jetpack_Fonts_Typekit {
 
 	public static function init() {
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
-		if ( apply_filters( 'jetpack_fonts_enable_typekit', true ) ) {
-			add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
-			add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
-		}
+		add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
+		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
 		require_once __DIR__ . '/wpcom-compat.php';
 		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
 			add_filter( 'wpcom_font_rules_location_base', array( __CLASS__, 'local_dev_annotations' ) );
@@ -148,6 +146,10 @@ class Jetpack_Fonts_Typekit {
 	}
 
 	public static function enqueue_scripts() {
+		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
+		if ( ! $provider->is_active() ) {
+			return;
+		}
 		$deps = is_admin()
 			? array( 'jetpack-fonts' )
 			: array( 'typekit-preview', 'jetpack-fonts-preview' );
