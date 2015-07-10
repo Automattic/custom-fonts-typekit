@@ -51,7 +51,11 @@ class Jetpack_Fonts_Typekit {
 		}
 	}
 
-	// Re-create the kit if it is missing or remove it if not being used
+	/**
+	 * Re-create the kit if it is missing or delete it if not being used.
+	 *
+	 * @param array $saved_fonts (Optional) All the currently saved fonts. Defaults to getting them from the site options.
+	 */
 	public static function maybe_create_or_delete_kit( $saved_fonts = null ) {
 		$kit_id = self::get_kit_id();
 		$typekit_saved_fonts = self::get_saved_typekit_fonts( $saved_fonts );
@@ -76,20 +80,65 @@ class Jetpack_Fonts_Typekit {
 		}
 	}
 
-	public static function delete_kit( $kit_id ) {
+	/**
+	 * Delete any saved kit.
+	 */
+	public static function maybe_delete_kit() {
+		self::delete_kit();
+	}
+
+	/**
+	 * Re-create a kit if there are Typekit fonts saved.
+	 */
+	public static function maybe_create_kit() {
+		$typekit_saved_fonts = self::get_saved_typekit_fonts();
+		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
+		if ( $provider && count( $typekit_saved_fonts ) > 0 ) {
+			$provider->save_fonts( $typekit_saved_fonts );
+		}
+	}
+
+	/**
+	 * Delete a Typekit Kit both from the Typekit service itself as well as from
+	 * the site's options. If the Typekit service reports a failure to delete the
+	 * kit, the kit ID in the options will not be deleted either.
+	 *
+	 * @param string $kit_id (Optional) The kit ID to delete. Defaults to the currently saved kit ID as returned by `get_kit_id`.
+	 *
+	 * @return null|WP_Error Returns null if successful or if not kit ID exists, otherwise will return a WP_Error.
+	 */
+	public static function delete_kit( $kit_id = null ) {
+		if ( ! isset( $kit_id ) ) {
+			$kit_id = self::get_kit_id();
+		}
+		if ( empty( $kit_id ) ) {
+			return;
+		}
 		require_once( __DIR__ . '/typekit-api.php' );
 		$response = TypekitApi::delete_kit( $kit_id );
 		if ( is_wp_error( $response ) ) {
 			// The TypekitApi class reports this error
-			return;
+			return $response;
 		}
 		Jetpack_Fonts::get_instance()->delete( 'typekit_kit_id' );
 	}
 
+	/**
+	 * Return the currently saved typekit kit ID for this site.
+	 *
+	 * @return string The kit ID.
+	 */
 	public static function get_kit_id() {
 		return Jetpack_Fonts::get_instance()->get( 'typekit_kit_id' );
 	}
 
+	/**
+	 * Return an array of saved fonts that use the typekit provider.
+	 *
+	 * @param array $saved_fonts (Optional) All the saved fonts. Defaults to getting the array from the site options.
+	 *
+	 * @return array The saved fonts that have the typekit provider.
+	 */
 	public static function get_saved_typekit_fonts( $saved_fonts = null ) {
 		if ( ! is_array( $saved_fonts ) ) {
 			$saved_fonts = Jetpack_Fonts::get_instance()->get( 'selected_fonts' );
@@ -151,8 +200,8 @@ class Jetpack_Fonts_Typekit {
 }
 
 add_action( 'setup_theme', array( 'Jetpack_Fonts_Typekit', 'init' ), 9 );
-add_action( 'custom-design-downgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_create_or_delete_kit' ) );
-add_action( 'custom-design-upgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_create_or_delete_kit' ) );
+add_action( 'custom-design-downgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_delete_kit' ) );
+add_action( 'custom-design-upgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_create_kit' ) );
 add_action( 'jetpack_fonts_save', array( 'Jetpack_Fonts_Typekit', 'maybe_create_or_delete_kit' ) );
 
 // Hey wp-cli is fun
