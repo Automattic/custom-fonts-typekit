@@ -62,17 +62,17 @@ class Jetpack_Fonts_Typekit {
 		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
 
 		// If a kit ID exists but the provider is disabled, delete the kit
-		if ( $kit_id && ! $provider->is_provider_active() ) {
+		if ( $kit_id && ! $provider->is_active() ) {
 			self::delete_kit( $kit_id );
 		}
 
 		// If a kit ID exists but there are no saved Typekit fonts, delete the kit
-		if ( $kit_id && $provider->is_provider_active() && count( $typekit_saved_fonts ) < 1 ) {
+		if ( $kit_id && $provider->is_active() && count( $typekit_saved_fonts ) < 1 ) {
 			self::delete_kit( $kit_id );
 		}
 
 		// If no kit ID exists, but there are saved Typekit fonts, publish the kit
-		if ( ! $kit_id && $provider->is_provider_active() && count( $typekit_saved_fonts ) > 0 ) {
+		if ( ! $kit_id && $provider->is_active() && count( $typekit_saved_fonts ) > 0 ) {
 			$provider->save_fonts( $typekit_saved_fonts );
 		}
 	}
@@ -90,7 +90,7 @@ class Jetpack_Fonts_Typekit {
 	public static function maybe_create_kit() {
 		$typekit_saved_fonts = self::get_saved_typekit_fonts();
 		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
-		if ( $provider->is_provider_active() && count( $typekit_saved_fonts ) > 0 ) {
+		if ( $provider->is_active() && count( $typekit_saved_fonts ) > 0 ) {
 			$provider->save_fonts( $typekit_saved_fonts );
 		}
 	}
