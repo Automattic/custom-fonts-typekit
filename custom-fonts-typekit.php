@@ -48,6 +48,8 @@ class Jetpack_Fonts_Typekit {
 		require_once __DIR__ . '/wpcom-compat.php';
 		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
 			add_filter( 'wpcom_font_rules_location_base', array( __CLASS__, 'local_dev_annotations' ) );
+		} else {
+			require_once __DIR__ . '/usage.php';
 		}
 	}
 
