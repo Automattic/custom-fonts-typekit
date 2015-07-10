@@ -30,6 +30,10 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return $whitelist;
 	}
 
+	public function is_provider_active() {
+		return apply_filters( 'jetpack_fonts_enable_typekit', true );
+	}
+
 	// TEMP
 	public function get_api_key() {
 		return '';

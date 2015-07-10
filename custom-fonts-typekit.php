@@ -40,8 +40,8 @@ class Jetpack_Fonts_Typekit {
 	const PREVIEWKIT_PRIMARY_AUTH_TOKEN = '3bb2a6e53c9684ffdc9a9aff185b2a62b09b6f5189114fc2b7a762d37126575957cc2be9ed2cf64258c2828e5d92d94602695c102ffcecb6fa701fe59ba9e9fee2253aa8ba8e355def1b980688bb77aa2d22dba28934c842d6375ecd';
 
 	public static function init() {
+		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 		if ( apply_filters( 'jetpack_fonts_enable_typekit', true ) ) {
-			add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 			add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 			add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
 		}
@@ -59,23 +59,20 @@ class Jetpack_Fonts_Typekit {
 	public static function maybe_create_or_delete_kit( $saved_fonts = null ) {
 		$kit_id = self::get_kit_id();
 		$typekit_saved_fonts = self::get_saved_typekit_fonts( $saved_fonts );
-		$provider = null;
-		if ( apply_filters( 'jetpack_fonts_enable_typekit', true ) ) {
-			$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
-		}
+		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
 
 		// If a kit ID exists but the provider is disabled, delete the kit
-		if ( $kit_id && ! $provider ) {
+		if ( $kit_id && ! $provider->is_provider_active() ) {
 			self::delete_kit( $kit_id );
 		}
 
 		// If a kit ID exists but there are no saved Typekit fonts, delete the kit
-		if ( $kit_id && $provider && count( $typekit_saved_fonts ) < 1 ) {
+		if ( $kit_id && $provider->is_provider_active() && count( $typekit_saved_fonts ) < 1 ) {
 			self::delete_kit( $kit_id );
 		}
 
 		// If no kit ID exists, but there are saved Typekit fonts, publish the kit
-		if ( ! $kit_id && $provider && count( $typekit_saved_fonts ) > 0 ) {
+		if ( ! $kit_id && $provider->is_provider_active() && count( $typekit_saved_fonts ) > 0 ) {
 			$provider->save_fonts( $typekit_saved_fonts );
 		}
 	}
@@ -93,7 +90,7 @@ class Jetpack_Fonts_Typekit {
 	public static function maybe_create_kit() {
 		$typekit_saved_fonts = self::get_saved_typekit_fonts();
 		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
-		if ( $provider && count( $typekit_saved_fonts ) > 0 ) {
+		if ( $provider->is_provider_active() && count( $typekit_saved_fonts ) > 0 ) {
 			$provider->save_fonts( $typekit_saved_fonts );
 		}
 	}
