@@ -1,6 +1,17 @@
 <?php
 
+
 add_action( 'typekit_publish_kit', 'wpcom_log_font_usage', 10, 2 );
+/**
+ * Log Typekit font usage for internal and tracking and audits
+ * Bumps a stat for how many times a font has been switched to
+ * Also logs when a blog changes its font, where the font is being used,
+ * if the font is currently active, and how long a certain font was used.
+ *
+ * Adapted from the old Typekit-specific custom-fonts plugin
+ *
+ * See https://wpcom.trac.automattic.com/ticket/2290
+ */
 function wpcom_log_font_usage( $kit_id, $fonts ) {
 	global $wpdb;
 	$blog_id = get_current_blog_id();
@@ -19,8 +30,6 @@ function wpcom_log_font_usage( $kit_id, $fonts ) {
 
 	$locations = Jetpack_Fonts::get_instance()->get_generator()->get_rule_types();
 	$locations = wp_list_pluck( $locations, 'id' );
-	// hard code in 'site-title' as a back-compat possibility
-	$locations[] = 'site-title';
 
 
 	// loop through our font locations to see if 1) there are new ones or 2) there were old ones
@@ -38,7 +47,9 @@ function wpcom_log_font_usage( $kit_id, $fonts ) {
 				continue;
 			}
 
-			// ok, new font. log it, if typekit
+			// ok, new font. log it, if typekit.
+			// this logic works because old fonts were always typekit
+			// and we'll only ever set typekit ones from here on out
 			if ( $font['provider'] === 'typekit' ) {
 				wpcom_log_new_font( $location, $short_font_name );
 			}
@@ -58,7 +69,6 @@ function wpcom_log_new_font( $location_name, $font_name ) {
 	global $wpdb;
 	$kit_id = Jetpack_Fonts::get_instance()->get_provider( 'typekit' )->get_kit_id();
 
-	// Log the new font as active.
 	$wpdb->insert(
 		'font_usage_log',
 		array(
@@ -76,6 +86,26 @@ function wpcom_log_new_font( $location_name, $font_name ) {
 	bump_stats_extras( 'typekit-fonts', $font_name );
 }
 
-function wpcom_mark_font_inactive(){
+function wpcom_mark_font_inactive( $location_name, $font_name ){
+	global $wpdb;
+	$kit_id = Jetpack_Fonts::get_instance()->get_provider( 'typekit' )->get_kit_id();
+
+	$wpdb->update(
+		'font_usage_log',
+		array(
+			'deactivation_date' => gmdate( "Y-m-d H:i:s", time() ),
+			'currently_active' => 0,
+		),
+		array(
+			'blog_id' => get_current_blog_id(),
+			'font' => $font_name,
+			'location' => $location_name,
+			'deactivation_date' => "0000-00-00 00:00:00",
+			'currently_active' => 1,
+			'typekit_id' => $kit_id,
+		),
+		array( '%s', '%d' ),
+		array( '%d', '%s', '%s', '%s', '%d', '%s' )
+	);
 
 }
