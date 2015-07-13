@@ -129,6 +129,10 @@ class TypekitApi {
 	 * @return array|WP_Error Returns a json_decoded result as an associative array or an error object.
 	 */
 	static function edit_kit( $kit_id, $domains, $name, $subset = 'default', $families = array() ) {
+		if ( empty( $families ) ) {
+			return new WP_Error( 'Cannot edit kit. No Typekit fonts to save.' );
+		}
+
 		$postdata = array(
 				'name' => $name,
 				'domains' => implode( ',', $domains ),

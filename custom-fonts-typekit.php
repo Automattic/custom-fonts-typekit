@@ -50,32 +50,6 @@ class Jetpack_Fonts_Typekit {
 	}
 
 	/**
-	 * Re-create the kit if it is missing or delete it if not being used.
-	 *
-	 * @param array $saved_fonts (Optional) All the currently saved fonts. Defaults to getting them from the site options.
-	 */
-	public static function maybe_create_or_delete_kit( $saved_fonts = null ) {
-		$kit_id = self::get_kit_id();
-		$typekit_saved_fonts = self::get_saved_typekit_fonts( $saved_fonts );
-		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
-
-		// If a kit ID exists but the provider is disabled, delete the kit
-		if ( $kit_id && ! $provider->is_active() ) {
-			self::delete_kit( $kit_id );
-		}
-
-		// If a kit ID exists but there are no saved Typekit fonts, delete the kit
-		if ( $kit_id && $provider->is_active() && count( $typekit_saved_fonts ) < 1 ) {
-			self::delete_kit( $kit_id );
-		}
-
-		// If no kit ID exists, but there are saved Typekit fonts, publish the kit
-		if ( ! $kit_id && $provider->is_active() && count( $typekit_saved_fonts ) > 0 ) {
-			$provider->save_fonts( $typekit_saved_fonts );
-		}
-	}
-
-	/**
 	 * Delete any saved kit.
 	 */
 	public static function maybe_delete_kit() {
@@ -201,7 +175,6 @@ class Jetpack_Fonts_Typekit {
 add_action( 'setup_theme', array( 'Jetpack_Fonts_Typekit', 'init' ), 9 );
 add_action( 'custom-design-downgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_delete_kit' ) );
 add_action( 'custom-design-upgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_create_kit' ) );
-add_action( 'jetpack_fonts_save', array( 'Jetpack_Fonts_Typekit', 'maybe_create_or_delete_kit' ) );
 
 // Hey wp-cli is fun
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
