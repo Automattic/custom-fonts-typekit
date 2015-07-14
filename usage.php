@@ -1,7 +1,7 @@
 <?php
 
 
-add_action( 'typekit_publish_kit', 'wpcom_log_font_usage', 10, 2 );
+add_action( 'jetpack_fonts_save', 'wpcom_log_font_usage' );
 /**
  * Log Typekit font usage for internal and tracking and audits
  * Bumps a stat for how many times a font has been switched to
@@ -12,9 +12,8 @@ add_action( 'typekit_publish_kit', 'wpcom_log_font_usage', 10, 2 );
  *
  * See https://wpcom.trac.automattic.com/ticket/2290
  */
-function wpcom_log_font_usage( $kit_id, $fonts ) {
+function wpcom_log_font_usage( $fonts ) {
 	global $wpdb;
-	$blog_id = get_current_blog_id();
 	$active_fonts = array();
 	$new_fonts = array();
 
@@ -23,7 +22,7 @@ function wpcom_log_font_usage( $kit_id, $fonts ) {
 	}
 
 	// Get currently active fonts to compare against new fonts being published.
-	$actives = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM font_usage_log WHERE blog_id = %d AND currently_active = 1", $blog_id ) );
+	$actives = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM font_usage_log WHERE blog_id = %d AND currently_active = 1", get_current_blog_id() ) );
 	foreach( $actives as $active ) {
 		$active_fonts[ $active->location ] = $active->font;
 	}
@@ -40,7 +39,8 @@ function wpcom_log_font_usage( $kit_id, $fonts ) {
 
 		if ( $new_font_set ) {
 			$font = $new_fonts[ $location ];
-			$short_font_name = trim( array_shift( explode( ',', $font['cssName'] ) ), '"' );
+			$short_font_name = array_shift( explode( ',', $font['cssName'] ) );
+			$short_font_name = preg_replace( "/[^a-zA-Z]/", '', $short_font_name );
 
 			// first make sure we don't have the same font, no point then
 			if ( $font_previously_set && $short_font_name === $active_fonts[ $location ]  ) {
@@ -55,12 +55,12 @@ function wpcom_log_font_usage( $kit_id, $fonts ) {
 			}
 
 			if ( $font_previously_set ) {
-				wpcom_mark_font_inactive( $location, $short_font_name );
+				wpcom_mark_font_inactive( $location, $active_fonts[ $location ] );
 			}
 		} else if ( $font_previously_set ) {
 			// here a font was previously set for a location
 			// but that location is now empty
-			wpcom_mark_font_inactive( $location );
+			wpcom_mark_font_inactive( $location, $active_fonts[ $location ] );
 		}
 	}
 }
@@ -88,7 +88,6 @@ function wpcom_log_new_font( $location_name, $font_name ) {
 
 function wpcom_mark_font_inactive( $location_name, $font_name ){
 	global $wpdb;
-	$kit_id = Jetpack_Fonts::get_instance()->get_provider( 'typekit' )->get_kit_id();
 
 	$wpdb->update(
 		'font_usage_log',
@@ -102,10 +101,9 @@ function wpcom_mark_font_inactive( $location_name, $font_name ){
 			'location' => $location_name,
 			'deactivation_date' => "0000-00-00 00:00:00",
 			'currently_active' => 1,
-			'typekit_id' => $kit_id,
 		),
 		array( '%s', '%d' ),
-		array( '%d', '%s', '%s', '%s', '%d', '%s' )
+		array( '%d', '%s', '%s', '%s', '%d' )
 	);
 
 }
