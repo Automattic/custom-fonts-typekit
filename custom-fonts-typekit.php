@@ -60,11 +60,14 @@ class Jetpack_Fonts_Typekit {
 	 * Re-create a kit if there are Typekit fonts saved.
 	 */
 	public static function maybe_create_kit() {
-		$typekit_saved_fonts = self::get_saved_typekit_fonts();
-		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
-		if ( $provider->is_active() && count( $typekit_saved_fonts ) > 0 ) {
-			$provider->save_fonts( $typekit_saved_fonts );
+		$jetpack_fonts = Jetpack_Fonts::get_instance();
+		$saved_fonts = $jetpack_fonts->get_fonts();
+		$typekit_fonts = wp_list_filter( $saved_fonts, array( 'provider' => 'typekit' ) );
+		if ( empty( $typekit_fonts ) ) {
+			return;
 		}
+		// re-saving will trigger things that need triggering
+		$jetpack_fonts->save_fonts( $saved_fonts, true );
 	}
 
 	/**
@@ -99,20 +102,6 @@ class Jetpack_Fonts_Typekit {
 	 */
 	public static function get_kit_id() {
 		return Jetpack_Fonts::get_instance()->get( 'typekit_kit_id' );
-	}
-
-	/**
-	 * Return an array of saved fonts that use the typekit provider.
-	 *
-	 * @param array $saved_fonts (Optional) All the saved fonts. Defaults to getting the array from the site options.
-	 *
-	 * @return array The saved fonts that have the typekit provider.
-	 */
-	public static function get_saved_typekit_fonts( $saved_fonts = null ) {
-		if ( ! is_array( $saved_fonts ) ) {
-			$saved_fonts = Jetpack_Fonts::get_instance()->get( 'selected_fonts' );
-		}
-		return wp_list_filter( $saved_fonts, array( 'provider' => 'typekit' ) );
 	}
 
 	public static function local_dev_annotations( $dir ) {
