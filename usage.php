@@ -105,5 +105,14 @@ function wpcom_mark_font_inactive( $location_name, $font_name ){
 		array( '%s', '%d' ),
 		array( '%d', '%s', '%s', '%s', '%d' )
 	);
+}
 
+add_action( 'custom-design-downgrade', 'wpcom_mark_all_fonts_inactive', 9 );
+function wpcom_mark_all_fonts_inactive() {
+	global $wpdb;
+	$actives = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM font_usage_log WHERE blog_id = %d AND currently_active = 1", get_current_blog_id() ) );
+
+	foreach( $actives as $active ) {
+		wpcom_mark_font_inactive( $active->location, $active->font );
+	}
 }
