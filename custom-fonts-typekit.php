@@ -89,8 +89,12 @@ class Jetpack_Fonts_Typekit {
 		require_once( __DIR__ . '/typekit-api.php' );
 		$response = TypekitApi::delete_kit( $kit_id );
 		if ( is_wp_error( $response ) ) {
-			// The TypekitApi class reports this error
-			return $response;
+			// If the service returns a 404, the kit already doesn't exist,
+			// so we want to go down to the bottom and delete the stored
+			// kit_id that no longer exists
+			if ( 'typekit_api_404' !== $response->get_error_code() ) {
+				return $response;
+			}
 		}
 		Jetpack_Fonts::get_instance()->delete( 'typekit_kit_id' );
 	}
