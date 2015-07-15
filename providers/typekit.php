@@ -63,9 +63,16 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 * @return void
 	 */
 	public function render_fonts( $fonts ) {
+	}
+
+	public function get_webfont_config_option( $fonts ) {
 		$kit_id = $this->get_kit_id();
 		if ( $kit_id ) {
-			$this->output_typekit_code( $kit_id );
+			return array(
+				'typekit' => array(
+					'id' => esc_js( $kit_id )
+				)
+			);
 		}
 	}
 
