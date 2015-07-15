@@ -76,24 +76,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		}
 	}
 
-	private function output_typekit_code( $kit_id ) {
-		$config = array(
-			'kitId'         => esc_js( $kit_id ),
-			'scriptTimeout' => 3000,
-		);
-		$config = json_encode( $config );
-				echo
-<<<EMBED
-<script type="text/javascript" id="custom-fonts-js">
-(function(doc) {
-	var config = {$config},
-	h=doc.getElementsByTagName("html")[0];h.className+=" wf-loading";var t=setTimeout(function(){h.className=h.className.replace(/(\s|^)wf-loading(\s|$)/g," ");h.className+="wf-inactive"},config.scriptTimeout);var tk=doc.createElement("script"),d=false;tk.src='//use.typekit.net/'+config.kitId+'.js';tk.type="text/javascript";tk.async="true";tk.onload=tk.onreadystatechange=function(){var a=this.readyState;if(d||a&&a!="complete"&&a!="loaded")return;d=true;clearTimeout(t);try{Typekit.load(config)}catch(b){}};var s=doc.getElementsByTagName("script")[0];s.parentNode.insertBefore(tk,s);
-})(document);
-</script>
-
-EMBED;
-	}
-
 	public function get_kit_id() {
 		$kit_id = $this->get( 'kit_id' );
 		if ( ! $kit_id ) {
