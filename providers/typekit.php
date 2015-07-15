@@ -70,7 +70,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		if ( $kit_id ) {
 			return array(
 				'typekit' => array(
-					'id' => esc_js( $kit_id )
+					'id' => $kit_id
 				)
 			);
 		}
