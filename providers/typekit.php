@@ -30,6 +30,10 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return $whitelist;
 	}
 
+	public function is_active() {
+		return apply_filters( 'jetpack_fonts_enable_typekit', true );
+	}
+
 	// TEMP
 	public function get_api_key() {
 		return '';
@@ -128,11 +132,17 @@ EMBED;
 	}
 
 	/**
-	 * Save the kit
+	 * Save/create the kit or delete it if the list of fonts is empty.
+	 *
 	 * @param  array $fonts  A list of fonts.
 	 * @return array         A potentially modified list of fonts.
 	 */
 	public function save_fonts( $fonts ) {
+		if ( empty( $fonts ) ) {
+			Jetpack_Fonts_Typekit::maybe_delete_kit();
+			return $fonts;
+		}
+
 		require_once( __DIR__ . '/../typekit-api.php' );
 		$kit_domains = $this->get_site_hosts();
 		$kit_id = $this->get_kit_id();
