@@ -14,6 +14,7 @@ function wpcom_font_rules_compat( $rules ) {
 		require_once __DIR__ . '/typekit-theme-mock.php';
 		include_once $annotations_file;
 		TypekitTheme::$rules_dependency = $rules;
+		TypekitTheme::$allowed_categories = $rules->get_allowed_types();
 		apply_filters( 'typekit_add_font_category_rules', array() );
 	}
 }
