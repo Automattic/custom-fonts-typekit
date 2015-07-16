@@ -53,8 +53,7 @@ class Jetpack_Fonts_Typekit {
 	}
 
 	public function maybe_override_for_advanced_mode( $wp_customize ) {
-		$legacy_option = get_option( 'typekit_data' );
-		if ( ! isset( $legacy_option['advanced_mode'] ) || !  $legacy_option['advanced_mode'] ) {
+		if ( ! Jetpack_Fonts::get_instance()->get_provider('typekit')->has_advanced_kit() ) {
 			return;
 		}
 

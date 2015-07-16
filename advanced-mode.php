@@ -38,8 +38,8 @@ class Typekit_Advanced_Mode {
 		$legacy_option['advanced_mode'] = null;
 		$legacy_option['advanced_kit_id'] = null;
 		$legacy_option['advanced_kit_families'] = null;
-
 		update_option( 'typekit_data', $legacy_option );
+		Jetpack_Fonts::get_instance()->get_provider('typekit')->set( 'advanced_kit_id', false );
 	}
 }
 
