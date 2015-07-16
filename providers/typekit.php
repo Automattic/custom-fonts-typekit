@@ -105,7 +105,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 				return true;
 			}
 		}
-		return false;
+		return (bool) $has_advanced_kit;
 	}
 
 	/**
