@@ -7,11 +7,12 @@ class TypekitTheme {
 	const CSS_FONT_VALUE_RX = '/^\s*(((?P<style>normal|italic|oblique)|(?P<variant>normal|small-caps|inherit)|(?P<weight>normal|bold|\d{3}))\s+)*(?P<size>[^\/\s]+)(?P<lineheight>\s*\/\s*[^\s]+)?\s+(?P<family>.+)$/si';
 
 	public static $rules_dependency;
+	public static $allowed_categories = array();
 
 	public static function add_font_category_rule( $category_rules, $category_id, $selector, $declarations = array(), $media_queries = array() ) {
 		$selector = preg_replace( "/[\n\t]+/", ' ', trim( $selector ) );
 
-		if ( empty( $declarations ) || 'none' === $category_id ) {
+		if ( empty( $declarations ) || ! in_array( $category_id, self::$allowed_categories ) ) {
 			return;
 		}
 
