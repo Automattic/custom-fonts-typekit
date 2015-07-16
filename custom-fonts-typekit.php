@@ -49,6 +49,7 @@ class Jetpack_Fonts_Typekit {
 			add_filter( 'wpcom_font_rules_location_base', array( __CLASS__, 'local_dev_annotations' ) );
 		} else {
 			require_once __DIR__ . '/usage.php';
+			require_once __DIR__ . '/theme-support.php';
 		}
 	}
 

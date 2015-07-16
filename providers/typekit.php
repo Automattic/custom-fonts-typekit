@@ -108,6 +108,20 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return (bool) $has_advanced_kit;
 	}
 
+	public function has_theme_set_kit() {
+		$has_theme_set_kit = $this->get( 'set_by_theme', null );
+		if ( $has_theme_set_kit === null ) {
+			$legacy_opt = (array) get_option( 'typekit_data', array() );
+			if ( array_key_exists( 'set_by_theme', $legacy_opt  ) && $legacy_opt['set_by_theme'] ) {
+				$this->set( 'set_by_theme', $legacy_opt['set_by_theme'] );
+				$legacy_opt['set_by_theme'] = null;
+				update_option( 'typekit_data', $legacy_opt );
+				return true;
+			}
+		}
+		return (bool) $has_theme_set_kit;
+	}
+
 	/**
 	 * The URL for your frontend customizer script. Underscore and jQuery
 	 * will be called as dependencies.
