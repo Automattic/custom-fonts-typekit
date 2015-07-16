@@ -70,24 +70,42 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		if ( $kit_id ) {
 			return array(
 				'typekit' => array(
-					'id' => esc_js( $kit_id )
+					'id' => $kit_id
 				)
 			);
 		}
 	}
 
 	public function get_kit_id() {
+		if ( $this->has_advanced_kit() ) {
+			return $this->get( 'advanced_kit_id' );
+		}
 		$kit_id = $this->get( 'kit_id' );
 		if ( ! $kit_id ) {
 			$legacy_opt = (array) get_option( 'typekit_data', array() );
 			if ( isset( $legacy_opt['kit_id'] ) && $legacy_opt['kit_id'] ) {
 				$kit_id = $legacy_opt['kit_id'];
 				$this->set( 'kit_id', $kit_id );
-				unset( $legacy_opt['kit_id'] );
+				$legacy_opt['kit_id'] = null;
+				update_option( $legacy_opt );
 				return $kit_id;
 			}
 		}
 		return $kit_id;
+	}
+
+	public function has_advanced_kit() {
+		$has_advanced_kit = $this->get( 'advanced_kit_id', null );
+		if ( $has_advanced_kit === null ) {
+			$legacy_opt = (array) get_option( 'typekit_data', array() );
+			if ( array_key_exists( 'advanced_kit_id', $legacy_opt  ) && $legacy_opt['advanced_kit_id'] ) {
+				$this->set( 'advanced_kit_id', $legacy_opt['advanced_kit_id'] );
+				$legacy_opt['advanced_kit_id'] = null;
+				update_option( 'typekit_data', $legacy_opt );
+				return true;
+			}
+		}
+		return (bool) $has_advanced_kit;
 	}
 
 	/**
