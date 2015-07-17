@@ -44,6 +44,7 @@ class Jetpack_Fonts_Typekit {
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 		add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
+		add_action( 'wp_head', array( __CLASS__, 'maybe_print_advanced_kit' ) );
 		require_once __DIR__ . '/wpcom-compat.php';
 		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
 			add_filter( 'wpcom_font_rules_location_base', array( __CLASS__, 'local_dev_annotations' ) );
@@ -53,8 +54,29 @@ class Jetpack_Fonts_Typekit {
 		}
 	}
 
+	/**
+	 * Get the Typekit `Jetpack_Fonts_Provider` instance
+	 * @return object Typekit_Jetpack_Fonts_Provider instance
+	 */
+	public static function get_provider() {
+		return Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
+	}
+
+	public function maybe_print_advanced_kit() {
+		if ( ! self::get_provider()->has_advanced_kit() ) {
+			return;
+		}
+
+		$config = array(
+			'typekit' => array(
+				'id' => self::get_provider()->get( 'advanced_kit_id' )
+			)
+		);
+		Jetpack_Fonts::get_instance()->output_webfont_loader( $config );
+	}
+
 	public function maybe_override_for_advanced_mode( $wp_customize ) {
-		if ( ! Jetpack_Fonts::get_instance()->get_provider('typekit')->has_advanced_kit() ) {
+		if ( ! self::get_provider()->has_advanced_kit() ) {
 			return;
 		}
 
@@ -126,8 +148,7 @@ class Jetpack_Fonts_Typekit {
 	}
 
 	public static function enqueue_scripts() {
-		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
-		if ( ! $provider->is_active() ) {
+		if ( ! self::get_provider()->is_active() ) {
 			return;
 		}
 		$deps = is_admin()

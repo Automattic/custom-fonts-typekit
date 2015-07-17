@@ -181,9 +181,10 @@ class Typekit_Theme_Support {
 	 *
 	 * @uses self::get_theme_fonts()
 	 * @uses self::get_provider()
-	 * @uses TypekitApi::create_kit()
-	 * @uses TypekitApi::publish_kit()
-	 * @uses TypekitApi::delete_kit()
+	 * @uses Jetpack_Typekit_Font_Provider::create_kit()
+	 * @uses Jetpack_Fonts::save_fonts()
+	 * @uses Jetpack_Typekit_Font_Provider::publish_kit()
+	 * @uses Jetpack_Typekit_Font_Provider::delete_kit()
 	 * @uses Jetpack_Typekit_Font_Provider::set()
 	 * @uses Jetpack_Typekit_Font_Provider::delete()
 	 * @return bool
@@ -195,28 +196,19 @@ class Typekit_Theme_Support {
 			return false;
 		}
 
-		require_once __DIR__ . '/typekit-api.php';
 		$typekit_provider = $this->get_provider();
 
-		$kit_domains = $typekit_provider->get_site_hosts();
-		$kit_name = $typekit_provider->get_kit_name();
-		$kit_subset = $typekit_provider->get_subset_for_blog_language();
-
-		$kit = TypekitApi::create_kit( $kit_domains, $kit_name, $kit_subset, $fonts );
+		$kit = $typekit_provider->create_kit( $fonts );
 
 		if ( is_array( $kit ) && isset( $kit['kit'] ) ) {
 			$kit = $kit['kit'];
 
-			// Clean up any kits previously in use on this site
-			$old_kit_id = $typekit_provider->get_kit_id();
-			if ( $old_kit_id ) {
-				TypekitApi::delete_kit( $old_kit_id );
-			}
-			$typekit_provider->set( 'kit_id', false );
-			$typekit_provider->delete( 'selected_fonts' );
+			// Clean up any fonts/kits previously in use on this site by
+			// saving an empty fonts array
+			Jetpack_Fonts::get_instance()->save_fonts( array(), true );
 
 			// set our new things
-			TypekitApi::publish_kit( $kit['id'] );
+			$typekit_provider->publish_kit( $kit['id'] );
 			$typekit_provider->set( 'set_by_theme', true );
 			$typekit_provider->set( 'theme_families', $kit['families'] );
 			$typekit_provider->set( 'advanced_kit_id', $kit['id'] );
@@ -247,8 +239,7 @@ class Typekit_Theme_Support {
 			$provider->delete( 'set_by_theme' );
 			$kit_id = $provider->get( 'advanced_kit_id' );
 			if ( $kit_id ) {
-				require_once __DIR__ . '/typekit-api.php';
-				TypekitApi::delete_kit( $kit_id );
+				$provider->delete_kit( $kit_id );
 				$provider->delete( 'advanced_kit_id' );
 			}
 
