@@ -39,7 +39,13 @@ class Typekit_Advanced_Mode {
 		$legacy_option['advanced_kit_id'] = null;
 		$legacy_option['advanced_kit_families'] = null;
 		update_option( 'typekit_data', $legacy_option );
-		Jetpack_Fonts::get_instance()->get_provider('typekit')->set( 'advanced_kit_id', false );
+		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
+		$provider->delete( 'advanced_kit_id' );
+		if ( $provider->has_theme_set_kit() ) {
+			$provider->delete( 'theme_families' );
+			$provider->delete( 'set_by_theme' );
+			$provider->set( 'theme_override', true );
+		}
 	}
 }
 
@@ -49,7 +55,11 @@ class Typekit_Advanced_Mode_Control extends WP_Customize_Control {
 
 	public function render_content() {
 		echo '<p>';
-		_e( 'You added a Typekit kit ID through our legacy interface, which is no longer supported. Uncheck the box below and click "Save" to remove your kit from this blog and use our easy new interface for choosing fonts.' );
+		if ( Jetpack_Fonts::get_instance()->get_provider( 'typekit' )->has_theme_set_kit() ) :
+			_e( 'Lucky you! Your theme designers chose specific fonts for you that you can’t pick otherwise. If you aren’t happy with these fonts, uncheck the checkbox below and click "Save" to choose other fonts.' );
+		else:
+			_e( 'You added a Typekit kit ID through our legacy interface, which is no longer supported. Uncheck the checkbox below and click "Save" to remove your kit from this blog and use our easy new interface for choosing fonts.' );
+		endif;
 		echo '</p>';
 		parent::render_content();
 	}

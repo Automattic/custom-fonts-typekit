@@ -112,16 +112,21 @@ class Typekit_Theme_Support {
 	 * @return null
 	 */
 	public function check_support() {
-		$typekit_provider = $this->get_provider();
+		$provider = $this->get_provider();
+
+		// User explicitly opted out.
+		if ( $provider->get( 'theme_override' ) ) {
+			return;
+		}
 
 		// Don't override an advanced kit set manually on this site, even if the theme specifies its own font stack
-		if ( $typekit_provider->has_advanced_kit() && ! $typekit_provider->has_theme_set_kit() ) {
+		if ( $provider->has_advanced_kit() && ! $provider->has_theme_set_kit() ) {
 			return;
 		}
 
 		// Parse the activate theme's support for this feature
 		$supported = current_theme_supports( $this->key ) && CustomDesign::is_upgrade_active();
-		$set = $typekit_provider->get( 'set_by_theme' );
+		$set = $provider->get( 'set_by_theme' );
 
 		if ( $supported && ! $set ) {
 			$this->get_theme_fonts();
@@ -196,9 +201,9 @@ class Typekit_Theme_Support {
 			return false;
 		}
 
-		$typekit_provider = $this->get_provider();
+		$provider = $this->get_provider();
 
-		$kit = $typekit_provider->create_kit( $fonts );
+		$kit = $provider->create_kit( $fonts );
 
 		if ( is_array( $kit ) && isset( $kit['kit'] ) ) {
 			$kit = $kit['kit'];
@@ -208,10 +213,10 @@ class Typekit_Theme_Support {
 			Jetpack_Fonts::get_instance()->save_fonts( array(), true );
 
 			// set our new things
-			$typekit_provider->publish_kit( $kit['id'] );
-			$typekit_provider->set( 'set_by_theme', true );
-			$typekit_provider->set( 'theme_families', $kit['families'] );
-			$typekit_provider->set( 'advanced_kit_id', $kit['id'] );
+			$provider->publish_kit( $kit['id'] );
+			$provider->set( 'set_by_theme', true );
+			$provider->set( 'theme_families', $kit['families'] );
+			$provider->set( 'advanced_kit_id', $kit['id'] );
 
 			return true;
 		} else {
@@ -234,6 +239,9 @@ class Typekit_Theme_Support {
 	 */
 	public function reset() {
 		$provider = $this->get_provider();
+		if ( $provider->get( 'theme_override' ) ) {
+			$provider->delete( 'theme_override' );
+		}
 		if ( $provider->has_theme_set_kit() ) {
 			$provider->delete( 'theme_families' );
 			$provider->delete( 'set_by_theme' );
