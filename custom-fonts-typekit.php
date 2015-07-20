@@ -58,17 +58,6 @@ class Jetpack_Fonts_Typekit {
 		} else {
 			require_once __DIR__ . '/usage.php';
 		}
-
-		// Add actions to mark kit for republishing when domain options change
-		add_action( 'update_option_home', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
-		add_action( 'update_option_siteurl', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
-		add_action( 'wpcom_makeprimaryblog', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
-
-		// Add action to mark kit for republishing when language options change
-		add_action( 'update_option_lang_id', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
-
-		// Add action to republish the kit on shutdown if any options have changed
-		add_action( 'shutdown', array( 'Jetpack_Fonts_Typekit', 'maybe_republish_kit' ) );
 	}
 
 	public function maybe_override_for_advanced_mode( $wp_customize ) {
@@ -229,6 +218,17 @@ class Jetpack_Fonts_Typekit {
 add_action( 'setup_theme', array( 'Jetpack_Fonts_Typekit', 'init' ), 9 );
 add_action( 'custom-design-downgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_delete_kit' ) );
 add_action( 'custom-design-upgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_create_kit' ) );
+
+// Add actions to mark kit for republishing when domain options change
+add_action( 'update_option_home', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
+add_action( 'update_option_siteurl', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
+add_action( 'wpcom_makeprimaryblog', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
+
+// Add action to mark kit for republishing when language options change
+add_action( 'update_option_lang_id', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
+
+// Add action to republish the kit on shutdown if any options have changed
+add_action( 'shutdown', array( 'Jetpack_Fonts_Typekit', 'maybe_republish_kit' ) );
 
 // Hey wp-cli is fun
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
