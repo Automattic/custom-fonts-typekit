@@ -39,6 +39,14 @@ class Jetpack_Fonts_Typekit {
 	const PREVIEWKIT_AUTH_ID = 'wp';
 	const PREVIEWKIT_PRIMARY_AUTH_TOKEN = '3bb2a6e53c9684ffdc9a9aff185b2a62b09b6f5189114fc2b7a762d37126575957cc2be9ed2cf64258c2828e5d92d94602695c102ffcecb6fa701fe59ba9e9fee2253aa8ba8e355def1b980688bb77aa2d22dba28934c842d6375ecd';
 
+	/**
+	 * Remembers if an option that requires the kit to be republished has been
+	 * updated during this execution so that we can republish the kit one time
+	 * upon shutdown using all the new option values.
+	 * @var boolean
+	 */
+	public static $republish_kit_on_shutdown = false;
+
 	public static function init() {
 		add_action( 'customize_register', array( __CLASS__, 'maybe_override_for_advanced_mode' ), 20 );
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
@@ -59,6 +67,36 @@ class Jetpack_Fonts_Typekit {
 
 		require_once __DIR__ . '/advanced-mode.php';
 		Typekit_Advanced_Mode::customizer_init( $wp_customize );
+	}
+
+	/**
+	 * Should be added as a callback to any hooks for updating an option that
+	 * affects how the kit is published (domains, languages, etc.) This allows the
+	 * kit to be republished just once, even when more than one of these options
+	 * changes at once.
+	 */
+	static function kit_option_updated() {
+		self::$republish_kit_on_shutdown = true;
+	}
+
+	/**
+	 * Should be added as a callback on the shutdown hook. If kit_option_updated
+	 * was called during this execution and the user is upgraded, using standard
+	 * mode, and has saved families, this method will republish the user's kit
+	 * with all of the current data values. This keeps the kit up-to-date and
+	 * working properly on the blog regardless of what changes are made to
+	 * WordPress options that affect how the kit needs to be published (like
+	 * domains, languages, etc.).
+	 */
+	static function maybe_republish_kit() {
+		if ( ! self::$republish_kit_on_shutdown ) {
+			return;
+		}
+		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
+		if ( ! $provider->is_active() ) {
+			return;
+		}
+		self::maybe_create_kit();
 	}
 
 	/**
@@ -180,6 +218,17 @@ class Jetpack_Fonts_Typekit {
 add_action( 'setup_theme', array( 'Jetpack_Fonts_Typekit', 'init' ), 9 );
 add_action( 'custom-design-downgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_delete_kit' ) );
 add_action( 'custom-design-upgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_create_kit' ) );
+
+// Add actions to mark kit for republishing when domain options change
+add_action( 'update_option_home', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
+add_action( 'update_option_siteurl', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
+add_action( 'wpcom_makeprimaryblog', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
+
+// Add action to mark kit for republishing when language options change
+add_action( 'update_option_lang_id', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
+
+// Add action to republish the kit on shutdown if any options have changed
+add_action( 'shutdown', array( 'Jetpack_Fonts_Typekit', 'maybe_republish_kit' ) );
 
 // Hey wp-cli is fun
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
