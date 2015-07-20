@@ -77,9 +77,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	}
 
 	public function get_kit_id() {
-		if ( $this->has_advanced_kit() ) {
-			return $this->get( 'advanced_kit_id' );
-		}
 		$kit_id = $this->get( 'kit_id' );
 		if ( ! $kit_id ) {
 			$legacy_opt = (array) get_option( 'typekit_data', array() );
@@ -106,6 +103,20 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			}
 		}
 		return (bool) $has_advanced_kit;
+	}
+
+	public function has_theme_set_kit() {
+		$has_theme_set_kit = $this->get( 'set_by_theme', null );
+		if ( $has_theme_set_kit === null ) {
+			$legacy_opt = (array) get_option( 'typekit_data', array() );
+			if ( array_key_exists( 'set_by_theme', $legacy_opt  ) && $legacy_opt['set_by_theme'] ) {
+				$this->set( 'set_by_theme', $legacy_opt['set_by_theme'] );
+				$legacy_opt['set_by_theme'] = null;
+				update_option( 'typekit_data', $legacy_opt );
+				return true;
+			}
+		}
+		return (bool) $has_theme_set_kit;
 	}
 
 	/**
@@ -150,22 +161,18 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			return $fonts;
 		}
 
-		require_once( __DIR__ . '/../typekit-api.php' );
-		$kit_domains = $this->get_site_hosts();
 		$kit_id = $this->get_kit_id();
-		$kit_name = $this->get_kit_name();
-		$kit_subset = $this->get_subset_for_blog_language();
 		$families = $this->convert_fonts_for_api( $fonts );
 
 		if ( ! $kit_id ) {
-			$response = TypekitApi::create_kit( $kit_domains, $kit_name, $kit_subset, $families );
+			$response = $this->create_kit( $families );
 			if ( is_wp_error( $response ) ) {
 				return $fonts;
 			}
 			$kit_id = $response['kit']['id'];
 			$this->set( 'kit_id', $kit_id );
 		} else {
-			$response = TypekitApi::edit_kit( $kit_id, $kit_domains, $kit_name, $kit_subset, $families );
+			$response = $this->edit_kit( $kit_id, $families );
 			if ( is_wp_error( $response ) ) {
 				return $fonts;
 			}
@@ -185,9 +192,73 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		}
 
 		// now, publish that kit!
-		TypekitApi::publish_kit( $kit_id );
+		$this->publish_kit( $kit_id );
 
 		return $modified_fonts;
+	}
+
+	/**
+	 * Helper for creating a kit without needing all of the extra bits
+	 * @param  array $families  Array of fonts to save
+	 * @return array|WP_Error   A `response` array from `wp_remote_post` on success,
+	 *                          `WP_Error` instance on failure.
+	 */
+	public function create_kit( $families ) {
+		return $this->edit_kit( '', $families );
+	}
+
+	/**
+	 * Helper for editing a kit while setting the rest of the parameters DRY-ly
+	 * @param  string $kit_id   Existing kit_id to edit, or an empty string to create a new kit
+	 * @param  array $families  Array of fonts to save
+	 * @return array|WP_Error   A `response` array from `wp_remote_post` on success,
+	 *                          `WP_Error` instance on failure.
+	 */
+	public function edit_kit( $kit_id, $families ) {
+		$this->require_api();
+		$kit_domains = $this->get_site_hosts();
+		$kit_name = $this->get_kit_name();
+		$kit_subset = $this->get_subset_for_blog_language();
+		return TypekitApi::edit_kit( $kit_id, $kit_domains, $kit_name, $kit_subset, $families );
+	}
+
+	/**
+	 * Helper for publishing a kit
+	 * @param  string $kit_id  The kit id to publish
+	 * @return array|WP_Error  A `response` array from `wp_remote_post` on success,
+	 *                         `WP_Error` instance on failure.
+	 */
+	public function publish_kit( $kit_id ) {
+		$this->require_api();
+		return TypekitApi::publish_kit( $kit_id );
+	}
+
+	/**
+	 * Helper for deleting a kit
+	 * @param  string $kit_id  The kit id to delete
+	 * @return array|WP_Error  A `response` array from `wp_remote_post` on success,
+	 *                         `WP_Error` instance on failure.
+	 */
+	public function delete_kit( $kit_id ) {
+		$this->require_api();
+		return TypekitApi::delete_kit( $kit_id );
+	}
+
+	/**
+	 * Helper for getting a kit's info
+	 * @param  string $kit_id  The kit id to get info for
+	 * @return array|WP_Error  A `response` array from `wp_remote_get` on success,
+	 *                         `WP_Error` instance on failure.
+	 */
+	public function get_kit_info( $kit_id ) {
+		$this->require_api();
+		return TypekitApi::get_published_kit_info( $kit_id );
+	}
+
+	public function require_api() {
+		if ( ! class_exists( 'TypekitApi' ) ) {
+			require __DIR__ . '/../typekit-api.php';
+		}
 	}
 
 	/**

@@ -1,6 +1,5 @@
 (function($, wp){
 	var api = wp.customize;
-	console.log( 'yo dawg');
 
 	api.bind( 'saved', function(){
 		if ( api( 'typekit_advanced_mode' ).get() ) {
