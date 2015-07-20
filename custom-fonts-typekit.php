@@ -67,12 +67,71 @@ class Jetpack_Fonts_Typekit {
 			return;
 		}
 
+
+		$kit_id = self::get_provider()->get( 'advanced_kit_id' );
+
 		$config = array(
 			'typekit' => array(
-				'id' => self::get_provider()->get( 'advanced_kit_id' )
+				'id' => $kit_id
 			)
 		);
-		Jetpack_Fonts::get_instance()->output_webfont_loader( $config );
+
+		$theme_config = apply_filters( 'typekit_theme_fonts_async_load_config', array(), $kit_id );
+		$additional_js = apply_filters( 'typekit_theme_fonts_additional_config_js', '', $kit_id );
+
+		if ( is_array( $theme_config ) && ! empty( $theme_config ) ) {
+			// `active` and `inactive` require special handling and can't be JSON-encoded
+			if ( isset( $theme_config['active'] ) ) {
+				$theme_config_active = $theme_config['active'];
+				unset( $theme_config['active'] );
+			}
+
+			if ( isset( $theme_config['inactive'] ) ) {
+				$theme_config_inactive = $theme_config['inactive'];
+				unset( $theme_config['inactive'] );
+			}
+
+			$config = array_merge( $theme_config, $config ); // ensure default configuration wins
+		}
+
+		// JSON-encode what we have so far
+		$config = json_encode( $config );
+
+		// The values of the theme-provided `active` and `inactive` configurations must be executable functions
+		// If we pass them through `json_encode()`, they become strings and the loading script breaks
+		if ( isset( $theme_config_active ) || isset( $theme_config_inactive ) ) {
+			$config = trim( $config );
+
+			$config_left = substr( $config, 0, strrpos( $config, '}' ) );
+
+			if ( isset( $theme_config_active ) ) {
+				$config_left .= ', "active": ' . $theme_config_active;
+			}
+
+			if ( isset( $theme_config_inactive ) ) {
+				$config_left .= ', "inactive": ' . $theme_config_inactive;
+			}
+
+			$config = $config_left . '}';
+		}
+
+		// output!
+		echo
+<<<EMBED
+<script type="text/javascript" id="webfont-output">
+  {$additional_js}
+  WebFontConfig = {$config};
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+	})();
+</script>
+EMBED;
 	}
 
 	public function maybe_override_for_advanced_mode( $wp_customize ) {
