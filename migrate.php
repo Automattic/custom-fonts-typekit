@@ -65,28 +65,28 @@ function wpcom_typekit_migrate_families( $typekit_data ) {
 			continue;
 		}
 
-		$font_data['type'] = $type;
+		$font = array(
+			'id' => $font_data['id'],
+			'provider' => 'typekit',
+			'type' => $type
+		);
 
 		if ( isset( $legacy_font['size'] ) && $legacy_font['size'] !== 0 ) {
-			$font_data['size'] = $legacy_font['size'];
+			$font['size'] = $legacy_font['size'];
+		} else {
+			$font['size'] = 0;
 		}
 
 		if ( isset( $legacy_font['css_names'] ) && is_array( $legacy_font['css_names'] ) ) {
-			$font_data['cssName'] = '"' . implode( '","', $legacy_font['css_names'] ) . '"';
+			$font['cssName'] = '"' . implode( '","', $legacy_font['css_names'] ) . '"';
 		}
 
-		// body-text won't have an fvd and can keep the above default.
+		// body-text won't have an fvd and doesn't need it
 		if ( isset( $legacy_font['fvd'] ) && $legacy_font['fvd'] ) {
-			$font_data['currentFvd'] = $legacy_font['fvd'];
+			$font['currentFvd'] = $legacy_font['fvd'];
 		}
 
-		$family = array();
-		// only keep the stuff we really want. the rest is superfluous
-		foreach( array( 'id', 'cssName', 'provider', 'type' ) as $key ) {
-			$family[ $key ] = $font_data[ $key ];
-		}
-
-		$families[] = $family;
+		$families[] = $font;
 	}
 
 	return $families;
