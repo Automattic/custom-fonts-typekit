@@ -89,7 +89,34 @@ function wpcom_typekit_migrate_families( $typekit_data ) {
 		$families[] = $font;
 	}
 
+	$families = wpcom_dedupe_site_title_and_headings( $families );
+
 	return $families;
+}
+
+function wpcom_dedupe_site_title_and_headings( $families ) {
+	$site_title = array_shift( wp_list_filter( $families, array( 'type' => 'site-title') ) );
+	$headings =   array_shift( wp_list_filter( $families, array( 'type' => 'headings') ) );
+	l( $site_title, $headings );
+	if ( ! $site_title || ! $headings ) {
+		return $families;
+	}
+	$distinct = false;
+	foreach( array( 'id', 'currentFvd', 'size' ) as $key ) {
+		if ( $site_title[ $key ] !== $headings[ $key ] ) {
+			$distinct = true;
+			break;
+		}
+	}
+	if ( $distinct ) {
+		return $families;
+	}
+
+	// dedupe!
+	return array_filter( $families, function( $family ){
+		return $family['type'] !== 'site-title';
+	});
+
 }
 
 function wpcom_get_font_data( $font_id ) {
