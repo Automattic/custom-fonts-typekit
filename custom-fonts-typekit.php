@@ -50,6 +50,7 @@ class Jetpack_Fonts_Typekit {
 	public static function init() {
 		add_action( 'customize_register', array( __CLASS__, 'maybe_override_for_advanced_mode' ), 20 );
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
+		add_action( 'jetpack_fonts_register', array( __CLASS__, 'maybe_migrate_options' ), 99 );
 		add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'wp_head', array( __CLASS__, 'maybe_print_advanced_kit' ) );
@@ -60,6 +61,14 @@ class Jetpack_Fonts_Typekit {
 			require_once __DIR__ . '/usage.php';
 			require_once __DIR__ . '/theme-support.php';
 		}
+	}
+
+	public static function maybe_migrate_options() {
+		if ( ! CustomDesign::is_upgrade_active() || Jetpack_Fonts::get_instance()->get( 'migrated' ) ) {
+			return;
+		}
+		require_once __DIR__ . '/migrate.php';
+		wpcom_typekit_data_migrate();
 	}
 
 	/**
