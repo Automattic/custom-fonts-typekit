@@ -34,11 +34,6 @@ class Typekit_Advanced_Mode {
 		}
 
 		// oh good we can disable it!
-		$legacy_option = get_option( 'typekit_data', array() );
-		$legacy_option['advanced_mode'] = null;
-		$legacy_option['advanced_kit_id'] = null;
-		$legacy_option['advanced_kit_families'] = null;
-		update_option( 'typekit_data', $legacy_option );
 		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
 		$provider->delete( 'advanced_kit_id' );
 		if ( $provider->has_theme_set_kit() ) {
