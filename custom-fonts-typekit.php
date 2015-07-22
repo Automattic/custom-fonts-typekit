@@ -265,7 +265,7 @@ EMBED;
 			'isAdmin' => is_admin(),
 			'badge' => array(
 				'url' => 'https://typekit.com/?utm_source=wordpress&utm_medium=wp-plugin&utm_content=wppl110601&utm_campaign=more-info',
-				'text' => __( 'Fonts by Typekit' )
+				'text' => __( 'Select fonts by Adobe Typekit' )
 			)
 		) );
 

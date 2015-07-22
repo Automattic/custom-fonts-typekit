@@ -10,14 +10,13 @@
 }
 .jetpack-fonts__typekit-credit {
   display: inline-block;
-  width: 126px;
-  height: 16px;
-  font: 0/0 normal;
-  background: url( '../img/typekit-badge-1x.png' ) no-repeat 0 0;
-  background-size: 100%;
+  background: url( '../img/typekit-logo-1x.png' ) no-repeat 0 0;
+  background-size: 16px 16px;
   float: right;
-  margin: 20px 12px 20px 0;
+  padding-left: 20px;
+  margin: 30px 15px 20px 0;
   opacity: .75;
+  font-size: 11px;
 }
 .jetpack-fonts__typekit-credit:focus, .jetpack-fonts__typekit-credit:hover {
   opacity: 1;
@@ -28,7 +27,7 @@
     background-image: url( '../img/typekit-logo-2x.png' );
   }
   .jetpack-fonts__typekit-credit {
-    background-image: url( '../img/typekit-badge-2x.png' );
+    background-image: url( '../img/typekit-logo-2x.png' );
   }
 }
 
