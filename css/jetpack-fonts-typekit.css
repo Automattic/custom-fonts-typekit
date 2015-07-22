@@ -2,14 +2,45 @@
   width: 16px;
   height: 16px;
   margin: 15px 10px 0px 0px;
-  content: "";
-  background-repeat: no-repeat;
-  background-position: 0 0;
+  background: url( '../img/typekit-logo-1x.png' ) no-repeat 0 0;
   background-size: 100%;
   display: inline-block;
   float: right;
+  opacity: .5;
+}
+.jetpack-fonts__typekit-credit {
+  display: inline-block;
+  width: 126px;
+  height: 16px;
+  font: 0/0 normal;
+  background: url( '../img/typekit-badge-1x.png' ) no-repeat 0 0;
+  background-size: 100%;
+  float: right;
+  margin: 20px 12px 20px 0;
+  opacity: .75;
+}
+.jetpack-fonts__typekit-credit:focus, .jetpack-fonts__typekit-credit:hover {
+  opacity: 1;
+}
+
+@media print, (-o-min-device-pixel-ratio: 5/4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+  .jetpack-fonts__typekit-option-logo {
+    background-image: url( '../img/typekit-logo-2x.png' );
+  }
+  .jetpack-fonts__typekit-credit {
+    background-image: url( '../img/typekit-badge-2x.png' );
+  }
 }
 
 .jetpack-fonts__current-font .jetpack-fonts__typekit-option-logo {
   display: none;
+}
+#customize-control-jetpack_fonts {
+  margin-bottom: 0;
+}
+/* clear the container because of our float */
+#customize-control-jetpack_fonts:after {
+  content: "";
+  display: table;
+  clear: both;
 }
