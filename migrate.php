@@ -97,7 +97,6 @@ function wpcom_typekit_migrate_families( $typekit_data ) {
 function wpcom_dedupe_site_title_and_headings( $families ) {
 	$site_title = array_shift( wp_list_filter( $families, array( 'type' => 'site-title') ) );
 	$headings =   array_shift( wp_list_filter( $families, array( 'type' => 'headings') ) );
-	l( $site_title, $headings );
 	if ( ! $site_title || ! $headings ) {
 		return $families;
 	}
