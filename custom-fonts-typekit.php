@@ -271,7 +271,11 @@ EMBED;
 			),
 			'imageDir' => plugins_url( '/img/', __FILE__ ),
 			'webKitShim' => 'https://wordpress.com/wp-content/mu-plugins/custom-fonts/webkit-shim.html',
-			'isAdmin' => is_admin()
+			'isAdmin' => is_admin(),
+			'badge' => array(
+				'url' => 'https://typekit.com/?utm_source=wordpress&utm_medium=wp-plugin&utm_content=wppl110601&utm_campaign=more-info',
+				'text' => __( 'Select fonts by Adobe Typekit' )
+			)
 		) );
 
 		if ( is_admin() ) {

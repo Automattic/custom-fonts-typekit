@@ -189,10 +189,7 @@
 			if ( this.$el.find( '.jetpack-fonts__typekit-option-logo' ).length > 0 ) {
 				return;
 			}
-			var typekitLogoUrl = this.imageDir + 'typekit-logo-64.png';
-			var logoEl = $( '<div class="jetpack-fonts__typekit-option-logo" />' );
-			logoEl.css( { 'background-image': 'url("' + typekitLogoUrl + '")' } );
-			this.$el.append( logoEl );
+			this.$el.append( '<div class="jetpack-fonts__typekit-option-logo" />' );
 		},
 
 		render: function() {
@@ -216,6 +213,24 @@
 	TypekitProviderView.addFontToPreview = addFontToPreview;
 
 	api.JetpackFonts.providerViews.typekit = TypekitProviderView;
+
+	if ( opts.isAdmin ) {
+		api.bind( 'ready', addTypekitBadge );
+	}
+
+	function addTypekitBadge() {
+		var control = api.control('jetpack_fonts'),
+			badge;
+		if ( ! control ) {
+			return;
+		}
+		badge = $( '<a />', {
+			href: opts.badge.url,
+			text: opts.badge.text,
+			'class': 'jetpack-fonts__typekit-credit'
+		} );
+		control.container.append( badge );
+	}
 
 	return TypekitProviderView;
 })( window.wp ? window.wp.customize : null );
