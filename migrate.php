@@ -2,9 +2,20 @@
 
 function wpcom_typekit_data_migrate() {
 	$typekit_data = (array) get_option( 'typekit_data' );
-	$existing = (array) get_option( 'jetpack_fonts' );
 
-	// sanity checks
+	// sanity check
+	if ( empty( $typekit_data ) ) {
+		Jetpack_Fonts::get_instance()->set( 'migrated', true );
+		bump_stats_extras( 'fonts_data_migration', 'no-typekit-data' );
+	}
+
+	// custom design preview
+	if ( isset( $typekit_data['preview_in_customizer'] ) && $typekit_data['preview_in_customizer'] ) {
+		update_option( 'preview_custom_design_in_customizer', true );
+	}
+
+	// moar sanity
+	$existing = (array) get_option( 'jetpack_fonts' );
 	if ( isset( $existing['selected_fonts'] ) && ! empty( $existing['selected_fonts'] ) ) {
 		// don't overwrite existing ones
 		Jetpack_Fonts::get_instance()->set( 'migrated', true );
@@ -12,12 +23,7 @@ function wpcom_typekit_data_migrate() {
 		return;
 	}
 
-	// moar sanity
-	if ( empty( $typekit_data ) ) {
-		Jetpack_Fonts::get_instance()->set( 'migrated', true );
-		bump_stats_extras( 'fonts_data_migration', 'no-typekit-data' );
-	}
-
+	// ok, migration time!
 	$jetpack_fonts = array(
 		'migrated' => true,
 		'selected_fonts' => wpcom_typekit_migrate_families( $typekit_data )

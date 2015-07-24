@@ -55,6 +55,7 @@ class Jetpack_Fonts_Typekit {
 		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'wp_head', array( __CLASS__, 'maybe_print_advanced_kit' ) );
 		require_once __DIR__ . '/wpcom-compat.php';
+		require_once __DIR__ . '/typekit-shims.php';
 		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
 			add_filter( 'wpcom_font_rules_location_base', array( __CLASS__, 'local_dev_annotations' ) );
 		} else {
