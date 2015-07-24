@@ -5,6 +5,9 @@ class TypekitData {
 	public static function set( $key, $data ) {
 		$method = 'set_' . $key;
 		if ( is_callable( array( __CLASS__, $method ) ) ) {
+			if ( defined( 'WPCOM_SANDBOXED' ) && WPCOM_SANDBOXED ) {
+				self::trigger_error( 'set', $key );
+			}
 			return self::$method( $data );
 		}
 		return null;
@@ -13,9 +16,17 @@ class TypekitData {
 	public static function get( $key ) {
 		$method = 'get_' . $key;
 		if ( is_callable( array( __CLASS__, $method ) ) ) {
+			if ( defined( 'WPCOM_SANDBOXED' ) && WPCOM_SANDBOXED ) {
+				self::trigger_error( 'get', $key );
+			}
 			return self::$method();
 		}
 		return null;
+	}
+
+	private static function trigger_error( $method, $key ) {
+		$message = sprintf( '`TypekitData::%s( \'%s\' )` is now only maintained as a legacy compatibility layer. The information you want likely lives in the `Jetpack_Fonts` class. Come by #customizer in Slack for help with updating your code!', $method, $key );
+		trigger_error( $message );
 	}
 
 	private static function get_preview_in_customizer() {
