@@ -130,6 +130,11 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			return $fonts;
 		}
 
+		// Avoid publishing a kit when we are only in preview mode.
+		if ( class_exists( 'CustomDesign' ) && CustomDesign::is_previewing() ) {
+			return $fonts;
+		}
+
 		$kit_id = $this->get_kit_id();
 		$families = $this->convert_fonts_for_api( $fonts );
 
