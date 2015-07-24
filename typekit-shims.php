@@ -48,6 +48,14 @@ class TypekitData {
 		}
 		return $families;
 	}
+
+	private static function get_advanced_mode() {
+		return Jetpack_Fonts::get_instance()->get_provider( 'typekit' )->has_advanced_kit();
+	}
+
+	private static function get_advanced_kit_id() {
+		return Jetpack_Fonts::get_instance()->get_provider( 'typekit' )->get( 'advanced_kit_id' );
+	}
 }
 
 class TypekitUtil {
