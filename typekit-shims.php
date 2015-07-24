@@ -33,15 +33,18 @@ class TypekitData {
 	private static function get_families() {
 		$fonts = Jetpack_Fonts::get_instance()->get_fonts();
 		$families = array(
-			'headings' => array( 'id' => false ),
-			'site-title' => array( 'id' => false ),
-			'body-text' => array( 'id' => false )
+			'headings' => array( 'id' => null ),
+			'site-title' => array( 'id' => null ),
+			'body-text' => array( 'id' => null )
 		);
 		foreach ( $fonts as $font ) {
-			$families[ $font['type'] ]['id'] = true;
+			$families[ $font['type'] ] = array(
+				'id' => $font['id'],
+				'css_names' => explode(',', str_replace('"', '', $font['cssName'] ) )
+			);
 		}
 		if ( ! $families['site-title']['id'] && $families['headings']['id'] ) {
-			$families['site-title']['id'] = true;
+			$families['site-title'] = $families['headings'];
 		}
 		return $families;
 	}
