@@ -131,7 +131,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		}
 
 		// Avoid publishing a kit when we are only in preview mode.
-		if ( class_exists( 'CustomDesign' ) && CustomDesign::is_previewing() ) {
+		if ( class_exists( 'CustomDesign' ) && ! CustomDesign::is_upgrade_active() ) {
 			return $fonts;
 		}
 
