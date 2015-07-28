@@ -1,12 +1,13 @@
 .jetpack-fonts__typekit-option-logo {
-  width: 16px;
-  height: 16px;
-  margin: 15px 10px 0px 0px;
+  width: 32px;
+  height: 100%;
+  margin: 0;
   background: url( '../img/typekit-logo-1x.png' ) no-repeat 0 0;
-  background-size: 100%;
+  background-size: 16px;
+  background-position: center;
+  background-color: #fff;
   display: inline-block;
   float: right;
-  opacity: .5;
 }
 .jetpack-fonts__typekit-credit {
   display: inline-block;
