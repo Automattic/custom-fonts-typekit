@@ -232,5 +232,31 @@
 		control.container.append( badge );
 	}
 
+	function hasVerticalScrollbar( $el ) {
+		return $el.length && $el[0].scrollWidth !== $el.innerWidth();
+	}
+
+	function handleVerticalScrollbars() {
+		var $me = $( this ),
+			$section, $select;
+
+		// bail early if we closed
+		if ( ! $me.hasClass( 'jetpack-fonts__current-font--open') ) {
+			return;
+		}
+
+		$section = $me.closest( '.accordion-section-content' );
+		$select =  $me.next();
+		if ( hasVerticalScrollbar( $section ) && hasVerticalScrollbar( $select ) ) {
+			$select.addClass( 'jetpack_fonts__constrained-space' );
+		} else {
+			$select.removeClass( 'jetpack_fonts__constrained-space' );
+		}
+	}
+
+	opts.isAdmin && $(document).ready( function(){
+		$( '.jetpack-fonts__current-font' ).on( 'click', handleVerticalScrollbars );
+	});
+
 	return TypekitProviderView;
 })( window.wp ? window.wp.customize : null );
