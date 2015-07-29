@@ -1,5 +1,43 @@
 <?php
 
+add_action( 'jetpack_fonts_save', 'wpcom_record_fonts_events' );
+function wpcom_record_fonts_events( $new_fonts ) {
+	// this works because the new fonts haven't been saved yet.
+	$old_fonts = Jetpack_Fonts::get_instance()->get_fonts();
+
+	// don't record if there's no change
+	if ( $old_fonts === $new_fonts ) {
+		return;
+	}
+	$properties = wpcom_fonts_event_props( 'new', $new_fonts );
+	$properties = wpcom_fonts_event_props( 'old', $old_fonts, $properties );
+	require_lib( 'tracks/client' );
+
+	if ( ! empty( $new_fonts ) ) {
+		// we are saving fonts
+		if ( ! empty( $old_fonts ) ) {
+			tracks_record_event( wp_get_current_user(), 'wpcom_fonts_saved_new', $properties );
+		} else {
+			tracks_record_event( wp_get_current_user(), 'wpcom_fonts_saved_changed', $properties );
+		}
+	} else {
+		// fonts have been unset
+		tracks_record_event( wp_get_current_user(), 'wpcom_fonts_saved_deleted', $properties );
+	}
+}
+
+function wpcom_fonts_event_props( $key_prefix, $fonts, $properties = array() ) {
+	foreach( $fonts as $font ) {
+		$font_data = Jetpack_Fonts::get_instance()->get_provider( $font['provider'] )->get_font( $font['id'] );
+		if ( ! $font_data ) {
+			continue;
+		}
+		$key =  'font_' . $key_prefix . '_' . str_replace( '-', '_', $font['type'] );
+		$value = $font_data['displayName'];
+		$properties[ $key ] = $value;
+	}
+	return $properties;
+}
 
 add_action( 'jetpack_fonts_save', 'wpcom_log_font_usage' );
 /**
