@@ -33,8 +33,13 @@ class TypekitTheme {
 		if ( ! empty( $media_queries ) ) {
 			$rule['media_query'] = $media_queries[0];
 		}
+		try {
+			self::$rules_dependency->add_rule( $rule );
+		} catch (Exception $e) {
+			a8c_irc( 'font-exceptions', 'Exception: ' . $e->getMessage() );
+			a8c_irc( 'font-exceptions', "Rule: " . json_encode( $rule ) );
+		}
 
-		self::$rules_dependency->add_rule( $rule );
 	}
 
 	private static function maybe_split_font_shorthand( $declarations ) {
