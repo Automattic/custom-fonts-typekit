@@ -50,7 +50,6 @@ class Jetpack_Fonts_Typekit {
 	public static function init() {
 		add_action( 'customize_register', array( __CLASS__, 'maybe_override_for_advanced_mode' ), 20 );
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
-		add_action( 'jetpack_fonts_register', array( __CLASS__, 'maybe_migrate_options' ), 99 );
 		add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'wp_head', array( __CLASS__, 'maybe_print_advanced_kit' ) );
@@ -61,6 +60,7 @@ class Jetpack_Fonts_Typekit {
 		} else {
 			require_once __DIR__ . '/usage.php';
 			require_once __DIR__ . '/theme-support.php';
+			add_action( 'jetpack_fonts_register', array( __CLASS__, 'maybe_migrate_options' ), 99 );
 		}
 	}
 
@@ -80,7 +80,7 @@ class Jetpack_Fonts_Typekit {
 		return Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
 	}
 
-	public function maybe_print_advanced_kit() {
+	public static function maybe_print_advanced_kit() {
 		if ( ! self::get_provider()->has_advanced_kit() ) {
 			return;
 		}
@@ -152,7 +152,7 @@ class Jetpack_Fonts_Typekit {
 EMBED;
 	}
 
-	public function maybe_override_for_advanced_mode( $wp_customize ) {
+	public static function maybe_override_for_advanced_mode( $wp_customize ) {
 		if ( ! self::get_provider()->has_advanced_kit() ) {
 			return;
 		}
@@ -167,7 +167,7 @@ EMBED;
 	 * kit to be republished just once, even when more than one of these options
 	 * changes at once.
 	 */
-	static function kit_option_updated() {
+	public static function kit_option_updated() {
 		self::$republish_kit_on_shutdown = true;
 	}
 
@@ -180,7 +180,7 @@ EMBED;
 	 * WordPress options that affect how the kit needs to be published (like
 	 * domains, languages, etc.).
 	 */
-	static function maybe_republish_kit() {
+	public static function maybe_republish_kit() {
 		if ( ! self::$republish_kit_on_shutdown ) {
 			return;
 		}
