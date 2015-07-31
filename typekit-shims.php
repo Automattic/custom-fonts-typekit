@@ -48,6 +48,9 @@ class TypekitData {
 			'site-title' => array( 'id' => null ),
 			'body-text' => array( 'id' => null )
 		);
+		if ( ! $fonts ) {
+			return $families;
+		}
 		foreach ( $fonts as $font ) {
 			$families[ $font['type'] ] = array(
 				'id' => $font['id'],
