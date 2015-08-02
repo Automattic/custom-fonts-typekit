@@ -65,7 +65,7 @@ class Jetpack_Fonts_Typekit {
 	}
 
 	public static function maybe_migrate_options() {
-		if ( ! CustomDesign::is_upgrade_active() || Jetpack_Fonts::get_instance()->get( 'migrated' ) ) {
+		if ( Jetpack_Fonts::get_instance()->get( 'migrated' ) ) {
 			return;
 		}
 		require_once __DIR__ . '/migrate.php';
