@@ -26,6 +26,7 @@ function wpcom_typekit_data_migrate() {
 	// Advanced mode
 	if ( isset( $typekit_data['advanced_kit_id'] ) && $typekit_data['advanced_kit_id'] ) {
 		bump_stats_extras( 'fonts_data_migration', 'migrating-advanced-kit' );
+		add_blog_sticker( 'granfathered-advanced-kit' );
 	}
 
 	// ok, migration time!
