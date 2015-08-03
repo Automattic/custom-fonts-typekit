@@ -23,8 +23,8 @@ function wpcom_typekit_data_migrate() {
 		return;
 	}
 
-	// Advanced mode
-	if ( isset( $typekit_data['advanced_kit_id'] ) && $typekit_data['advanced_kit_id'] ) {
+	// Old granfathered Advanced mode users
+	if ( isset( $typekit_data['old_user'] ) && $typekit_data['old_user'] && isset( $typekit_data['advanced_kit_id'] ) && $typekit_data['advanced_kit_id'] ) {
 		bump_stats_extras( 'fonts_data_migration', 'migrating-advanced-kit' );
 		add_blog_sticker( 'granfathered-advanced-kit' );
 	}
