@@ -160,7 +160,8 @@
 			return position;
 		},
 
-		calculateBackgroundHeight: function( slots ) {
+		calculateBackgroundHeight: function( fvds, oldFvds ) {
+			var slots = oldFvds || fvds;
 			return slots * this.slotHeight - 32;
 		},
 
@@ -203,7 +204,7 @@
 			);
 			this.$el.css( 'background-position', '0px ' + position.toString() + 'px' );
 
-			var height = this.calculateBackgroundHeight( this.model.get( 'fvds' ).length );
+			var height = this.calculateBackgroundHeight( this.model.get( 'fvds' ).length, this.model.get( 'oldFvdCount' ) );
 			this.$el.css( 'background-size', 'auto ' + height.toString() + 'px' );
 
 			return this;
