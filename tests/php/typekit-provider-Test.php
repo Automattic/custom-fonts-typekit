@@ -12,6 +12,7 @@ class Jetpack_Font_Provider {
 
 	public function get() {}
 	public function set() {}
+	public function get_cached_fonts() { return get_test_fonts(); }
 
 }
 
@@ -28,34 +29,37 @@ function wp_list_pluck( $list, $field ) {
 function get_test_fonts() {
 	return array(
 		array(
-			'displayName' => 'Abril Text',
 			'id' => 'gjst',
 			'cssName' => 'abril-text',
-			'variants' => array(
-				'n4',
-				'i4',
-				'n6',
-				'i6',
-				'n7',
-				'i7',
-				'n8',
-				'i8',
+			'displayName' => 'Abril Text',
+			'fvds' =>
+			array (
+				'n3','i3','n4','i4','n6','i6','n7','i7','n8','i8'
 			),
-			'shortname' => 'Abril Text',
-			'smallTextLegibility' => true
+			'genericFamily' => 'sans-serif',
+			'subsets' =>
+			array (
+			),
+			'bodyText' => true,
+			'oldFvdCount' => 8,
+			'provider' => 'typekit',
+
 		),
 		array(
-			'displayName' => 'Special Adelle Web',
 			'id' => 'xxxx',
 			'cssName' => 'special-adelle-web',
-			'variants' => array(
-				'n4',
-				'i4',
-				'n7',
-				'i7',
+			'displayName' => 'Special Adelle Web',
+			'fvds' =>
+			array (
+				'n1','i1','n3','i3','n4','i4','n6','i6','n7','i7','n8','i8','n9','i9'
 			),
-			'shortname' => 'Special Adelle',
-			'smallTextLegibility' => false,
+			'genericFamily' => 'serif',
+			'subsets' =>
+			array (
+			),
+			'bodyText' => false,
+			'oldFvdCount' => 4,
+			'provider' => 'typekit',
 		),
 	);
 }
@@ -173,46 +177,6 @@ class Jetpack_Typekit_Font_Provider_Test extends PHPUnit_Framework_TestCase {
 		) );
 		\WP_Mock::onFilter( 'jetpack_fonts_list_typekit_retired' )->with( array() )->reply( array( 'gjst' ) );
 		$this->assertContains( 'gjst', $this->default_whitelist() );
-	}
-
-	public function test_render_fonts_outputs_kit_javascript() {
-		\WP_Mock::wpFunction( 'get_option', array(
-			'return' => array( 'kit_id' => 'foobar' )
-		) );
-		$jetpack_fonts = new Jetpack_Fonts();
-		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
-		$provider->render_fonts( array() );
-		$this->expectOutputRegex( '/<script type="text\/javascript" id="custom-fonts-js">/' );
-	}
-
-	public function test_render_fonts_outputs_kit_javascript_with_kit_id_in_config() {
-		\WP_Mock::wpFunction( 'get_option', array(
-			'return' => array( 'kit_id' => 'foobar' )
-		) );
-		$jetpack_fonts = new Jetpack_Fonts();
-		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
-		$provider->render_fonts( array() );
-		$this->expectOutputRegex( '/"kitId":"foobar"/' );
-	}
-
-	public function test_render_fonts_outputs_nothing_when_there_is_no_kit_id() {
-		\WP_Mock::wpFunction( 'get_option', array(
-			'return' => null
-		) );
-		$jetpack_fonts = new Jetpack_Fonts();
-		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
-		$provider->render_fonts( array() );
-		$this->expectOutputString( '' );
-	}
-
-	public function test_render_fonts_outputs_nothing_when_there_is_no_option_set() {
-		\WP_Mock::wpFunction( 'get_option', array(
-			'return' => null
-		) );
-		$jetpack_fonts = new Jetpack_Fonts();
-		$provider = new Jetpack_Typekit_Font_Provider( $jetpack_fonts );
-		$provider->render_fonts( array() );
-		$this->expectOutputString( '' );
 	}
 }
 

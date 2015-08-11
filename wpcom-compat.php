@@ -44,17 +44,3 @@ add_action( 'update_option_jetpack_fonts', 'wpcom_typekit_data_stat', 10, 2 );
 function typekit_exists_and_truthy( $array, $key ) {
 	return array_key_exists( $key, $array ) && !! $array[ $key ];
 }
-
-function wpcom_read_google_fonts_from_json( $value ) {
-	static $google;
-	if ( is_array( $google ) ) {
-		return $google;
-	}
-	$google = file_get_contents( __DIR__ . '/google.json' );
-	if ( ! $google || empty( $google ) ) {
-		return $value;
-	}
-	$google = json_decode( $google, true );
-	return $google;
-}
-add_filter( 'pre_transient_jetpack_google_fonts_list', 'wpcom_read_google_fonts_from_json' );
