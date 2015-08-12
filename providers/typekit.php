@@ -77,7 +77,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		parent::__construct( $custom_fonts );
 		$this->manager = $custom_fonts;
 		add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ) );
-		add_filter( 'jetpack_fonts_font_families_css', array( $this, 'add_typekit_fallback_css' ) );
+		add_filter( 'jetpack_fonts_font_families_css', array( $this, 'add_typekit_fallback_css' ), 10, 2 );
 	}
 
 	public function default_whitelist( $whitelist ) {
