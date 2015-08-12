@@ -97,7 +97,10 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return apply_filters( 'jetpack_fonts_enable_typekit', true );
 	}
 
-	public function add_typekit_fallback_css( $font_names ) {
+	public function add_typekit_fallback_css( $font_names, $font  ) {
+		if ( $font['provider'] === 'typekit' ) {
+			return $font_names;
+		}
 		// Typekit fallback in case the cssName is incorrect for some reason
 		if ( count( $font_names ) > 0 && ! preg_match( '/-\d"?$/', $font_names[0] ) ) {
 			$font_name = str_replace( '"', '', $font_names[0] );
