@@ -77,6 +77,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		parent::__construct( $custom_fonts );
 		$this->manager = $custom_fonts;
 		add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ) );
+		add_filter( 'jetpack_fonts_font_families_css', array( $this, 'add_typekit_fallback_css' ), 10, 2 );
 	}
 
 	public function default_whitelist( $whitelist ) {
@@ -94,6 +95,18 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 
 	public function is_active() {
 		return apply_filters( 'jetpack_fonts_enable_typekit', true );
+	}
+
+	public function add_typekit_fallback_css( $font_names, $font  ) {
+		if ( $font['provider'] === 'typekit' ) {
+			return $font_names;
+		}
+		// Typekit fallback in case the cssName is incorrect for some reason
+		if ( count( $font_names ) > 0 && ! preg_match( '/-\d"?$/', $font_names[0] ) ) {
+			$font_name = str_replace( '"', '', $font_names[0] );
+			array_push( $font_names, '"' . $font_name . '-1"');
+		}
+		return $font_names;
 	}
 
 	// TEMP
