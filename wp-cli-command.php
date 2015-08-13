@@ -54,6 +54,36 @@ class Typekit_Fonts_Command extends WP_CLI_Command {
 		}
 		WP_CLI::print_value( $data );
 	}
+
+	/**
+	 * Sets an advanced kit_id for a user.
+	 *
+	 * We don't have a UI for this any more and the feature is unsupported but if a user
+	 * unsets their kit (or we lost it in transition) it's nice to set it back.
+	 *
+	 * @subcommand set-advanced-kit
+	 *
+	 * @synopsis <kit-id> [--force=<true>]
+	 */
+	public function set_advanced_kit_id( $args, $assoc_args = array( 'force' => false ) ) {
+		$jetpack_fonts = Jetpack_Fonts::get_instance();
+		$provider = $this->provider();
+
+		// first, if they have erroneously set a kit through the standard interface, delete it.
+		if ( ! empty( $jetpack_fonts->get_fonts() ) ) {
+			if ( $assoc_args['force'] !== 'true' ) {
+				WP_CLI::warning( 'The user currently has fonts set. Run this command with `--force=true` to delete their fonts and set an advanced kit id.' );
+				WP_CLI::print_value( $jetpack_fonts->get_fonts() );
+				return;
+			} else {
+				$jetpack_fonts->save_fonts( array(), true );
+				WP_CLI::success( 'User\'s normally set fonts deleted' );
+			}
+		}
+
+		$this->provider()->set( 'advanced_kit_id', $args[0] );
+		WP_CLi::success( sprintf( 'Typekit advanced kit id of %s set for %s', $args[0], home_url() ) );
+	}
 }
 
 WP_CLI::add_command( 'typekit', 'Typekit_Fonts_Command' );
