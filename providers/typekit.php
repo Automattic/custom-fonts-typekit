@@ -98,7 +98,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	}
 
 	public function add_typekit_fallback_css( $font_names, $font  ) {
-		if ( $font['provider'] === 'typekit' ) {
+		if ( $font['provider'] !== 'typekit' ) {
 			return $font_names;
 		}
 		// Typekit fallback in case the cssName is incorrect for some reason
