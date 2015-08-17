@@ -129,10 +129,18 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			'genericFamily' => $font['css_stack'],
 			'langs' => $font['browse_info']['language'],
 			'subsets' => array(),
-			'bodyText' => in_array( 'paragraphs', $font['browse_info']['recommended_for'] ),
+			'bodyText' => $this->is_body_text( $font ),
 			'oldFvdCount' => isset( $this->old_fvd_count[ $font['id'] ] ) ? $this->old_fvd_count[ $font['id'] ] : false
 		);
 		return $formatted;
+	}
+
+	private function is_body_text( $font ) {
+		// these are whitelisted as body fonts since the API doesn't report them as such but really they are
+		$whitelist = array(
+			'plns', // Tinos
+		);
+		return in_array( $font['id'], $whitelist ) || in_array( 'paragraphs', $font['browse_info']['recommended_for'] );
 	}
 
 	/**
