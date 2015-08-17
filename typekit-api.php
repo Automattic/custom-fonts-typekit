@@ -189,7 +189,12 @@ class TypekitApi {
 	}
 
 	/**
-	 * Gets an array of fvds present in a given font family.
+	 * Gets an array of fvds present in a given font family. Depending on the
+	 * family and the `$reduce` setting, may reduce the fvds to the four most
+	 * common, although that may not be `n4, i4, n7, i7` if the family doesn't
+	 * support those. In that case, we will use the four closest fvds following
+	 * the rules used by browsers:
+	 * https://developer.mozilla.org/en/docs/Web/CSS/font-weight#Fallback
 	 *
 	 * @param array $family An associative array of font family data.
 	 * @param bool  $reduce Reduce to "regular", "bold", "italic", "bold italic" variations
@@ -197,20 +202,152 @@ class TypekitApi {
 	 * @return array Returns an array of strings for the fvds defined in this font family.
 	 */
 	private static function get_family_fvds( $family, $reduce = false ) {
-		$variations = array();
-		if ( isset( $family['fvds'] ) ) {
-			$variations = $family['fvds'];
-			// keep big families "regular" when activating.
-			if ( $reduce && count( $variations ) > 4 ) {
-				$allowed = array( 'n4', 'n7', 'i4', 'i7' );
-				foreach( $variations as $i => $variation ) {
-					if ( ! in_array( $variation, $allowed ) ) {
-						unset( $variations[ $i ] );
-					}
-				}
+		if ( ! isset( $family['fvds'] ) || ! is_array( $family['fvds'] ) ) {
+			return array();
+		}
+		$variations = $family['fvds'];
+		if ( $reduce !== true || count( $variations ) <= 4 ) {
+			return $variations;
+		}
+
+		$nearest_variations = array();
+		$standard_variations = array( 'n4', 'n7', 'i4', 'i7' );
+		foreach( $standard_variations as $standard_fvd ) {
+			if ( in_array( $standard_fvd, $variations ) ) {
+				array_push( $nearest_variations, $standard_fvd );
+			} else {
+				array_push( $nearest_variations, self::find_nearest_fvd( $standard_fvd, $variations ) );
 			}
 		}
-		return $variations;
+		return $nearest_variations;
+	}
+
+	/**
+	 * Searches an array of available fvds and returns the one that most closely
+	 * matches the target, following the rules in
+	 * https://developer.mozilla.org/en/docs/Web/CSS/font-weight#Fallback
+	 *
+	 * @param string $target_fvd An fvd to match or get close to
+	 * @param array $available_fvds An array of strings (fvds) to search
+	 * @return string Thee closest matching fvd
+	 */
+	private static function find_nearest_fvd( $target_fvd, $available_fvds ) {
+		if ( in_array( $target_fvd, $available_fvds ) ) {
+			return $target_fvd;
+		}
+
+		$target_weight = self::get_weight_from_fvd( $target_fvd );
+		$closest_darker = self::get_closest_darker_weight( $target_fvd, $available_fvds );
+		$closest_lighter = self::get_closest_lighter_weight( $target_fvd, $available_fvds );
+
+		// If a weight greater than 500 is given, the closest available darker
+		// weight is used (or, if there is none, the closest available lighter
+		// weight).
+		if ( $target_weight > 500 ) {
+			if ( $closest_darker ) {
+				return self::adjust_fvd_weight( $target_fvd, $closest_darker );
+			}
+			return self::adjust_fvd_weight( $target_fvd, $closest_lighter );
+		}
+
+		// If a weight less than 400 is given, the closest available lighter weight
+		// is used (or, if there is none, the closest available darker weight).
+		if ( $target_weight < 400 ) {
+			if ( $closest_lighter ) {
+				return self::adjust_fvd_weight( $target_fvd, $closest_lighter );
+			}
+			return self::adjust_fvd_weight( $target_fvd, $closest_darker );
+		}
+
+		// If a weight of exactly 400 is given, then 500 is used. If 500 is not
+		// available, then the heuristic for font weights less than 500 is used.
+		if ( $target_weight === 400 ) {
+			$five_hundred = self::adjust_fvd_weight( $target_fvd, 500 );
+			if ( in_array( $five_hundred, $available_fvds ) ) {
+				return $five_hundred;
+			}
+			return self::adjust_fvd_weight( $target_fvd, $closest_lighter );
+		}
+
+		// If a weight of exactly 500 is given, then 400 is used. If 400 is not
+		// available, then the heuristic for font weights less than 400 is used.
+		if ( $target_weight === 500 ) {
+			$four_hundred = self::adjust_fvd_weight( $target_fvd, 400 );
+			if ( in_array( $four_hundred, $available_fvds ) ) {
+				return $four_hundred;
+			}
+			return self::adjust_fvd_weight( $target_fvd, $closest_lighter );
+		}
+
+		// We should never end up here
+		return 'n4';
+	}
+
+	private static function get_closest_darker_weight( $target_fvd, $available_fvds ) {
+		$target_weight = self::get_weight_from_fvd( $target_fvd );
+		$available_weights = array_map( function( $fvd ) {
+			return self::get_weight_from_fvd( $fvd );
+		}, $available_fvds );
+		sort( $available_weights );
+
+		// Get the next darkest weight
+		$closest = $target_weight;
+		foreach( $available_weights as $weight ) {
+			if ( $weight > $closest ) {
+				$closest = $weight;
+				break;
+			}
+		}
+
+		// If there is no darker weight, return null
+		if ( $closest === $target_weight ) {
+			$closest = null;
+		}
+		return $closest;
+	}
+
+	private static function get_closest_lighter_weight( $target_fvd, $available_fvds ) {
+		$target_weight = self::get_weight_from_fvd( $target_fvd );
+		$available_weights = array_map( function( $fvd ) {
+			return self::get_weight_from_fvd( $fvd );
+		}, $available_fvds );
+		rsort( $available_weights );
+
+		// Get the next lighter weight
+		$closest = $target_weight;
+		foreach( $available_weights as $weight ) {
+			if ( $weight < $closest ) {
+				$closest = $weight;
+				break;
+			}
+		}
+
+		// If there is no lighter weight, return null
+		if ( $closest === $target_weight ) {
+			$closest = null;
+		}
+		return $closest;
+	}
+
+	private static function adjust_fvd_weight( $fvd, $weight ) {
+		$style = substr( $fvd, 0, 1 );
+		$weight = substr( strval( $weight ), 0, 1 );
+		return $style . $weight;
+	}
+
+	private static function get_weight_from_fvd( $fvd ) {
+		if ( ! class_exists( 'kevintweber\KtwFvd\Fvd' ) ) {
+			require_once( __DIR__ . '/lib/Fvd.php' );
+		}
+		try {
+			$parsed = kevintweber\KtwFvd\Fvd::Parse( $fvd );
+			if ( $parsed && $parsed[ 'font-weight' ] ) {
+				return intval( $parsed[ 'font-weight' ], 10 );
+			}
+		} catch( Exception $e ) {
+			// fall back to the default
+		}
+		return 400;
 	}
 
 	/**
