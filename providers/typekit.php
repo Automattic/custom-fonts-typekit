@@ -350,10 +350,19 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			if ( ! $rule_type ) {
 				continue;
 			}
-			$api_fonts[] = array(
+			$api_font = array(
 				'id' => $font['id'],
 				'fvd' => $rule_type['fvdAdjust'] && isset( $font['currentFvd'] ) ? $font['currentFvd'] : null
 			);
+
+			// if we don't have an fvd for a font that adjusts the fvd, pick the closest to n4
+			if ( $rule_type['fvdAdjust'] && $api_font['fvd'] === null ) {
+				$font = $this->get_font( $font['id'] );
+				$this->require_api();
+				$api_font['fvd'] = TypekitApi::find_nearest_fvd( 'n4', $font['fvds'] );
+			}
+
+			$api_fonts[] = $api_font;
 		}
 		return $api_fonts;
 	}

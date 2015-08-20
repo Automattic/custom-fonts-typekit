@@ -231,7 +231,7 @@ class TypekitApi {
 	 * @param array $available_fvds An array of strings (fvds) to search
 	 * @return string Thee closest matching fvd
 	 */
-	private static function find_nearest_fvd( $target_fvd, $available_fvds ) {
+	public static function find_nearest_fvd( $target_fvd, $available_fvds ) {
 		if ( in_array( $target_fvd, $available_fvds ) ) {
 			return $target_fvd;
 		}
