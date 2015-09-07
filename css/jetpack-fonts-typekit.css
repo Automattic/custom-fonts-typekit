@@ -21,11 +21,11 @@
   float: right;
   padding-left: 20px;
   margin: 30px 15px 20px 0;
-  opacity: .75;
   font-size: 11px;
+  color: #87a6bc; /* Base Gray */
 }
 .jetpack-fonts__typekit-credit:focus, .jetpack-fonts__typekit-credit:hover {
-  opacity: 1;
+  color: #4f748e; /* Base Gray, Darken 20% */
 }
 
 @media print, (-o-min-device-pixel-ratio: 5/4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
