@@ -235,7 +235,7 @@
 
 		// to match up with previous images. "Web Pro" is ugly.
 		getName: function() {
-			return this.model.get( 'displayName' ).replace( /Web Pro$/, '' );
+			return this.model.get( 'displayName' ).replace( /Web Pro$/, '' ).replace( /[0-9]/g, '' );
 		}
 	});
 
