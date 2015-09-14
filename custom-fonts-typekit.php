@@ -259,7 +259,7 @@ EMBED;
 			return;
 		}
 		$deps = is_admin()
-			? array( 'jetpack-fonts' )
+			? array( 'typekit-preview', 'jetpack-fonts', 'underscore' )
 			: array( 'typekit-preview', 'jetpack-fonts-preview' );
 
 		wp_register_script( 'typekit-preview', '//use.typekit.net/previewkits/pk-v1.js', array(), '20150417', true );
@@ -270,7 +270,6 @@ EMBED;
 				'auth_id' => self::PREVIEWKIT_AUTH_ID,
 				'auth_token' => self::PREVIEWKIT_PRIMARY_AUTH_TOKEN
 			),
-			'imageDir' => plugins_url( '/img/', __FILE__ ),
 			'webKitShim' => 'https://wordpress.com/wp-content/mu-plugins/custom-fonts/webkit-shim.html',
 			'isAdmin' => is_admin(),
 			'badge' => array(

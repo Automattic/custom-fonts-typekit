@@ -1,4 +1,4 @@
-/* globals jQuery, TypekitPreview */
+/* globals jQuery, TypekitPreview, _ */
 ( function( api ) {
 	if ( ! api ) {
 		return;
@@ -16,7 +16,9 @@
 		timeout,
 		loadingClass = 'wf-loading',
 		activeClass = 'wf-active',
-		dataType = 'TypekitPreviewShim';
+		dataType = 'TypekitPreviewShim',
+		toLoadQueue = [],
+		loadQueuedFontsThrottled;
 
 	// This will be called in the context of the preview window iframe.
 	function addFontToPreview( font ) {
@@ -33,6 +35,75 @@
 		}
 	}
 
+
+
+	// This is called in the admin to render the menu item
+	function addFontToControls( font ) {
+		if ( ~ loadedFontIds.indexOf( font.id ) ) {
+			return;
+		}
+		font = formatFont( font );
+		// technically they're not loaded yet but this prevents dupes
+		loadedFontIds.push( font.id );
+		// loads [A-z0-9], no OpenType features
+		font.primer = '9f562d6ca39adae019ef00367c3f3deae3c8627f22e3b025ba425fbc2aac6431';
+		// we only want the closest weight to n4
+		font.variations = [ pickFvd( font.variations ) ];
+		// queue it and call it
+		toLoadQueue.push( font );
+		// once we hit this many fonts, we have to empty the queue
+		if ( toLoadQueue.length >= 45 ) {
+			loadFontsFromQueue();
+		} else {
+			loadQueuedFontsThrottled();
+		}
+
+	}
+
+	function loadFontsFromQueue() {
+		var queue;
+		// first let's see if we have a queue
+		if ( ! toLoadQueue.length ) {
+			return;
+		}
+		// take control
+		queue = toLoadQueue;
+		toLoadQueue = [];
+
+		// Load 'em
+		TypekitPreview.load( queue, { classes: false, events: false } );
+	}
+
+	loadQueuedFontsThrottled = _.throttle( loadFontsFromQueue, 500 );
+
+	function pickFvd( variations ) {
+		// algorithm here: https://developer.mozilla.org/en/docs/Web/CSS/font-weight#Fallback
+		// first try n4
+		var i = 4;
+		if ( _.contains( variations, 'n' + i ) ) {
+			return 'n' + i;
+		}
+		// next we try n5
+		i = 5;
+		if ( _.contains( variations, 'n' + i ) ) {
+			return 'n' + i;
+		}
+		// now we go lighter, to 3-1
+		for ( i = 3; i >= 1; i-- ) {
+			if ( _.contains( variations, 'n' + i ) ) {
+				return 'n' + i;
+			}
+		}
+		// now darker, 6-9
+		for ( i = 6; i <= 9; i++ ) {
+			if ( _.contains( variations, 'n' + i ) ) {
+				return 'n' + i;
+			}
+		}
+		// I guess just return n4 anyway
+		return 'n4';
+	}
+
 	// get ready for previewing, either with `TypekitPreview` or the Webkit Shim
 	if ( ! opts.isAdmin ) {
 		if ( isWebkit ) {
@@ -40,6 +111,9 @@
 		} else {
 			enableTypekitPreview();
 		}
+	} else {
+		// admin doesn't need shim
+		enableTypekitPreview();
 	}
 
 	function setupWebKit() {
@@ -139,53 +213,6 @@
 	}
 
 	var TypekitProviderView = api.JetpackFonts.ProviderView.extend({
-
-		imageDir: opts.imageDir,
-		slotHeight: 128,
-		preloaded: false,
-
-		mouseenter: function() {
-			this.setImageFile( true );
-		},
-
-		mouseleave: function () {
-			this.setImageFile();
-		},
-
-		calculateBackgroundPosition: function( isActive ) {
-			var position = 8;
-			if ( isActive ) {
-				position = position - this.slotHeight / 2;
-			}
-			return position;
-		},
-
-		calculateBackgroundHeight: function( fvds, oldFvds ) {
-			var slots = oldFvds || fvds;
-			return slots * this.slotHeight - 32;
-		},
-
-		findImageFile: function( hover ) {
-			var prefix = hover ? 'light' : 'dark';
-			var id = this.model.get( 'id' );
-			var hiRes = ( window.devicePixelRatio && window.devicePixelRatio >= 1.25 ) ? '2x': '1x';
-			var dir = prefix + '-' + hiRes;
-			return this.imageDir + dir + '/font_' + id + '.png';
-		},
-
-		setImageFile: function( hover ) {
-			this.$el.css( 'backgroundImage', 'url(' + this.findImageFile( hover ) + ')' );
-		},
-
-		maybePreloadImage: function() {
-			if ( this.preloaded ) {
-				return;
-			}
-			var image = new Image();
-			image.src = this.findImageFile();
-			this.preloaded = true;
-		},
-
 		addLogo: function() {
 			if ( this.$el.find( '.jetpack-fonts__typekit-option-logo' ).length > 0 ) {
 				return;
@@ -194,20 +221,21 @@
 		},
 
 		render: function() {
-			this.$el.addClass( 'jetpack-fonts__typekit-option' );
+			addFontToControls( this.model.toJSON() );
+			this.$el.text( this.getName() ).addClass( 'jetpack-fonts__typekit-option' );
 			this.addLogo();
-			this.maybePreloadImage();
-			this.setImageFile();
-
-			var position = this.calculateBackgroundPosition(
-				this.currentFont && this.currentFont.get( 'id' ) === this.model.get( 'id' )
-			);
-			this.$el.css( 'background-position', '0px ' + position.toString() + 'px' );
-
-			var height = this.calculateBackgroundHeight( this.model.get( 'fvds' ).length, this.model.get( 'oldFvdCount' ) );
-			this.$el.css( 'background-size', 'auto ' + height.toString() + 'px' );
-
+			this.$el.css( 'font-family', '"' + this.model.get( 'cssName' ) + '"' );
+			if ( this.currentFont && this.currentFont.get( 'id' ) === this.model.get( 'id' ) ) {
+				this.$el.addClass( 'active' );
+			} else {
+				this.$el.removeClass( 'active' );
+			}
 			return this;
+		},
+
+		// to match up with previous images. "Web Pro" is ugly.
+		getName: function() {
+			return this.model.get( 'displayName' ).replace( /Web Pro$/, '' ).replace( /[0-9]/g, '' );
 		}
 	});
 

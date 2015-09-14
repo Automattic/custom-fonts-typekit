@@ -52,24 +52,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	);
 
 	/**
-	 * Because
-	 * @var array
-	 */
-	protected $old_fvd_count = array(
-		'gjst' => 8, 'gmsj' => 4, 'sskw' => 2, 'fbln' => 4, 'nlwf' => 4, 'tsyb' => 4,
-		'yvxn' => 12, 'ymzk' => 4, 'vybr' => 4, 'wgzc' => 4, 'hrpf' => 8, 'klcb' => 1,
-		'drjf' => 2, 'gkmg' => 2, 'vqgt' => 1, 'pcpv' => 4, 'gckq' => 4, 'snqb' => 4,
-		'gwsq' => 1, 'rlxq' => 4, 'dbqg' => 4, 'fytf' => 1, 'brwr' => 4, 'rrtc' => 4,
-		'rgzb' => 1, 'sbsp' => 1, 'xwmz' => 4, 'ttyp' => 4, 'pzyv' => 2, 'twbx' => 1,
-		'ftnk' => 10, 'lmgn' => 2, 'gmvz' => 1, 'cwfk' => 14, 'jgfl' => 2, 'vyvm' => 2,
-		'mrnw' => 2, 'rvnd' => 4, 'mvgb' => 4, 'rshz' => 4, 'kmpm' => 1, 'zsyz' => 4,
-		'lcny' => 4, 'nljb' => 8, 'htrh' => 4, 'ycvr' => 4, 'llxb' => 4, 'mpmb' => 16,
-		'jtcj' => 10, 'rfss' => 2, 'xcqq' => 4, 'vcsm' => 4, 'ccqc' => 4, 'nqdy' => 1,
-		'snjm' => 2, 'rtgb' => 4, 'hzlv' => 2, 'wbmp' => 4, 'mkrf' => 1, 'qlvb' => 4,
-		'bhyf' => 12, 'yrwy' => 2, 'fkjd' => 6, 'plns' => 4, 'jhhw' => 4
-	);
-
-	/**
 	 * Constructor
 	 * @param Jetpack_Fonts $custom_fonts Manager instance
 	 */
@@ -130,7 +112,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			'langs' => $font['browse_info']['language'],
 			'subsets' => array(),
 			'bodyText' => $this->is_body_text( $font ),
-			'oldFvdCount' => isset( $this->old_fvd_count[ $font['id'] ] ) ? $this->old_fvd_count[ $font['id'] ] : false
 		);
 		return $formatted;
 	}
