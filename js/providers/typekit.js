@@ -42,22 +42,30 @@
 		if ( ~ loadedFontIds.indexOf( font.id ) ) {
 			return;
 		}
+		var primer = getPrimer( font.displayName );
 		font = formatFont( font );
 		// technically they're not loaded yet but this prevents dupes
 		loadedFontIds.push( font.id );
-		// loads [A-z0-9], no OpenType features
-		font.primer = '9f562d6ca39adae019ef00367c3f3deae3c8627f22e3b025ba425fbc2aac6431';
+		// loads [A-z] or [A-z0-9] if needed, no OpenType features
+		font.primer = primer;
 		// we only want the closest weight to n4
 		font.variations = [ pickFvd( font.variations ) ];
 		// queue it and call it
 		toLoadQueue.push( font );
 		// once we hit this many fonts, we have to empty the queue
-		if ( toLoadQueue.length >= 45 ) {
+		if ( toLoadQueue.length >= 20 ) {
 			loadFontsFromQueue();
 		} else {
 			loadQueuedFontsThrottled();
 		}
 
+	}
+
+	function getPrimer( name ) {
+		if ( /[0-9]/.test( name ) ) {
+			return 'd6e278f920ed85d9792cfa31ee5cd5293abe11cd4dbd3c56f22b3a7112a92e0e';
+		}
+		return '9f562d6ca39adae019ef00367c3f3deae3c8627f22e3b025ba425fbc2aac6431';
 	}
 
 	function loadFontsFromQueue() {
@@ -235,7 +243,7 @@
 
 		// to match up with previous images. "Web Pro" is ugly.
 		getName: function() {
-			return this.model.get( 'displayName' ).replace( /Web Pro$/, '' ).replace( /[0-9]/g, '' );
+			return this.model.get( 'displayName' ).replace( /Web Pro$/, '' );
 		}
 	});
 
