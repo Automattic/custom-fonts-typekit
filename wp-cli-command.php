@@ -38,7 +38,7 @@ class Typekit_Fonts_Command extends WP_CLI_Command {
 	 * Outputs kit data from typekit, using the current blog's kit by default.
 	 * @subcommand kit-data
 	 *
-	 * @synopsis [<kit_id>]
+	 * @synopsis [<kit-id>]
 	 */
 	public function kit_data( $args, $assoc_args ) {
 		$kit_id = isset( $args[0] )
@@ -47,8 +47,7 @@ class Typekit_Fonts_Command extends WP_CLI_Command {
 		if ( ! $kit_id ) {
 			WP_CLI::error( 'No Kit found' );
 		}
-		require_once __DIR__ . '/typekit-api.php';
-		$data = TypekitApi::get_published_kit_info( $kit_id );
+		$data = $provider->get_kit_info( $kit_id );
 		if ( is_wp_error( $data ) ) {
 			WP_CLI::error( sprintf( 'Error code %s with message: %s', $data->get_error_code(), $data->get_error_message() ) );
 		}
@@ -83,6 +82,91 @@ class Typekit_Fonts_Command extends WP_CLI_Command {
 
 		$this->provider()->set( 'advanced_kit_id', $args[0] );
 		WP_CLi::success( sprintf( 'Typekit advanced kit id of %s set for %s', $args[0], home_url() ) );
+	}
+
+	/**
+	 * Check if the currently published kit matches the saved font values
+	 *
+	 * @subcommand check-kit
+	 */
+	public function check_kit( $args, $assoc_args ) {
+		$jetpack_fonts = Jetpack_Fonts::get_instance();
+		$provider = $this->provider();
+		$set_fonts = $jetpack_fonts->get_fonts();
+		$kit_id = $provider->get_kit_id();
+		$kit_data = $kit_id ? $provider->get_kit_info( $kit_id ) : false;
+
+		if ( ! $set_fonts ) {
+			// No saved fonts
+			if ( $kit_data ) {
+				// orphaned kit
+				return WP_CLI::warning( 'No fonts set, but there is a kit.' );
+			} else {
+				// no kit
+				return WP_CLI::success( 'No fonts set and no kit. Looks good.' );
+			}
+		} else {
+			// Has saved fonts
+			if ( $this->any_typekit_fonts( $set_fonts ) && ! $kit_data ) {
+				return WP_CLI::success( 'No typekit fonts and no kit.' );
+			}
+			if ( $kit_data ) {
+				if ( ! $this->any_typekit_fonts( $set_fonts ) ) {
+					return WP_CLI::warning( 'There is a kit but no Typekit fonts set.' );
+				}
+				if ( $this->is_kit_data_and_saved_fonts_matching( $kit_data, $set_fonts) ) {
+					$this->print_data( $kit_data, $set_fonts );
+					WP_CLI::success( 'The saved Typekit fonts and the kit are a match.' );
+					WP_CLI::warning( 'Note that variations are not strictly checked. The data is above.' );
+					return;
+				} else {
+					$this->print_data( $kit_data, $set_fonts );
+					WP_CLI::warning( 'The saved Typekit fonts and the kit are mistmatched. The data is above.' );
+					return $this->print_fixer( $assoc_args );
+				}
+			}
+		}
+		WP_CLI::error( 'Our checks failed to account for this situation.' );
+	}
+
+	private function print_fixer( $assoc_args ) {
+		WP_CLI::line( sprintf( "To fix, use:\nwp --url=%s typekit republish", preg_replace( '/^https?:\/\//', '', home_url() ) ) );
+	}
+
+	private function print_data( $kit_data, $set_fonts ) {
+		WP_CLI::print_value( "\nKit Data:\n" );
+		WP_CLI::print_value( $kit_data['kit']['families'] );
+		WP_CLI::print_value( "\nSaved Typekit Fonts:\n" );
+		WP_CLI::print_value( wp_list_filter( $set_fonts, array( 'provider' => 'typekit' ) ) );
+	}
+
+	private function any_typekit_fonts( $fonts ) {
+		if ( ! $fonts ) {
+			return false;
+		}
+		$typekit_fonts = wp_list_filter( $fonts, array( 'provider' => 'typekit' ) );
+		return count( $typekit_fonts ) > 0;
+	}
+
+	private function is_kit_data_and_saved_fonts_matching( $kit_data, $fonts ) {
+		$kit_families = $kit_data['kit']['families'];
+		$kit_ids = wp_list_pluck( $kit_families, 'id' );
+		$typekit_fonts = wp_list_filter( $fonts, array( 'provider' => 'typekit' ) );
+		$saved_font_ids = wp_list_pluck( $typekit_fonts, 'id' );
+		// we need to compare both directions
+		// first kit to saved
+		foreach( $kit_ids as $id ) {
+			if ( ! in_array( $id, $saved_font_ids ) ) {
+				return false;
+			}
+		}
+		// now saved to kit
+		foreach( $saved_font_ids as $id ) {
+			if ( ! in_array( $id, $kit_ids ) ) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 
