@@ -38,7 +38,7 @@ class Typekit_Fonts_Command extends WP_CLI_Command {
 	 * Outputs kit data from typekit, using the current blog's kit by default.
 	 * @subcommand kit-data
 	 *
-	 * @synopsis [<kit_id>]
+	 * @synopsis [<kit-id>]
 	 */
 	public function kit_data( $args, $assoc_args ) {
 		$kit_id = isset( $args[0] )
