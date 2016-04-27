@@ -418,7 +418,13 @@ class Typekit_Theme_Support {
 
 		if ( get_subscription( $purchase_meta['blog_id'], 0, WPCOM_CUSTOM_DESIGN_PRODUCT ) ) {
 			// Extend sub to expire one year from today, if it expires earlier
-			WPCOM_Store::renew( $purchase_meta['blog_id'], $purchase_meta['user_id'], WPCOM_CUSTOM_DESIGN_PRODUCT, $purchase_meta['txn_id'], $message );
+			WPCOM_Store::renew_wpcom_subscriptions( [
+				'blog_id' => $purchase_meta['blog_id'],
+				'user_id' => $purchase_meta['user_id'],
+				'product_id' => WPCOM_CUSTOM_DESIGN_PRODUCT,
+				'txn_id' => $purchase_meta['txn_id'],
+				'message' => $message
+			] );
 
 			bump_stats_extra( 'cd-typekit-free-year-bump', $stylesheet );
 		} else {
