@@ -146,17 +146,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	}
 
 	public function get_kit_id() {
-		// There was a period after the WP 4.4 deploy in [129468] and [129707] where
-		// users with an existing Typekit kit_id who removed all typekit fonts would have an orphaned
-		// kit, leading to 1) 404 calls to the kit on the frontend and 2) inability to later publish
-		// a kit, since it would attempt to add to a now-deleted kit on Typekit servers
-		$kit_id = $this->get( 'kit_id' );
-		if ( $kit_id && ! $this->any_typekit_fonts_set() ) {
-			$this->delete( 'kit_id' );
-			$kit_id = false;
-			bump_stats_extras( 'typekit-delete-orphaned-kit' );
-		}
-		return $kit_id;
+		return $this->get( 'kit_id' );
 	}
 
 	private function any_typekit_fonts_set() {
