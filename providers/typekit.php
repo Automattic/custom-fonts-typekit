@@ -18,7 +18,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		'ftnk', 'lmgn', 'gmvz', 'cwfk', 'jgfl', 'vyvm', 'mrnw', 'rvnd', 'mvgb', 'rshz',
 		'kmpm', 'zsyz', 'lcny', 'nljb', 'htrh', 'ycvr', 'llxb', 'mpmb', 'jtcj', 'rfss',
 		'xcqq', 'vcsm', 'ccqc', 'nqdy', 'snjm', 'rtgb', 'hzlv', 'wbmp', 'mkrf', 'qlvb',
-		'bhyf', 'yrwy', 'fkjd', 'plns', 'jhhw'
+		'bhyf', 'yrwy', 'fkjd', 'plns', 'jhhw', 'wktd'
 	);
 
 	/**
@@ -49,6 +49,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		'xcqq', // PT Serif
 		'bhyf', // Source Sans Pro
 		'jhhw', // Ubuntu
+		'wbmp', // Skolar Web (became Skolar Latin) http://wp.me/p1hsAU-71
 	);
 
 	/**
