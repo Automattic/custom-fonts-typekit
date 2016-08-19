@@ -159,10 +159,17 @@
 	function addFontStylesheet( data ) {
 		// remove loading class, add loaded class
 		$html.removeClass( loadingClass ).addClass( activeClass );
-		$( '<link />', { rel: 'stylesheet', href: data.styleURL } ).appendTo( 'head' );
-		$.each( data.fonts, function( i,font ){
+		// add styles
+		if ( data.styleURL ) {
+			$( '<link />', { rel: 'stylesheet', href: data.styleURL } ).appendTo( 'head' );
+		}
+		if ( data.styleCss ) {
+			$( '<style type="text/css">' + data.styleCss + '</style>' ).appendTo( 'head' );
+		}
+		// mark styles as loaded
+		$.each( data.fonts, function( i,font ) {
 			loadedFontIds.push( font.id );
-		});
+		} );
 	}
 
 	/**
