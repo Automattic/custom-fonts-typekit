@@ -269,6 +269,7 @@
 			return;
 		}
 		badge = $( '<a />', {
+			target: '_top',
 			href: opts.badge.url,
 			text: opts.badge.text,
 			'class': 'jetpack-fonts__typekit-credit'
