@@ -30,14 +30,10 @@ Author URI: http://automattic.com/
  * **********************************************************************
  */
 
-if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
-	define( 'WPCOM_TYPEKIT_API_TOKEN', '83285b026d39a1de4d36810211436d39574f0cf4' );
-}
-
 class Jetpack_Fonts_Typekit {
 
 	const PREVIEWKIT_AUTH_ID = 'wp';
-	const PREVIEWKIT_PRIMARY_AUTH_TOKEN = '3bb2a6e53c9684ffdc9a9aff185b2a62b09b6f5189114fc2b7a762d37126575957cc2be9ed2cf64258c2828e5d92d94602695c102ffcecb6fa701fe59ba9e9fee2253aa8ba8e355def1b980688bb77aa2d22dba28934c842d6375ecd';
+	const PREVIEWKIT_PRIMARY_AUTH_TOKEN = WPCOM_TYPEKIT_PREVIEWKIT_TOKEN;
 
 	/**
 	 * Remembers if an option that requires the kit to be republished has been
