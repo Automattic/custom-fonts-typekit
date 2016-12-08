@@ -266,6 +266,8 @@ EMBED;
 				'auth_id' => self::PREVIEWKIT_AUTH_ID,
 				'auth_token' => self::PREVIEWKIT_PRIMARY_AUTH_TOKEN
 			),
+			// in 4.7, the preview is no longer a src-less iframe, so the shim won't be needed
+			'needsShim' => ! method_exists( 'WP_Customize_Manager', 'changeset_data' ),
 			'webKitShim' => 'https://wordpress.com/wp-content/mu-plugins/custom-fonts/webkit-shim.html',
 			'isAdmin' => is_admin(),
 			'badge' => array(

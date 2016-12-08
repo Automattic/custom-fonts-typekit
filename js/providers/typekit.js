@@ -9,6 +9,7 @@
 		loadedFontIds = [],
 		opts = window._JetpackFontsTypekitOptions,
 		isWebkit = /webkit/.test( window.navigator.userAgent.toLowerCase() ),
+		needsShim = opts.needsShim && isWebkit,
 		iframeHelper,
 		isShimLoaded = false,
 		toLoadInShim = [],
@@ -28,7 +29,7 @@
 
 		font = formatFont( font );
 
-		if ( isWebkit ) {
+		if ( needsShim ) {
 			loadViaShim( font );
 		} else {
 			loadFont( font );
@@ -114,7 +115,7 @@
 
 	// get ready for previewing, either with `TypekitPreview` or the Webkit Shim
 	if ( ! opts.isAdmin ) {
-		if ( isWebkit ) {
+		if ( needsShim ) {
 			setupWebKit();
 		} else {
 			enableTypekitPreview();
