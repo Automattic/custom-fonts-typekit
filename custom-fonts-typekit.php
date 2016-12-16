@@ -30,6 +30,10 @@ Author URI: http://automattic.com/
  * **********************************************************************
  */
 
+if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
+	require __DIR__ . '/non-dotcom-shim.php';
+}
+
 class Jetpack_Fonts_Typekit {
 
 	const PREVIEWKIT_AUTH_ID = 'wp';
