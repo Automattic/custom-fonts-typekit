@@ -33,7 +33,6 @@ Author URI: http://automattic.com/
 class Jetpack_Fonts_Typekit {
 
 	const PREVIEWKIT_AUTH_ID = 'wp';
-	const PREVIEWKIT_PRIMARY_AUTH_TOKEN = WPCOM_TYPEKIT_PREVIEWKIT_TOKEN;
 
 	/**
 	 * Remembers if an option that requires the kit to be republished has been
@@ -44,6 +43,10 @@ class Jetpack_Fonts_Typekit {
 	public static $republish_kit_on_shutdown = false;
 
 	public static function init() {
+		// won't work without it
+		if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return;
+		}
 		add_action( 'customize_register', array( __CLASS__, 'maybe_override_for_advanced_mode' ), 20 );
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 		add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
@@ -264,7 +267,7 @@ EMBED;
 		wp_localize_script( 'jetpack-fonts-typekit', '_JetpackFontsTypekitOptions', array(
 			'authentication' => array(
 				'auth_id' => self::PREVIEWKIT_AUTH_ID,
-				'auth_token' => self::PREVIEWKIT_PRIMARY_AUTH_TOKEN
+				'auth_token' => self::get_auth_token()
 			),
 			// in 4.7, the preview is no longer a src-less iframe, so the shim won't be needed
 			'needsShim' => ! method_exists( 'WP_Customize_Manager', 'changeset_data' ),
@@ -279,6 +282,39 @@ EMBED;
 		if ( is_admin() ) {
 			wp_enqueue_style( 'jetpack-fonts-typekit', plugins_url( 'css/jetpack-fonts-typekit.css', __FILE__ ), array(), '20150501', 'screen' );
 		}
+	}
+
+	/**
+	 * Gets a TypekitPreview auth token, either the universal one for *.wordpress.com,
+	 * or a temporary one from their API
+	 * @return string  Auth token
+	 */
+	private static function get_auth_token() {
+		if ( defined( 'IS_WPCOM' ) && IS_WPCOM ) {
+			return WPCOM_TYPEKIT_PREVIEWKIT_TOKEN;
+		}
+
+		// have one?
+		$maybe_token = get_transient( 'typekit_previewkit_token' );
+		if ( $maybe_token ) {
+			return $maybe_token;
+		}
+
+		// nope, get one
+		$response = Jetpack_Fonts::get_instance()->get_provider( 'typekit' )->get_previewkit_token();
+		// fail silently, I guess
+		if ( is_wp_error( $response ) ) {
+			return '';
+		}
+
+		// ok store it plz
+		$token = $response['auth_token'];
+		// shave an hour off the actual expiry, no surprises
+		$expiry = strtotime( $response['expires_at'] ) - time() - HOUR_IN_SECONDS;
+		set_transient( 'typekit_previewkit_token', $token, $expiry );
+
+		// token token
+		return $token;
 	}
 
 	/**
