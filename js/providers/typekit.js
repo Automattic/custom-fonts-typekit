@@ -8,16 +8,10 @@
 		loggedIn = false,
 		loadedFontIds = [],
 		opts = window._JetpackFontsTypekitOptions,
-		isWebkit = /webkit/.test( window.navigator.userAgent.toLowerCase() ),
-		needsShim = opts.needsShim && isWebkit,
-		iframeHelper,
-		isShimLoaded = false,
-		toLoadInShim = [],
 		$html = $( 'html' ),
 		timeout,
 		loadingClass = 'wf-loading',
 		activeClass = 'wf-active',
-		dataType = 'TypekitPreviewShim',
 		toLoadQueue = [],
 		loadQueuedFontsThrottled;
 
@@ -28,12 +22,7 @@
 		}
 
 		font = formatFont( font );
-
-		if ( needsShim ) {
-			loadViaShim( font );
-		} else {
-			loadFont( font );
-		}
+		loadFont( font );
 	}
 
 
@@ -113,49 +102,8 @@
 		return 'n4';
 	}
 
-	// get ready for previewing, either with `TypekitPreview` or the Webkit Shim
-	if ( ! opts.isAdmin ) {
-		if ( needsShim ) {
-			setupWebKit();
-		} else {
-			enableTypekitPreview();
-		}
-	} else {
-		// admin doesn't need shim
-		enableTypekitPreview();
-	}
-
-	function setupWebKit() {
-		var url = opts.webKitShim + '?' + $.param( opts.authentication );
-		iframeHelper = $( '<iframe id="webkit-iframe-shim" src="' + url + '" />' )
-			.css( {width: 0, height: 0} ).appendTo( 'body' ).get( 0 );
-
-		$( iframeHelper ).load( function(){
-			isShimLoaded = true;
-			// clear the loading queue, if any
-			if ( toLoadInShim.length ) {
-				loadViaShim( toLoadInShim );
-				toLoadInShim = [];
-			}
-		});
-
-		$( window ).on( 'message', function( ev ) {
-			ev = ev.originalEvent;
-			if ( ! /wordpress\.com$/.test( ev.origin ) || ev.data[0] !== '{' ) {
-				return;
-			}
-			var data = JSON.parse( ev.data );
-			if ( data.type !== dataType ) {
-				return;
-			}
-
-			clearTimeout( timeout );
-
-			if ( data.status === 'active' ) {
-				addFontStylesheet( data );
-			}
-		});
-	}
+	// get ready for previewing
+	enableTypekitPreview();
 
 	function addFontStylesheet( data ) {
 		// remove loading class, add loaded class
@@ -171,32 +119,6 @@
 		$.each( data.fonts, function( i,font ) {
 			loadedFontIds.push( font.id );
 		} );
-	}
-
-	/**
-	 * Accepts a single `font` or an array of `font`s
-	 */
-	function loadViaShim( font ) {
-		// queue fonts if the shim hasn't loaded yet
-		if ( ! isShimLoaded ) {
-			toLoadInShim.push( font );
-			return;
-		}
-
-		// fake the font event
-		$html.addClass( loadingClass );
-		// set a timeout of 5 secs to ensure we don't leave the wf-loading class forever if something goes squirrely
-		clearTimeout( timeout );
-		timeout = setTimeout( function() {
-			$html.removeClass( loadingClass );
-		}, 5000 );
-
-		// Support multiple fonts. We pass in the whole toLoadInShim array when clearing it
-		// Otherwise we get a race condition on the first font if there are multiple.
-		if ( ! $.isArray( font ) ) {
-			font = [ font ];
-		}
-		iframeHelper.contentWindow.postMessage( JSON.stringify( { type: dataType, fonts: font } ), '*' );
 	}
 
 	function loadFont( font ) {
