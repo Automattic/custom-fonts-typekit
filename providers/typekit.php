@@ -320,6 +320,16 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return TypekitApi::get_published_kit_info( $kit_id );
 	}
 
+	/**
+	 * Gets a PreviewKit token for the site's current domain
+	 * @return array|WP_Error  A `response` array from `wp_remote_get` on success,
+	 *                         `WP_Error` instance on failure.
+	 */
+	public function get_previewkit_token() {
+		$this->require_api();
+		return TypekitApi::get_previewkit_auth_for_domain( $this->primary_site_host() );
+	}
+
 	public function require_api() {
 		if ( ! class_exists( 'TypekitApi' ) ) {
 			require __DIR__ . '/../typekit-api.php';

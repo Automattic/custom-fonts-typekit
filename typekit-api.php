@@ -442,6 +442,9 @@ class TypekitApi {
 		if ( empty( $result ) ) {
 			return;
 		}
+		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
+			return;
+		}
 		$blog_id = get_current_blog_id();
 		$error_code = wp_remote_retrieve_response_code( $result );
 		$server_uri = esc_url( $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] );

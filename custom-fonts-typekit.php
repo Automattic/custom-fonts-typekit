@@ -30,14 +30,13 @@ Author URI: http://automattic.com/
  * **********************************************************************
  */
 
-if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
-	define( 'WPCOM_TYPEKIT_API_TOKEN', '83285b026d39a1de4d36810211436d39574f0cf4' );
+if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
+	require __DIR__ . '/non-dotcom-shim.php';
 }
 
 class Jetpack_Fonts_Typekit {
 
 	const PREVIEWKIT_AUTH_ID = 'wp';
-	const PREVIEWKIT_PRIMARY_AUTH_TOKEN = '3bb2a6e53c9684ffdc9a9aff185b2a62b09b6f5189114fc2b7a762d37126575957cc2be9ed2cf64258c2828e5d92d94602695c102ffcecb6fa701fe59ba9e9fee2253aa8ba8e355def1b980688bb77aa2d22dba28934c842d6375ecd';
 
 	/**
 	 * Remembers if an option that requires the kit to be republished has been
@@ -48,13 +47,17 @@ class Jetpack_Fonts_Typekit {
 	public static $republish_kit_on_shutdown = false;
 
 	public static function init() {
+		// won't work without it
+		if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return;
+		}
 		add_action( 'customize_register', array( __CLASS__, 'maybe_override_for_advanced_mode' ), 20 );
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 		add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'wp_head', array( __CLASS__, 'maybe_print_advanced_kit' ) );
-		require_once __DIR__ . '/wpcom-compat.php';
 		require_once __DIR__ . '/typekit-shims.php';
+		require_once __DIR__ . '/annotation-compat.php';
 		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
 			add_filter( 'wpcom_font_rules_location_base', array( __CLASS__, 'local_dev_annotations' ) );
 		} else {
@@ -268,9 +271,8 @@ EMBED;
 		wp_localize_script( 'jetpack-fonts-typekit', '_JetpackFontsTypekitOptions', array(
 			'authentication' => array(
 				'auth_id' => self::PREVIEWKIT_AUTH_ID,
-				'auth_token' => self::PREVIEWKIT_PRIMARY_AUTH_TOKEN
+				'auth_token' => self::get_auth_token()
 			),
-			'webKitShim' => 'https://wordpress.com/wp-content/mu-plugins/custom-fonts/webkit-shim.html',
 			'isAdmin' => is_admin(),
 			'badge' => array(
 				'url' => 'https://typekit.com/?utm_source=wordpress&utm_medium=wp-plugin&utm_content=wppl110601&utm_campaign=more-info',
@@ -281,6 +283,39 @@ EMBED;
 		if ( is_admin() ) {
 			wp_enqueue_style( 'jetpack-fonts-typekit', plugins_url( 'css/jetpack-fonts-typekit.css', __FILE__ ), array(), '20150501', 'screen' );
 		}
+	}
+
+	/**
+	 * Gets a TypekitPreview auth token, either the universal one for *.wordpress.com,
+	 * or a temporary one from their API
+	 * @return string  Auth token
+	 */
+	private static function get_auth_token() {
+		if ( defined( 'IS_WPCOM' ) && IS_WPCOM ) {
+			return WPCOM_TYPEKIT_PREVIEWKIT_TOKEN;
+		}
+
+		// have one?
+		$maybe_token = get_transient( 'typekit_previewkit_token' );
+		if ( $maybe_token ) {
+			return $maybe_token;
+		}
+
+		// nope, get one
+		$response = Jetpack_Fonts::get_instance()->get_provider( 'typekit' )->get_previewkit_token();
+		// fail silently, I guess
+		if ( is_wp_error( $response ) ) {
+			return '';
+		}
+
+		// ok store it plz
+		$token = $response['auth_token'];
+		// shave an hour off the actual expiry, no surprises
+		$expiry = strtotime( $response['expires_at'] ) - time() - HOUR_IN_SECONDS;
+		set_transient( 'typekit_previewkit_token', $token, $expiry );
+
+		// token token
+		return $token;
 	}
 
 	/**
