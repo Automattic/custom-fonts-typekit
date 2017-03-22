@@ -49,6 +49,7 @@ class Jetpack_Fonts_Typekit {
 	public static function init() {
 		// won't work without it
 		if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			require_once __DIR__ . '/annotation-compat.php';
 			return;
 		}
 		add_action( 'customize_register', array( __CLASS__, 'maybe_override_for_advanced_mode' ), 20 );
