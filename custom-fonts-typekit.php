@@ -47,9 +47,9 @@ class Jetpack_Fonts_Typekit {
 	public static $republish_kit_on_shutdown = false;
 
 	public static function init() {
+		require_once __DIR__ . '/annotation-compat.php';
 		// won't work without it
 		if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
-			require_once __DIR__ . '/annotation-compat.php';
 			return;
 		}
 		add_action( 'customize_register', array( __CLASS__, 'maybe_override_for_advanced_mode' ), 20 );
@@ -58,7 +58,6 @@ class Jetpack_Fonts_Typekit {
 		add_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'wp_head', array( __CLASS__, 'maybe_print_advanced_kit' ) );
 		require_once __DIR__ . '/typekit-shims.php';
-		require_once __DIR__ . '/annotation-compat.php';
 		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
 			add_filter( 'wpcom_font_rules_location_base', array( __CLASS__, 'local_dev_annotations' ) );
 		} else {
