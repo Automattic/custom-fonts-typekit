@@ -48,10 +48,9 @@ class Jetpack_Fonts_Typekit {
 
 	public static function init() {
 		require_once __DIR__ . '/annotation-compat.php';
-		// won't work without it
-		if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
-			return;
-		}
+		// PRESSABLE HACK
+		add_action( 'after_setup_theme', array( __CLASS__, 'pressable_hacks' ) );
+		// END HACK
 		add_action( 'customize_register', array( __CLASS__, 'maybe_override_for_advanced_mode' ), 20 );
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 		add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
@@ -65,6 +64,26 @@ class Jetpack_Fonts_Typekit {
 			require_once __DIR__ . '/theme-support.php';
 			add_action( 'jetpack_fonts_register', array( __CLASS__, 'maybe_migrate_options' ), 99 );
 		}
+	}
+
+	public static function pressable_hacks() {
+		// unregister the fonts panel so it doesn't display
+		add_action( 'customize_register', function( $wp_customize ) {
+			$wp_customize->remove_section( 'jetpack_fonts' );
+		}, 999 );
+		// Juuust in case, to prevent some errors
+		if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN') ) {
+			define( 'WPCOM_TYPEKIT_API_TOKEN', 'lolnope' );
+		}
+		// don't display Typekit fonts in customizer preview
+		remove_action( 'customize_preview_init', array( __CLASS__, 'enqueue_scripts' ) );
+		// don't display Google fonts in customzier preview
+		remove_action( 'customize_preview_init', array( Jetpack_Fonts::get_instance(), 'add_preview_scripts' ) );
+
+		add_action( 'wp_head', function(){
+			// force a render of fonts, even in the Customizer preview.
+			Jetpack_Fonts::get_instance()->maybe_render_fonts( true );
+		} );
 	}
 
 	public static function maybe_migrate_options() {
