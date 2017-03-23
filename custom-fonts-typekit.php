@@ -70,6 +70,8 @@ class Jetpack_Fonts_Typekit {
 		// unregister the fonts panel so it doesn't display
 		add_action( 'customize_register', function( $wp_customize ) {
 			$wp_customize->remove_section( 'jetpack_fonts' );
+			$wp_customize->remove_control( 'jetpack_fonts' );
+			$wp_customize->remove_setting( 'jetpack_fonts[selected_fonts]' );
 		}, 999 );
 		// Juuust in case, to prevent some errors
 		if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN') ) {
