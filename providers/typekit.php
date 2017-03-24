@@ -187,7 +187,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		if ( $fonts = $this->get_cached_fonts() ) {
 			return $fonts;
 		}
-		$fonts = $this->retrieve_fonts();
+		// $fonts = $this->retrieve_fonts();
 		if ( $fonts ) {
 			$this->set_cached_fonts( $fonts );
 			return $fonts;
