@@ -441,16 +441,12 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	private function api_make_call( $method, $endpoint, $params = [] ) {
 		$site = get_current_blog_id();
 		$url = '/wpcom/v2/sites/' . $site . '/typekit-fonts' . $endpoint;
-		$server = rest_get_server();
-		$request = new WP_REST_Request( $method, $url );
-		foreach ( $params as $key => $val ) {
-			$request->set_param( $key, $val );
+		$body = json_encode( $params );
+		$response = Jetpack_Client::wpcom_json_api_request_as_blog( $url, 2, [], $body );
+		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return new WP_Error( 'api_error', 'Error connecting to API.', $response );
 		}
-		$response = $server->dispatch( $request );
-		if ( $response->is_error() ) {
-			return $response->as_error();
-		}
-		return $response->get_data();
+		return json_decode( wp_remote_retrieve_body( $response ) );
 	}
 
 	private function api_get_family( $id ) {
