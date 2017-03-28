@@ -439,14 +439,34 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	}
 
 	private function api_make_call( $method, $endpoint, $params = [] ) {
-		$site = get_current_blog_id();
-		$url = '/wpcom/v2/sites/' . $site . '/typekit-fonts' . $endpoint;
-		$body = json_encode( $params );
-		$response = Jetpack_Client::wpcom_json_api_request_as_blog( $url, 2, [], $body );
+		// $site = get_current_blog_id();
+		$site = Jetpack_Options::get_option( 'id' );
+		$url = '/sites/' . $site . '/typekit-fonts' . $endpoint;
+		$body = empty( $params ) ? null : $params;
+		error_log( 'api_make_call ' . $url );
+		$response = $this->api_make_jetpack_call( $method, $url, $body );
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			error_log( 'api_make_call error' );
+			error_log( json_encode( $response ) );
 			return new WP_Error( 'api_error', 'Error connecting to API.', $response );
 		}
-		return json_decode( wp_remote_retrieve_body( $response ) );
+		$response_body = wp_remote_retrieve_body( $response );
+		error_log( 'api_make_call response ' . $response_body );
+		return json_decode( $response_body );
+	}
+
+	private function api_make_jetpack_call( $request_method, $path, $body ) {
+		$version = 2;
+		$proto = apply_filters( 'jetpack_can_make_outbound_https', true ) ? 'https' : 'http';
+		$_path = preg_replace( '/^\//', '', $path );
+		$url = sprintf( '%s://%s/wpcom/v%s/%s', $proto, JETPACK__WPCOM_JSON_API_HOST, $version, $_path );
+		error_log( 'api_make_jetpack_call ' . $url );
+		$validated_args = array_merge( array(), array(
+			'url'     => $url,
+			'blog_id' => (int) Jetpack_Options::get_option( 'id' ),
+			'method'  => $request_method,
+		) );
+		return Jetpack_Client::remote_request( $validated_args, $body );
 	}
 
 	private function api_get_family( $id ) {
