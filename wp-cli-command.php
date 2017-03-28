@@ -9,44 +9,6 @@ class Typekit_Fonts_Command extends WP_CLI_Command {
 	}
 
 	/**
-	 * Return available family data for a font
-	 * @subcommand get-family
-	 *
-	 * @synopsis [<font-id>]
-	 */
-	public function get_family( $args ) {
-		$font_id = isset( $args[0] ) ? $args[0] : null;
-		if ( ! $font_id ) {
-			WP_CLI::error( 'No Font ID provided' );
-		}
-		require_lib( 'typekit' );
-		$data = Typekit::get_family( $font_id );
-		if ( is_wp_error( $data ) ) {
-			WP_CLI::error( sprintf( 'Error code %s with message: %s', $data->get_error_code(), $data->get_error_message() ) );
-		}
-		WP_CLI::print_value( $data );
-	}
-
-	/**
-	 * Return previewkit token
-	 * @subcommand get-previewkit-token
-	 *
-	 * @synopsis [<domain>]
-	 */
-	public function get_previewkit_token( $args ) {
-		$domain = isset( $args[0] ) ? $args[0] : null;
-		if ( ! $domain ) {
-			WP_CLI::error( 'No domain provided' );
-		}
-		require_lib( 'typekit' );
-		$data = Typekit::get_previewkit_auth_for_domain( $domain );
-		if ( is_wp_error( $data ) ) {
-			WP_CLI::error( sprintf( 'Error code %s with message: %s', $data->get_error_code(), $data->get_error_message() ) );
-		}
-		WP_CLI::print_value( $data );
-	}
-
-	/**
 	 * Republish the currently saved fonts. Useful if something went wrong when publishing
 	 * a kit. (Eg API was down)
 	 */

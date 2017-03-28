@@ -59,6 +59,9 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	public function __construct( Jetpack_Fonts $custom_fonts ) {
 		parent::__construct( $custom_fonts );
 		$this->manager = $custom_fonts;
+		if ( ! class_exists( 'TypekitApi' ) ) {
+			require __DIR__ . '/../typekit-api.php';
+		}
 		add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ) );
 		add_filter( 'jetpack_fonts_font_families_css', array( $this, 'add_typekit_fallback_css' ), 10, 2 );
 	}
@@ -332,7 +335,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 */
 	private function convert_fonts_for_api( $fonts ) {
 		$api_fonts = array();
-		require_lib( 'typekit' );
 		foreach ( $fonts as $font ) {
 			$rule_type = $this->get_rule_type( $font['type'] );
 			if ( ! $rule_type ) {
@@ -346,7 +348,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			// if we don't have an fvd for a font that adjusts the fvd, pick the closest to n4
 			if ( $rule_type['fvdAdjust'] && null === $api_font['fvd'] ) {
 				$font = $this->get_font( $font['id'] );
-				$api_font['fvd'] = Typekit::find_nearest_fvd( 'n4', $font['fvds'] );
+				$api_font['fvd'] = TypekitApi::find_nearest_fvd( 'n4', $font['fvds'] );
 			}
 
 			$api_fonts[] = $api_font;
