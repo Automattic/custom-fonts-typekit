@@ -441,7 +441,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	}
 
 	private function api_make_call( $method, $endpoint, $params = [] ) {
-		// $site = get_current_blog_id();
 		$site = Jetpack_Options::get_option( 'id' );
 		$url = '/sites/' . $site . '/typekit-fonts' . $endpoint;
 		$body = empty( $params ) ? null : $params;
@@ -472,22 +471,37 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	}
 
 	private function api_get_family( $id ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::get_family( $id );
+		}
 		return $this->api_make_call( 'GET', '/' . $id . '/family' );
 	}
 
 	private function api_get_kit_info( $kit_id ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::get_kit_info( $kit_id );
+		}
 		return $this->api_make_call( 'GET', '/' . $kit_id );
 	}
 
 	private function api_delete_kit( $kit_id ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::delete_kit( $kit_id );
+		}
 		return $this->api_make_call( 'DELETE', '/' . $kit_id );
 	}
 
 	private function api_publish_kit( $kit_id ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::publish_kit( $kit_id );
+		}
 		return $this->api_make_call( 'PUT', '/' . $kit_id . '/publish' );
 	}
 
 	private function api_edit_kit( $kit_id, $kit_domains, $kit_name, $kit_subset, $families ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::edit_kit( $kit_id, $domains, $name, $subset, $families );
+		}
 		return $this->api_make_call( 'PUT', '/' . $kit_id, [
 			'domains' => $kit_domains,
 			'name' => $kit_name,
@@ -497,10 +511,16 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	}
 
 	private function api_get_previewkit_token( $host ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::get_previewkit_auth_for_domain( $host );
+		}
 		return $this->api_make_call( 'GET', '/' . $host . '/previewkit' );
 	}
 
 	private function api_create_kit( $kit_domains, $kit_name, $kit_subset, $families ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::create_kit( $domains, $name, $subset, $families );
+		}
 		return $this->api_make_call( 'POST', '', [
 			'domains' => $kit_domains,
 			'name' => $kit_name,
