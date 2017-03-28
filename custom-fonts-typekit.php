@@ -231,8 +231,7 @@ EMBED;
 		if ( empty( $kit_id ) ) {
 			return;
 		}
-		require_once( __DIR__ . '/typekit-api.php' );
-		$response = TypekitApi::delete_kit( $kit_id );
+		$response = self::get_provider()->delete_kit( $kit_id );
 		if ( is_wp_error( $response ) ) {
 			// If the service returns a 404, the kit already doesn't exist,
 			// so we want to go down to the bottom and delete the stored
