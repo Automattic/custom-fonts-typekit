@@ -500,7 +500,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 
 	private function api_edit_kit( $kit_id, $kit_domains, $kit_name, $kit_subset, $families ) {
 		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
-			return TypekitApi::edit_kit( $kit_id, $domains, $name, $subset, $families );
+			return TypekitApi::edit_kit( $kit_id, $kit_domains, $kit_name, $kit_subset, $families );
 		}
 		return $this->api_make_call( 'PUT', '/' . $kit_id, [
 			'domains' => $kit_domains,
@@ -519,7 +519,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 
 	private function api_create_kit( $kit_domains, $kit_name, $kit_subset, $families ) {
 		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
-			return TypekitApi::create_kit( $domains, $name, $subset, $families );
+			return TypekitApi::create_kit( $kit_domains, $kit_name, $kit_subset, $families );
 		}
 		return $this->api_make_call( 'POST', '', [
 			'domains' => $kit_domains,
