@@ -462,6 +462,8 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 * Based on `Jetpack_Client::wpcom_json_api_request_as_blog()` but modified
 	 * to allow working with v2 wpcom endpoints via the $base_api_path param.
 	 *
+	 * See https://github.com/Automattic/jetpack/pull/6813
+	 *
 	 * @param string  $path
 	 * @param string  $version
 	 * @param array   $args
