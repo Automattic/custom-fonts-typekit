@@ -453,7 +453,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		}
 		$response_body = wp_remote_retrieve_body( $response );
 		error_log( 'api_make_call response ' . $response_body );
-		return json_decode( $response_body );
+		return json_decode( $response_body, true );
 	}
 
 	private function api_make_jetpack_call( $request_method, $path, $body ) {
@@ -514,7 +514,10 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
 			return TypekitApi::get_previewkit_auth_for_domain( $host );
 		}
-		return $this->api_make_call( 'GET', '/' . $host . '/previewkit' );
+		$response = $this->api_make_call( 'GET', '/' . $host . '/previewkit' );
+		error_log( 'api_get_previewkit_token says' );
+		error_log( var_export( $response, true ) );
+		return $response;
 	}
 
 	private function api_create_kit( $kit_domains, $kit_name, $kit_subset, $families ) {
