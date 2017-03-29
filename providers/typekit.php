@@ -445,7 +445,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		$url = '/sites/' . $site . '/typekit-fonts' . $endpoint;
 		$body = empty( $params ) ? null : $params;
 		error_log( 'api_make_call ' . $url );
-		$response = $this->api_make_jetpack_call( $method, $url, $body );
+		$response = self::wpcom_json_api_request_as_blog( $url, 2, [ 'method' => $method ], $body, 'wpcom' );
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			error_log( 'api_make_call error' );
 			error_log( json_encode( $response ) );
@@ -456,17 +456,54 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return json_decode( $response_body, true );
 	}
 
-	private function api_make_jetpack_call( $request_method, $path, $body ) {
-		$version = 2;
+	/**
+	 * Query the WordPress.com REST API using the blog token
+	 *
+	 * Based on `wpcom_json_api_request_as_blog` in https://opengrok.a8c.com/source/xref/jetpack/class.jetpack-client.php
+	 * Modified to work with v2 wpcom endpoints
+	 *
+	 * @param string  $path
+	 * @param string  $version
+	 * @param array   $args
+	 * @param string  $body
+	 * @param string  $base_api_path Determines the base API path for jetpack requests; defaults to 'rest'
+	 * @return array|WP_Error $response Data.
+	 */
+	static function wpcom_json_api_request_as_blog( $path, $version = 1, $args = array(), $body = null, $base_api_path = 'rest' ) {
+		$filtered_args = array_intersect_key( $args, array(
+			'method'      => 'string',
+			'timeout'     => 'int',
+			'redirection' => 'int',
+			'stream'      => 'boolean',
+			'filename'    => 'string',
+			'sslverify'   => 'boolean',
+		) );
+
+		/**
+		 * Determines whether Jetpack can send outbound https requests to the WPCOM api.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @param bool $proto Defaults to true.
+		 */
 		$proto = apply_filters( 'jetpack_can_make_outbound_https', true ) ? 'https' : 'http';
+
+		// unprecedingslashit
 		$_path = preg_replace( '/^\//', '', $path );
-		$url = sprintf( '%s://%s/wpcom/v%s/%s', $proto, JETPACK__WPCOM_JSON_API_HOST, $version, $_path );
-		error_log( 'api_make_jetpack_call ' . $url );
-		$validated_args = array_merge( array(), array(
-			'url'     => $url,
+
+		// Use GET by default whereas `remote_request` uses POST
+		if ( isset( $filtered_args['method'] ) && strtoupper( $filtered_args['method'] === 'POST' ) ) {
+			$request_method = 'POST';
+		} else {
+			$request_method = 'GET';
+		}
+
+		$validated_args = array_merge( $filtered_args, array(
+			'url'     => sprintf( '%s://%s/%s/v%s/%s', $proto, JETPACK__WPCOM_JSON_API_HOST, $base_api_path, $version, $_path ),
 			'blog_id' => (int) Jetpack_Options::get_option( 'id' ),
 			'method'  => $request_method,
 		) );
+
 		return Jetpack_Client::remote_request( $validated_args, $body );
 	}
 
