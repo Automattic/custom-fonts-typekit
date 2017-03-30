@@ -444,7 +444,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		$site = Jetpack_Options::get_option( 'id' );
 		$url = '/sites/' . $site . '/typekit-fonts' . $endpoint;
 		$body = empty( $params ) ? null : $params;
-		error_log( 'api_make_call ' . $url );
+		error_log( "api_make_call $url" );
 		$response = self::wpcom_json_api_request_as_blog( $url, 2, [ 'method' => $method ], $body, 'wpcom' );
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			error_log( 'api_make_call error' );
@@ -452,7 +452,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			return new WP_Error( 'api_error', 'Error connecting to API.', $response );
 		}
 		$response_body = wp_remote_retrieve_body( $response );
-		error_log( 'api_make_call response ' . $response_body );
+		error_log( 'api_make_call response ' . json_encode( $response ) );
 		return json_decode( $response_body, true );
 	}
 
@@ -463,6 +463,8 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 * to allow working with v2 wpcom endpoints via the $base_api_path param.
 	 *
 	 * See https://github.com/Automattic/jetpack/pull/6813
+	 *
+	 * Also allows any HTTP verb (not just GET and POST).
 	 *
 	 * @param string  $path
 	 * @param string  $version
@@ -494,11 +496,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		$_path = preg_replace( '/^\//', '', $path );
 
 		// Use GET by default whereas `remote_request` uses POST
-		if ( isset( $filtered_args['method'] ) && strtoupper( $filtered_args['method'] === 'POST' ) ) {
-			$request_method = 'POST';
-		} else {
-			$request_method = 'GET';
-		}
+		$request_method = ( isset( $filtered_args['method'] ) ) ? $filtered_args['method'] : 'GET';
 
 		$validated_args = array_merge( $filtered_args, array(
 			'url'     => sprintf( '%s://%s/%s/v%s/%s', $proto, JETPACK__WPCOM_JSON_API_HOST, $base_api_path, $version, $_path ),
@@ -554,8 +552,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			return TypekitApi::get_previewkit_auth_for_domain( $host );
 		}
 		$response = $this->api_make_call( 'GET', '/' . $host . '/previewkit' );
-		error_log( 'api_get_previewkit_token says' );
-		error_log( var_export( $response, true ) );
 		return $response;
 	}
 
