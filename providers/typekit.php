@@ -444,7 +444,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		$site = Jetpack_Options::get_option( 'id' );
 		$url = '/sites/' . $site . '/typekit-fonts' . $endpoint;
 		$body = empty( $params ) ? null : $params;
-		error_log( "api_make_call $url" );
+		error_log( "api_make_call $method $url " . json_encode( $body ) );
 		$response = self::wpcom_json_api_request_as_blog( $url, 2, [ 'method' => $method ], $body, 'wpcom' );
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			error_log( 'api_make_call error' );
