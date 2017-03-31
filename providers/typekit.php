@@ -466,6 +466,8 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 *
 	 * Also allows any HTTP verb (not just GET and POST).
 	 *
+	 * Also sends all its data as JSON rather than url-encoded.
+	 *
 	 * @param string  $path
 	 * @param string  $version
 	 * @param array   $args
