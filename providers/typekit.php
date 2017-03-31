@@ -502,7 +502,14 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			'url'     => sprintf( '%s://%s/%s/v%s/%s', $proto, JETPACK__WPCOM_JSON_API_HOST, $base_api_path, $version, $_path ),
 			'blog_id' => (int) Jetpack_Options::get_option( 'id' ),
 			'method'  => $request_method,
+			'headers' => array(
+				'content-type' => 'application/json',
+			),
 		) );
+
+		if ( ! is_null( $body ) ) {
+			$body = json_encode( $body );
+		}
 
 		return Jetpack_Client::remote_request( $validated_args, $body );
 	}
