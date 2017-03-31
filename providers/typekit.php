@@ -414,7 +414,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			$name = sanitize_user( $name, true ); // Reduce to ASCII since Typekit can't deal with UTF-8 characters
 		}
 		if ( empty( $name ) ) {
-			return $this->primary_site_host();
+			$name = $this->primary_site_host();
 		}
 		return substr( $name, 0, 50 );
 	}
