@@ -443,9 +443,9 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	private function api_make_call( $method, $endpoint, $params = [] ) {
 		$site = Jetpack_Options::get_option( 'id' );
 		$url = '/sites/' . $site . '/typekit-fonts' . $endpoint;
-		$body = empty( $params ) ? null : $params;
-		error_log( "api_make_call $method $url " . json_encode( $body ) );
-		$response = self::wpcom_json_api_request_as_blog( $url, 2, [ 'method' => $method ], $body, 'wpcom' );
+		$body = empty( $params ) ? null : json_encode( $params );
+		error_log( "api_make_call $method $url " . $body );
+		$response = self::wpcom_json_api_request_as_blog( $url, 2, [ 'method' => $method, 'headers' => [ 'content-type' => 'application/json' ] ], $body, 'wpcom' );
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			error_log( 'api_make_call error' );
 			error_log( json_encode( $response ) );
@@ -466,8 +466,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 *
 	 * Also allows any HTTP verb (not just GET and POST).
 	 *
-	 * Also sends all its data as JSON rather than url-encoded.
-	 *
 	 * @param string  $path
 	 * @param string  $version
 	 * @param array   $args
@@ -477,6 +475,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 */
 	static function wpcom_json_api_request_as_blog( $path, $version = 1, $args = array(), $body = null, $base_api_path = 'rest' ) {
 		$filtered_args = array_intersect_key( $args, array(
+			'headers'     => 'array',
 			'method'      => 'string',
 			'timeout'     => 'int',
 			'redirection' => 'int',
@@ -504,14 +503,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			'url'     => sprintf( '%s://%s/%s/v%s/%s', $proto, JETPACK__WPCOM_JSON_API_HOST, $base_api_path, $version, $_path ),
 			'blog_id' => (int) Jetpack_Options::get_option( 'id' ),
 			'method'  => $request_method,
-			'headers' => array(
-				'content-type' => 'application/json',
-			),
 		) );
-
-		if ( ! is_null( $body ) ) {
-			$body = json_encode( $body );
-		}
 
 		return Jetpack_Client::remote_request( $validated_args, $body );
 	}
