@@ -49,10 +49,8 @@ class TypekitApi {
 			$tries++;
 
 			// Make remote request of method specified and retrieve status code
-			error_log( 'typekit request for ' . $url );
 			$result = 'GET' == $method ? wp_remote_get( $url, $request_args ) : wp_remote_post( $url, $request_args );
 			$status_code = (int) wp_remote_retrieve_response_code( $result );
-			error_log( 'typekit result is ' . json_encode( $result ) );
 
 			if ( is_wp_error( $result ) ) {
 				continue;
