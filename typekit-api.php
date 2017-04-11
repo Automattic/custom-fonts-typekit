@@ -20,7 +20,7 @@ class TypekitApi {
 	 * @param array $postdata The data keys and values to include (default: array() ).
 	 * @return array|WP_Error Returns a json_decoded result as an associative array or an error object.
 	 */
-	static function request( $method, $endpoint, $postdata = array() ) {
+	private static function request( $method, $endpoint, $postdata = array() ) {
 		$url = self::API_BASE . $endpoint;
 
 		if ( 'DELETE' == $method ) {
