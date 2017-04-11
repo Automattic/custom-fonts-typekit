@@ -31,7 +31,7 @@ class TypekitApi {
 		$request_args = array(
 			'headers' => array( 'X-Typekit-Token' => self::API_TOKEN ),
 			'body' => $postdata,
-			'timeout' => 10000
+			'timeout' => 10000,
 		);
 
 		// Try Typekit API up to six times (one initial, plus five retries), with two-second delays upon failure.
@@ -42,8 +42,9 @@ class TypekitApi {
 		$tries = 0;
 
 		while ( false === $object && $tries < 6 ) {
-			if ( $tries > 0 )
+			if ( $tries > 0 ) {
 				sleep( 2 );
+			}
 
 			$tries++;
 
@@ -51,18 +52,17 @@ class TypekitApi {
 			$result = 'GET' == $method ? wp_remote_get( $url, $request_args ) : wp_remote_post( $url, $request_args );
 			$status_code = (int) wp_remote_retrieve_response_code( $result );
 
-			if ( is_wp_error( $result ) )
+			if ( is_wp_error( $result ) ) {
 				continue;
+			}
 
 			if ( 200 == $status_code ) {
 				$object = json_decode( wp_remote_retrieve_body( $result ), true );
 				break;
-			}
-			elseif ( in_array( $status_code, array( 400, 401, 404, 503 ) ) ) {
+			} elseif ( in_array( $status_code, array( 400, 401, 404, 503 ) ) ) {
 				// Don't retry requests that return these status codes as they will fail consistently
 				break;
-			}
-			else {
+			} else {
 				bump_stats_extras( 'typekit_api_error_retry', $status_code );
 				$object = false;
 			}
@@ -72,33 +72,32 @@ class TypekitApi {
 		if ( is_wp_error( $result ) ) {
 			self::log_error( $result, $url, $request_args );
 			return $result;
-		}
-		elseif ( 200 != $status_code ) {
+		} elseif ( 200 != $status_code ) {
 			self::log_error( $result, $url, $request_args );
 
-			$error_details = ( is_array( $object ) && array_key_exists( 'errors', $object ) ) ? $status_code . ": " . implode( ' ', $object['errors'] ) : $status_code;
+			$error_details = ( is_array( $object ) && array_key_exists( 'errors', $object ) ) ? $status_code . ': ' . implode( ' ', $object['errors'] ) : $status_code;
 
 			switch ( $status_code ) {
 				case 400:
 					// 400 for errors in the data provided by your application
-					return new WP_Error( 'typekit_api_400', __( "There was a problem with the data submitted to the font service. ( $error_details ) Please try again or contact support." ) );
+					return new WP_Error( 'typekit_api_400', "There was a problem with the data submitted to the font service. ( $error_details ) Please try again or contact support." );
 				case 401:
 					// 401 if authentication is needed to access the requested endpoint
-					return new WP_Error( 'typekit_api_401', __( "There was a problem accessing the font service. ( $error_details ) Please try again or contact support." ) );
+					return new WP_Error( 'typekit_api_401', "There was a problem accessing the font service. ( $error_details ) Please try again or contact support." );
 				case 403:
 					// 403 if your application has been rate limited
-					return new WP_Error( 'typekit_api_403', __( "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." ) );
+					return new WP_Error( 'typekit_api_403', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." );
 				case 404:
 					// 404 if you are requesting a resource that doesn't exist
-					return new WP_Error( 'typekit_api_404', __( "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." ) );
+					return new WP_Error( 'typekit_api_404', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." );
 				case 500:
 					// 500 if our servers are unable to process the request
-					return new WP_Error( 'typekit_api_500', __( "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." ) );
+					return new WP_Error( 'typekit_api_500', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." );
 				case 503:
 					// 503 if the Typekit API is offline for maintenance
-					return new WP_Error( 'typekit_api_503', __( "There was a problem communicating with the font service. ( $error_details ) Please try again later." ) );
+					return new WP_Error( 'typekit_api_503', "There was a problem communicating with the font service. ( $error_details ) Please try again later." );
 			}
-			return new WP_Error( 'typekit_api_generic_error', __( "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." ) );
+			return new WP_Error( 'typekit_api_generic_error', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." );
 		}
 
 		// Great, we've got something to return
@@ -114,7 +113,7 @@ class TypekitApi {
 	 * @param array $families The array of families (like from TypekitAdmin::get_standard_form_data) to add to the kit.
 	 * @return array|WP_Error Returns a json_decoded result as an associative array or an error object.
 	 */
-	static function create_kit( $domains, $name, $subset = 'default', $families = array() ) {
+	public static function create_kit( $domains, $name, $subset = 'default', $families = array() ) {
 		return self::edit_kit( '', $domains, $name, $subset, $families );
 	}
 
@@ -128,7 +127,7 @@ class TypekitApi {
 	 * @param array $families The array of families (like from TypekitAdmin::get_standard_form_data) to add to the kit.
 	 * @return array|WP_Error Returns a json_decoded result as an associative array or an error object.
 	 */
-	static function edit_kit( $kit_id, $domains, $name, $subset = 'default', $families = array() ) {
+	public static function edit_kit( $kit_id, $domains, $name, $subset = 'default', $families = array() ) {
 		if ( empty( $families ) ) {
 			return new WP_Error( 'Cannot edit kit. No Typekit fonts to save.' );
 		}
@@ -143,14 +142,14 @@ class TypekitApi {
 		$family_count = 0;
 		foreach ( $families as $family ) {
 			if ( $family['id'] ) {
-				$postdata["families[$family_count][id]"] = $family['id'];
-				$postdata["families[$family_count][subset]"] = $subset;
+				$postdata[ "families[$family_count][id]" ] = $family['id'];
+				$postdata[ "families[$family_count][subset]" ] = $subset;
 
 				// Build array of variations based either on input or data about known fonts
 				$variations = array();
 				if ( is_string( $family['fvd'] ) ) {
 					$variations = array( $family['fvd'] );
-				} elseif( is_array( $family['fvd'] ) ) {
+				} elseif ( is_array( $family['fvd'] ) ) {
 					$variations = $family['fvd'];
 				} else {
 					$_family = self::get_font_by_id( $family['id'] );
@@ -163,13 +162,13 @@ class TypekitApi {
 				$variations = array_filter( array_map( array( __CLASS__, 'filter_allowed_variations' ), $variations ) );
 				$variation_count = 0;
 				foreach ( $variations as $variation ) {
-					$postdata["families[$family_count][variations][$variation_count]"] = $variation;
+					$postdata[ "families[$family_count][variations][$variation_count]" ] = $variation;
 					$variation_count++;
 				}
 				$family_count++;
 			}
 		}
-		if ( $family_count == 0 ) {
+		if ( 0 == $family_count ) {
 			// Remove all families from the kit for tracking purposes
 			$postdata['families'] = '';
 		}
@@ -206,13 +205,13 @@ class TypekitApi {
 			return array();
 		}
 		$variations = $family['fvds'];
-		if ( $reduce !== true || count( $variations ) <= 4 ) {
+		if ( true !== $reduce || count( $variations ) <= 4 ) {
 			return $variations;
 		}
 
 		$nearest_variations = array();
 		$standard_variations = array( 'n4', 'n7', 'i4', 'i7' );
-		foreach( $standard_variations as $standard_fvd ) {
+		foreach ( $standard_variations as $standard_fvd ) {
 			if ( in_array( $standard_fvd, $variations ) ) {
 				array_push( $nearest_variations, $standard_fvd );
 			} else {
@@ -261,7 +260,7 @@ class TypekitApi {
 
 		// If a weight of exactly 400 is given, then 500 is used. If 500 is not
 		// available, then the heuristic for font weights less than 500 is used.
-		if ( $target_weight === 400 ) {
+		if ( 400 === $target_weight ) {
 			$five_hundred = self::adjust_fvd_weight( $target_fvd, 500 );
 			if ( in_array( $five_hundred, $available_fvds ) ) {
 				return $five_hundred;
@@ -271,7 +270,7 @@ class TypekitApi {
 
 		// If a weight of exactly 500 is given, then 400 is used. If 400 is not
 		// available, then the heuristic for font weights less than 400 is used.
-		if ( $target_weight === 500 ) {
+		if ( 500 === $target_weight ) {
 			$four_hundred = self::adjust_fvd_weight( $target_fvd, 400 );
 			if ( in_array( $four_hundred, $available_fvds ) ) {
 				return $four_hundred;
@@ -292,7 +291,7 @@ class TypekitApi {
 
 		// Get the next darkest weight
 		$closest = $target_weight;
-		foreach( $available_weights as $weight ) {
+		foreach ( $available_weights as $weight ) {
 			if ( $weight > $closest ) {
 				$closest = $weight;
 				break;
@@ -315,7 +314,7 @@ class TypekitApi {
 
 		// Get the next lighter weight
 		$closest = $target_weight;
-		foreach( $available_weights as $weight ) {
+		foreach ( $available_weights as $weight ) {
 			if ( $weight < $closest ) {
 				$closest = $weight;
 				break;
@@ -341,10 +340,10 @@ class TypekitApi {
 		}
 		try {
 			$parsed = kevintweber\KtwFvd\Fvd::Parse( $fvd );
-			if ( $parsed && $parsed[ 'font-weight' ] ) {
-				return intval( $parsed[ 'font-weight' ], 10 );
+			if ( $parsed && $parsed['font-weight'] ) {
+				return intval( $parsed['font-weight'], 10 );
 			}
-		} catch( Exception $e ) {
+		} catch ( Exception $e ) {
 			// fall back to the default
 		}
 		return 400;
@@ -359,7 +358,7 @@ class TypekitApi {
 	 * @param string $kit_id The id of the kit to publish.
 	 * @return array|WP_Error Returns a json_decoded result as an associative array or an error object.
 	 */
-	static function publish_kit( $kit_id ) {
+	public static function publish_kit( $kit_id ) {
 		$kit_id = rawurlencode( $kit_id );
 		return self::request( 'POST', "/kits/$kit_id/publish" );
 	}
@@ -372,7 +371,7 @@ class TypekitApi {
 	 * @param string $kit_id The id of the kit to delete.
 	 * @return array|WP_Error Returns a json_decoded result as an associative array or an error object.
 	 */
-	static function delete_kit( $kit_id ) {
+	public static function delete_kit( $kit_id ) {
 		$kit_id = rawurlencode( $kit_id );
 		return self::request( 'DELETE', "/kits/$kit_id" );
 	}
@@ -384,7 +383,7 @@ class TypekitApi {
 	 * @param string $kit_id The id of the kit to retrieve information about.
 	 * @return array|WP_Error Returns a json_decoded result as an associative array or an error object.
 	 */
-	static function get_published_kit_info( $kit_id ) {
+	public static function get_published_kit_info( $kit_id ) {
 		$kit_id = rawurlencode( $kit_id );
 		return self::request( 'GET', "/kits/$kit_id/published" );
 	}
@@ -396,7 +395,7 @@ class TypekitApi {
 	 * @param string $kit_id The id of the kit to retrieve information about.
 	 * @return array|WP_Error Returns a json_decoded result as an associative array or an error object.
 	 */
-	static function get_kit_info( $kit_id ) {
+	public static function get_kit_info( $kit_id ) {
 		$kit_id = rawurlencode( $kit_id );
 		return self::request( 'GET', "/kits/$kit_id" );
 	}
@@ -409,7 +408,7 @@ class TypekitApi {
 	 * @param string $domain The domain to get a valid previewkit auth token for.
 	 * @return array|WP_Error Returns a json_decoded result as an associative array or an error object.
 	 */
-	static function get_previewkit_auth_for_domain( $domain ) {
+	public static function get_previewkit_auth_for_domain( $domain ) {
 		$auth_id = rawurlencode( self::PREVIEWKIT_AUTH_ID );
 		$domain = rawurlencode( $domain );
 		return self::request( 'GET', "/previewkitauths/$auth_id/$domain" );
@@ -430,7 +429,7 @@ class TypekitApi {
 	 * @param string $variation
 	 * @return string or false
 	 */
-	static function filter_allowed_variations( $variation ) {
+	public static function filter_allowed_variations( $variation ) {
 		if ( preg_match( '#[nio]{1}[1-9]{1}#', $variation ) ) {
 			return $variation;
 		} else {
@@ -466,33 +465,37 @@ class TypekitApi {
 		if ( '404' != $error_code ) {
 			wp_mail(
 				'wiebe@automattic.com, payton@automattic.com',
-				'TypekitAPI error',
+				'Typekit API error',
 				$error_payload
 			);
 		}
 		// Log it.
 		error_log( $error_payload );
 		// Bump stats.
-		if ( empty( $error_code ) )
+		if ( empty( $error_code ) ) {
 			$error_code = 'undefined';
+		}
 		bump_stats_extras( 'typekit_api_error', $error_code );
 	}
 
 	private static function backtrace() {
 		$trace = debug_backtrace( false );
-			$out = '';
-			foreach($trace as $ent) {
-				if(isset($ent['file']))
-					$out .= $ent['file'];
-				if(isset($ent['function']))
-					$out .= ':'.$ent['function'].'()';
-				if(isset($ent['line']))
-					$out .= ' at line '.$ent['line'].' ';
-				if(isset($ent['file']))
-					$out .= ' in '.$ent['file'];
-				$out .= "\n";
+		$out = '';
+		foreach ( $trace as $ent ) {
+			if ( isset( $ent['file'] ) ) {
+				$out .= $ent['file'];
 			}
-			return $out;
+			if ( isset( $ent['function'] ) ) {
+				$out .= ':' . $ent['function'] . '()';
+			}
+			if ( isset( $ent['line'] ) ) {
+				$out .= ' at line ' . $ent['line'] . ' ';
+			}
+			if ( isset( $ent['file'] ) ) {
+				$out .= ' in ' . $ent['file'];
+			}
+			$out .= "\n";
+		}
+		return $out;
 	}
 }
-
