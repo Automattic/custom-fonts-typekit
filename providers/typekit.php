@@ -59,6 +59,9 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	public function __construct( Jetpack_Fonts $custom_fonts ) {
 		parent::__construct( $custom_fonts );
 		$this->manager = $custom_fonts;
+		if ( ! class_exists( 'TypekitApi' ) ) {
+			require __DIR__ . '/../typekit-api.php';
+		}
 		add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ) );
 		add_filter( 'jetpack_fonts_font_families_css', array( $this, 'add_typekit_fallback_css' ), 10, 2 );
 	}
@@ -197,9 +200,8 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 
 	public function retrieve_fonts() {
 		$fonts = array();
-		$this->require_api();
 		foreach ( $this->ids_to_populate as $id ) {
-			$font_data = TypekitApi::request( 'GET', "/families/{$id}" );
+			$font_data = $this->api_get_family( $id );
 			// if we had an error fetching, we don't want it in our cache
 			if ( is_wp_error( $font_data ) ) {
 				return false;
@@ -269,7 +271,10 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 *                          `WP_Error` instance on failure.
 	 */
 	public function create_kit( $families ) {
-		return $this->edit_kit( '', $families );
+		$kit_domains = $this->get_site_hosts();
+		$kit_name = $this->get_kit_name();
+		$kit_subset = $this->get_subset_for_blog_language();
+		return $this->api_create_kit( $kit_domains, $kit_name, $kit_subset, $families );
 	}
 
 	/**
@@ -280,11 +285,10 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 *                          `WP_Error` instance on failure.
 	 */
 	public function edit_kit( $kit_id, $families ) {
-		$this->require_api();
 		$kit_domains = $this->get_site_hosts();
 		$kit_name = $this->get_kit_name();
 		$kit_subset = $this->get_subset_for_blog_language();
-		return TypekitApi::edit_kit( $kit_id, $kit_domains, $kit_name, $kit_subset, $families );
+		return $this->api_edit_kit( $kit_id, $kit_domains, $kit_name, $kit_subset, $families );
 	}
 
 	/**
@@ -294,8 +298,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 *                         `WP_Error` instance on failure.
 	 */
 	public function publish_kit( $kit_id ) {
-		$this->require_api();
-		return TypekitApi::publish_kit( $kit_id );
+		return $this->api_publish_kit( $kit_id );
 	}
 
 	/**
@@ -305,8 +308,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 *                         `WP_Error` instance on failure.
 	 */
 	public function delete_kit( $kit_id ) {
-		$this->require_api();
-		return TypekitApi::delete_kit( $kit_id );
+		return $this->api_delete_kit( $kit_id );
 	}
 
 	/**
@@ -316,8 +318,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 *                         `WP_Error` instance on failure.
 	 */
 	public function get_kit_info( $kit_id ) {
-		$this->require_api();
-		return TypekitApi::get_published_kit_info( $kit_id );
+		return $this->api_get_kit_info( $kit_id );
 	}
 
 	/**
@@ -326,14 +327,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	 *                         `WP_Error` instance on failure.
 	 */
 	public function get_previewkit_token() {
-		$this->require_api();
-		return TypekitApi::get_previewkit_auth_for_domain( $this->primary_site_host() );
-	}
-
-	public function require_api() {
-		if ( ! class_exists( 'TypekitApi' ) ) {
-			require __DIR__ . '/../typekit-api.php';
-		}
+		return $this->api_get_previewkit_token( $this->primary_site_host() );
 	}
 
 	/**
@@ -354,7 +348,6 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			// if we don't have an fvd for a font that adjusts the fvd, pick the closest to n4
 			if ( $rule_type['fvdAdjust'] && null === $api_font['fvd'] ) {
 				$font = $this->get_font( $font['id'] );
-				$this->require_api();
 				$api_font['fvd'] = TypekitApi::find_nearest_fvd( 'n4', $font['fvds'] );
 			}
 
@@ -447,4 +440,127 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		return 'all';
 	}
 
+	private function api_make_call( $method, $endpoint, $params = [] ) {
+		$site = Jetpack_Options::get_option( 'id' );
+		$url = '/sites/' . $site . '/typekit-fonts' . $endpoint;
+		$body = empty( $params ) ? null : json_encode( $params );
+		$response = self::wpcom_json_api_request_as_blog( $url, 2, [ 'method' => $method, 'headers' => [ 'content-type' => 'application/json' ] ], $body, 'wpcom' );
+		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return new WP_Error( 'api_error', 'Error connecting to API.', $response );
+		}
+		$response_body = wp_remote_retrieve_body( $response );
+		return json_decode( $response_body, true );
+	}
+
+	/**
+	 * Query the WordPress.com REST API using the blog token
+	 *
+	 * Based on `Jetpack_Client::wpcom_json_api_request_as_blog()` but modified
+	 * to allow working with v2 wpcom endpoints via the $base_api_path param.
+	 *
+	 * See https://github.com/Automattic/jetpack/pull/6813
+	 *
+	 * Also allows any HTTP verb (not just GET and POST).
+	 *
+	 * @param string  $path
+	 * @param string  $version
+	 * @param array   $args
+	 * @param string  $body
+	 * @param string  $base_api_path Determines the base API path for jetpack requests; defaults to 'rest'
+	 * @return array|WP_Error $response Data.
+	 */
+	public static function wpcom_json_api_request_as_blog( $path, $version = 1, $args = array(), $body = null, $base_api_path = 'rest' ) {
+		$filtered_args = array_intersect_key( $args, array(
+			'headers'     => 'array',
+			'method'      => 'string',
+			'timeout'     => 'int',
+			'redirection' => 'int',
+			'stream'      => 'boolean',
+			'filename'    => 'string',
+			'sslverify'   => 'boolean',
+		) );
+
+		/**
+		 * Determines whether Jetpack can send outbound https requests to the WPCOM api.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @param bool $proto Defaults to true.
+		 */
+		$proto = apply_filters( 'jetpack_can_make_outbound_https', true ) ? 'https' : 'http';
+
+		// unprecedingslashit
+		$_path = preg_replace( '/^\//', '', $path );
+
+		// Use GET by default whereas `remote_request` uses POST
+		$request_method = ( isset( $filtered_args['method'] ) ) ? $filtered_args['method'] : 'GET';
+
+		$validated_args = array_merge( $filtered_args, array(
+			'url'     => sprintf( '%s://%s/%s/v%s/%s', $proto, JETPACK__WPCOM_JSON_API_HOST, $base_api_path, $version, $_path ),
+			'blog_id' => (int) Jetpack_Options::get_option( 'id' ),
+			'method'  => $request_method,
+		) );
+
+		return Jetpack_Client::remote_request( $validated_args, $body );
+	}
+
+	private function api_get_family( $id ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::get_family( $id );
+		}
+		return $this->api_make_call( 'GET', '/' . $id . '/family' );
+	}
+
+	private function api_get_kit_info( $kit_id ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::get_kit_info( $kit_id );
+		}
+		return $this->api_make_call( 'GET', '/' . $kit_id );
+	}
+
+	private function api_delete_kit( $kit_id ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::delete_kit( $kit_id );
+		}
+		return $this->api_make_call( 'DELETE', '/' . $kit_id );
+	}
+
+	private function api_publish_kit( $kit_id ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::publish_kit( $kit_id );
+		}
+		return $this->api_make_call( 'PUT', '/' . $kit_id . '/publish' );
+	}
+
+	private function api_edit_kit( $kit_id, $kit_domains, $kit_name, $kit_subset, $families ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::edit_kit( $kit_id, $kit_domains, $kit_name, $kit_subset, $families );
+		}
+		return $this->api_make_call( 'PUT', '/' . $kit_id, [
+			'domains' => $kit_domains,
+			'name' => $kit_name,
+			'subset' => $kit_subset,
+			'families' => $families,
+		] );
+	}
+
+	private function api_get_previewkit_token( $host ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::get_previewkit_auth_for_domain( $host );
+		}
+		$response = $this->api_make_call( 'GET', '/' . $host . '/previewkit' );
+		return $response;
+	}
+
+	private function api_create_kit( $kit_domains, $kit_name, $kit_subset, $families ) {
+		if ( defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return TypekitApi::create_kit( $kit_domains, $kit_name, $kit_subset, $families );
+		}
+		return $this->api_make_call( 'POST', '', [
+			'domains' => $kit_domains,
+			'name' => $kit_name,
+			'subset' => $kit_subset,
+			'families' => $families,
+		] );
+	}
 }
