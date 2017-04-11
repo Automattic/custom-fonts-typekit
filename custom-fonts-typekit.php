@@ -48,6 +48,10 @@ class Jetpack_Fonts_Typekit {
 
 	public static function init() {
 		require_once __DIR__ . '/annotation-compat.php';
+		// won't work without it
+		if ( ! defined( 'WPCOM_TYPEKIT_API_TOKEN' ) ) {
+			return;
+		}
 		add_action( 'customize_register', array( __CLASS__, 'maybe_override_for_advanced_mode' ), 20 );
 		add_action( 'jetpack_fonts_register', array( __CLASS__, 'register_provider' ) );
 		add_action( 'customize_controls_print_scripts', array( __CLASS__, 'enqueue_scripts' ) );
@@ -227,7 +231,8 @@ EMBED;
 		if ( empty( $kit_id ) ) {
 			return;
 		}
-		$response = self::get_provider()->delete_kit( $kit_id );
+		require_once( __DIR__ . '/typekit-api.php' );
+		$response = TypekitApi::delete_kit( $kit_id );
 		if ( is_wp_error( $response ) ) {
 			// If the service returns a 404, the kit already doesn't exist,
 			// so we want to go down to the bottom and delete the stored
