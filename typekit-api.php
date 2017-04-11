@@ -104,6 +104,11 @@ class TypekitApi {
 		return $object;
 	}
 
+	public static function get_family( $font_id ) {
+		$font_id = rawurlencode( $font_id );
+		return self::request( 'GET', "/families/$font_id" );
+	}
+
 	/**
 	 * Makes an API request to create a new kit
 	 *
