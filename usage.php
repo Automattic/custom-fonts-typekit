@@ -103,12 +103,9 @@ function wpcom_log_font_usage( $fonts ) {
 	}
 }
 
-function wpcom_log_new_font( $location_name, $font_name, $kit_id = false ) {
+function wpcom_log_new_font( $location_name, $font_name ) {
 	global $wpdb;
-	if ( ! $kit_id ) {
-		$kit_id = Jetpack_Fonts::get_instance()->get_provider( 'typekit' )->get_kit_id();
-	}
-
+	$kit_id = Jetpack_Fonts::get_instance()->get_provider( 'typekit' )->get_kit_id();
 
 	$wpdb->insert(
 		'font_usage_log',
