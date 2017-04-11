@@ -446,6 +446,9 @@ class TypekitApi {
 		if ( empty( $result ) ) {
 			return;
 		}
+		if ( defined( 'IS_TEST_RUNNING' ) && IS_TEST_RUNNING ) {
+			return;
+		}
 		if ( ! ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
 			return;
 		}
