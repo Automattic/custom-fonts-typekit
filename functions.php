@@ -80,7 +80,7 @@ function wpcomsh_symlink_theme( $theme_slug, $theme_type ) {
 
 	$abs_theme_path = $themes_source_path . "/{$theme_slug}";
 	$abs_theme_symlink_path = get_theme_root() . '/' . $theme_slug;
-	
+
 	if ( ! $storefront_theme && ! file_exists( $abs_theme_path ) ) {
 		$error_message = "Source theme directory doesn't exists at: ${abs_theme_path}";
 
