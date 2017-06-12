@@ -445,8 +445,11 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		$url = '/sites/' . $site . '/typekit-fonts' . $endpoint;
 		$body = empty( $params ) ? null : json_encode( $params );
 		$response = self::wpcom_json_api_request_as_blog( $url, 2, [ 'method' => $method, 'headers' => [ 'content-type' => 'application/json' ] ], $body, 'wpcom' );
-		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			return new WP_Error( 'api_error', 'Error connecting to API.', $response );
+		$response_code = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $response_code ) {
+			$error = new WP_Error( 'api_error', 'Error connecting to API (' . $response_code . ').', $response );
+			do_action( 'wpcomsh_log', 'Custom-Fonts: Typekit API error: ' . $error->get_error_message() );
+			return $error;
 		}
 		$response_body = wp_remote_retrieve_body( $response );
 		return json_decode( $response_body, true );
