@@ -475,7 +475,7 @@ class TypekitApi {
 		// Send error report.
 		if ( '404' != $error_code ) {
 			wp_mail(
-				'wiebe@automattic.com, payton@automattic.com',
+				'jeff@automattic.com, payton@automattic.com',
 				'Typekit API error',
 				$error_payload
 			);
