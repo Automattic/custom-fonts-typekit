@@ -80,24 +80,24 @@ class TypekitApi {
 			switch ( $status_code ) {
 				case 400:
 					// 400 for errors in the data provided by your application
-					return new WP_Error( 'typekit_api_400', "There was a problem with the data submitted to the font service. ( $error_details ) Please try again or contact support." );
+					return new WP_Error( 'typekit_api_400', "There was a problem with the data submitted to the font service. ( $error_details ) Please try again or contact support.", array( 'status' => $status_code ) );
 				case 401:
 					// 401 if authentication is needed to access the requested endpoint
-					return new WP_Error( 'typekit_api_401', "There was a problem accessing the font service. ( $error_details ) Please try again or contact support." );
+					return new WP_Error( 'typekit_api_401', "There was a problem accessing the font service. ( $error_details ) Please try again or contact support.", array( 'status' => $status_code ) );
 				case 403:
 					// 403 if your application has been rate limited
-					return new WP_Error( 'typekit_api_403', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." );
+					return new WP_Error( 'typekit_api_403', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support.", array( 'status' => $status_code ) );
 				case 404:
 					// 404 if you are requesting a resource that doesn't exist
-					return new WP_Error( 'typekit_api_404', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." );
+					return new WP_Error( 'typekit_api_404', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support.", array( 'status' => $status_code ) );
 				case 500:
 					// 500 if our servers are unable to process the request
-					return new WP_Error( 'typekit_api_500', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." );
+					return new WP_Error( 'typekit_api_500', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support.", array( 'status' => $status_code ) );
 				case 503:
 					// 503 if the Typekit API is offline for maintenance
-					return new WP_Error( 'typekit_api_503', "There was a problem communicating with the font service. ( $error_details ) Please try again later." );
+					return new WP_Error( 'typekit_api_503', "There was a problem communicating with the font service. ( $error_details ) Please try again later.", array( 'status' => $status_code ) );
 			}
-			return new WP_Error( 'typekit_api_generic_error', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support." );
+			return new WP_Error( 'typekit_api_generic_error', "There was a problem communicating with the font service. ( $error_details ) Please try again or contact support.", array( 'status' => $status_code ) );
 		}
 
 		// Great, we've got something to return
@@ -134,7 +134,10 @@ class TypekitApi {
 	 */
 	public static function edit_kit( $kit_id, $domains, $name, $subset = 'default', $families = array() ) {
 		if ( empty( $families ) ) {
-			return new WP_Error( 'Cannot edit kit. No Typekit fonts to save.' );
+			return new WP_Error( 'typekit_api_error', 'Cannot edit kit. No Typekit fonts to save.', array( 'status' => 400 ) );
+		}
+		if ( ! is_array( $domains ) ) {
+			return new WP_Error( 'typekit_api_error', 'Cannot edit kit. Domains are not in the correct format', array( 'status' => 400 ) );
 		}
 
 		$postdata = array(
