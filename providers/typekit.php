@@ -447,7 +447,10 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		$response = self::wpcom_json_api_request_as_blog( $url, 2, [ 'method' => $method, 'headers' => [ 'content-type' => 'application/json' ] ], $body, 'wpcom' );
 		$response_code = wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $response_code ) {
-			$error = new WP_Error( 'api_error', 'Error connecting to API (' . $response_code . ').', $response );
+			$proto = apply_filters( 'jetpack_can_make_outbound_https', true ) ? 'https' : 'http';
+			$stripped_path = preg_replace( '/^\//', '', $url );
+			$full_url = sprintf( '%s://%s/%s/v%s/%s', $proto, JETPACK__WPCOM_JSON_API_HOST, 'wpcom', 2, $stripped_path );
+			$error = new WP_Error( 'api_error', "Error connecting to API {$method} {$full_url} ({$response_code}).", $response );
 			do_action( 'wpcomsh_log', 'Custom-Fonts: Typekit API error: ' . $error->get_error_message() );
 			return $error;
 		}
@@ -493,13 +496,13 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		$proto = apply_filters( 'jetpack_can_make_outbound_https', true ) ? 'https' : 'http';
 
 		// unprecedingslashit
-		$_path = preg_replace( '/^\//', '', $path );
+		$stripped_path = preg_replace( '/^\//', '', $path );
 
 		// Use GET by default whereas `remote_request` uses POST
 		$request_method = ( isset( $filtered_args['method'] ) ) ? $filtered_args['method'] : 'GET';
 
 		$validated_args = array_merge( $filtered_args, array(
-			'url'     => sprintf( '%s://%s/%s/v%s/%s', $proto, JETPACK__WPCOM_JSON_API_HOST, $base_api_path, $version, $_path ),
+			'url'     => sprintf( '%s://%s/%s/v%s/%s', $proto, JETPACK__WPCOM_JSON_API_HOST, $base_api_path, $version, $stripped_path ),
 			'blog_id' => (int) Jetpack_Options::get_option( 'id' ),
 			'method'  => $request_method,
 		) );
