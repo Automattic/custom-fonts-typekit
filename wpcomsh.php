@@ -8,7 +8,7 @@
  */
 
 // Increase version number if you change something in wpcomsh.
-define( 'WPCOMSH_VERSION', '1.8.17' );
+define( 'WPCOMSH_VERSION', '1.8.18' );
 
 // If true, Typekit fonts will be available in addition to Google fonts
 add_filter( 'jetpack_fonts_enable_typekit', '__return_true' );
@@ -16,6 +16,7 @@ add_filter( 'jetpack_fonts_enable_typekit', '__return_true' );
 require_once( 'constants.php' );
 
 require_once( 'footer-credit/footer-credit.php' );
+require_once( 'storefront/storefront.php' );
 require_once( 'custom-colors/colors.php' );
 require_once( 'class.wpcomsh-log.php' );
 
@@ -395,8 +396,10 @@ function wpcomsh_add_wpcom_suffix_to_theme_endpoint_response( $formatted_theme )
 	}
 
 	$theme_slug = $formatted_theme['id'];
+	$theme = wp_get_theme( $theme_slug );
+	$is_storefront = 'storefront' === $theme_slug || 'storefront' === $theme->get( 'Template' );
 
-	if ( wpcomsh_is_theme_symlinked( $theme_slug ) ) {
+	if ( wpcomsh_is_theme_symlinked( $theme_slug ) && ! $is_storefront ) {
 		$formatted_theme['theme_uri'] = "https://wordpress.com/theme/{$theme_slug}";
 	}
 
