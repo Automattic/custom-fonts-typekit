@@ -18,6 +18,7 @@ require_once( 'constants.php' );
 require_once( 'footer-credit/footer-credit.php' );
 require_once( 'storefront/storefront.php' );
 require_once( 'custom-colors/colors.php' );
+require_once( 'privacy/participating-plugins.php' );
 require_once( 'class.wpcomsh-log.php' );
 
 /**
