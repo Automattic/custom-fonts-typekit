@@ -20,7 +20,7 @@ function wpcomsh_woocommerce_download_file_xsendfile( $file_path, $filename ) {
 			$_file_type = 'application/force-download';
 		}
 		// If the url matches our expected hostname and we have a path, just try and X-Accel-Redirect the path from the doc root
-		// See: https://atomicrequests.wordpress.com/2019/04/27/error-downloading-pdf-files-after-checkout/
+		// See: https://wp.me/p9F6qB-359
 		if ( ( $_parsed_url['host'] == $_parsed_wp_siteurl['host'] ) && isset( $_parsed_url['path'] ) ) {
 			nocache_headers();
 			header( 'X-Robots-Tag: noindex, nofollow', true );
