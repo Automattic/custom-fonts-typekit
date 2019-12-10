@@ -98,7 +98,7 @@ In order for WordPress to load the test site correctly, you'll need to access th
 - Build a new release locally with `make build`. The build will be `./build/wpcomsh.{vesion}.zip`
 - [Draft a new release](https://github.com/Automattic/wpcomsh/releases) and add the build as an asset. Note the build asset in this [example](https://github.com/Automattic/wpcomsh/releases/tag/v2.3.50).
 - Publish release
-- Post a request on atomicp2.wordpress.com to have the lastest version deployed [example post](https://atomicp2.wordpress.com/2019/10/31/wpcomsh-v2-4-49-deploy/). Make sure to mark the post as "to-do"
+- New version will be deployed when our monitoring detects it has been released.
 
 ## Troubleshooting
 
