@@ -86,9 +86,11 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			$set_fonts = wp_list_filter( $this->manager->get_fonts(), array( 'provider' => $this->id ) );
 		}
 		$set_fonts = wp_list_pluck( $set_fonts, 'id' );
-		foreach ( $set_fonts as $id ) {
-			if ( ! in_array( $id, $whitelist ) && in_array( $id, $this->retired_font_ids ) ) {
-				$whitelist[] = $id;
+		if ( ! isset( $_COOKIE['preview-google-fonts'] ) && ! isset( $_GET['enable-google-fonts-preview'] ) ) {
+			foreach ( $set_fonts as $id ) {
+				if ( ! in_array( $id, $whitelist ) && in_array( $id, $this->retired_font_ids ) ) {
+					$whitelist[] = $id;
+				}
 			}
 		}
 		return $whitelist;
