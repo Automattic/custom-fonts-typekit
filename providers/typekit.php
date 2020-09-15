@@ -63,7 +63,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			require __DIR__ . '/../typekit-api.php';
 		}
 		// phpcs:disable
-		$font_update = isset( $_POST ) && isset( $_POST['customized'] ) && strpos( $_POST['customized'], 'jetpack_fonts' ) !== false;
+		$font_update = isset( $_POST['customized'] ) && strpos( $_POST['customized'], 'jetpack_fonts' ) !== false;
 		// phpcs:enable
 
 		if ( ( ( defined( 'A8C_PROXIED_REQUEST' ) && A8C_PROXIED_REQUEST ) || ( defined( 'AT_PROXIED_REQUEST' ) && AT_PROXIED_REQUEST ) )
