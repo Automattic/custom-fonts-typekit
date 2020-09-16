@@ -62,9 +62,9 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		if ( ! class_exists( 'TypekitApi' ) ) {
 			require __DIR__ . '/../typekit-api.php';
 		}
-		// phpcs:disable
-		$font_update = isset( $_POST['customized'] ) && strpos( $_POST['customized'], 'jetpack_fonts' ) !== false;
-		// phpcs:enable
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$font_update = isset( $_POST['customized'] ) && strpos( sanitize_text_field( wp_unslash( $_POST['customized'] ) ), 'jetpack_fonts' ) !== false;
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		if ( ( ( defined( 'A8C_PROXIED_REQUEST' ) && A8C_PROXIED_REQUEST ) || ( defined( 'AT_PROXIED_REQUEST' ) && AT_PROXIED_REQUEST ) )
 				&& ! isset( $_GET['update-typekit-selection'] ) && ! $font_update ) {
