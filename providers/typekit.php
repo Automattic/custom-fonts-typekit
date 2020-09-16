@@ -62,6 +62,16 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		if ( ! class_exists( 'TypekitApi' ) ) {
 			require __DIR__ . '/../typekit-api.php';
 		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$font_update = isset( $_POST['customized'] ) && strpos( sanitize_text_field( wp_unslash( $_POST['customized'] ) ), 'jetpack_fonts' ) !== false;
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+		if ( ( ( defined( 'A8C_PROXIED_REQUEST' ) && A8C_PROXIED_REQUEST ) || ( defined( 'AT_PROXIED_REQUEST' ) && AT_PROXIED_REQUEST ) )
+				&& ! isset( $_GET['update-typekit-selection'] ) && ! $font_update ) {
+			$this->retired_font_ids = array_merge( $this->retired_font_ids, $this->ids_to_populate );
+			$this->ids_to_populate  = array( 'placeholder' ); // Need at least one item in whitelist or plugin whitelists everything.
+		}
+
 		add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ) );
 		add_filter( 'jetpack_fonts_font_families_css', array( $this, 'add_typekit_fallback_css' ), 10, 2 );
 	}
@@ -69,11 +79,18 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	public function default_whitelist( $whitelist ) {
 		$whitelist = array_diff( $this->ids_to_populate, $this->retired_font_ids );
 		// ensure that currently-set-but-otherwise-retired fonts still show
-		$set_fonts = wp_list_filter( $this->manager->get_fonts(), array( 'provider' => $this->id ) );
+		$deprecated_fonts = $this->manager->get( 'deprecated_typekit_fonts' );
+		if ( is_array( $deprecated_fonts ) ) {
+			$set_fonts = $deprecated_fonts;
+		} else {
+			$set_fonts = wp_list_filter( $this->manager->get_fonts(), array( 'provider' => $this->id ) );
+		}
 		$set_fonts = wp_list_pluck( $set_fonts, 'id' );
-		foreach ( $set_fonts as $id ) {
-			if ( ! in_array( $id, $whitelist ) && in_array( $id, $this->retired_font_ids ) ) {
-				$whitelist[] = $id;
+		if ( ! isset( $_COOKIE['preview-google-fonts'] ) && ! isset( $_GET['enable-google-fonts-preview'] ) ) {
+			foreach ( $set_fonts as $id ) {
+				if ( ! in_array( $id, $whitelist ) && in_array( $id, $this->retired_font_ids ) ) {
+					$whitelist[] = $id;
+				}
 			}
 		}
 		return $whitelist;
