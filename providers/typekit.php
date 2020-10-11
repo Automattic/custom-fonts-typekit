@@ -66,8 +66,7 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		$font_update = isset( $_POST['customized'] ) && strpos( sanitize_text_field( wp_unslash( $_POST['customized'] ) ), 'jetpack_fonts' ) !== false;
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 
-		if ( ( ( defined( 'A8C_PROXIED_REQUEST' ) && A8C_PROXIED_REQUEST ) || ( defined( 'AT_PROXIED_REQUEST' ) && AT_PROXIED_REQUEST ) )
-				&& ! isset( $_GET['update-typekit-selection'] ) && ! $font_update ) {
+		if ( ! isset( $_GET['update-typekit-selection'] ) && ! $font_update ) {
 			$this->retired_font_ids = array_merge( $this->retired_font_ids, $this->ids_to_populate );
 			$this->ids_to_populate  = array( 'placeholder' ); // Need at least one item in whitelist or plugin whitelists everything.
 		}
