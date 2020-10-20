@@ -62,14 +62,8 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 		if ( ! class_exists( 'TypekitApi' ) ) {
 			require __DIR__ . '/../typekit-api.php';
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$font_update = isset( $_POST['customized'] ) && strpos( sanitize_text_field( wp_unslash( $_POST['customized'] ) ), 'jetpack_fonts' ) !== false;
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 
-		if ( ! isset( $_GET['update-typekit-selection'] ) && ! $font_update ) {
-			$this->retired_font_ids = array_merge( $this->retired_font_ids, $this->ids_to_populate );
-			$this->ids_to_populate  = array( 'placeholder' ); // Need at least one item in whitelist or plugin whitelists everything.
-		}
+		$this->ids_to_populate  = array( 'placeholder' ); // Need at least one item in whitelist or plugin whitelists everything.
 
 		add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ) );
 		add_filter( 'jetpack_fonts_font_families_css', array( $this, 'add_typekit_fallback_css' ), 10, 2 );

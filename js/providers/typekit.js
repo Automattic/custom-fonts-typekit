@@ -185,21 +185,6 @@
 		api.bind( 'ready', addTypekitBadge );
 	}
 
-	function addTypekitBadge() {
-		var control = api.control('jetpack_fonts'),
-			badge;
-		if ( ! control ) {
-			return;
-		}
-		badge = $( '<a />', {
-			target: '_top',
-			href: opts.badge.url,
-			text: opts.badge.text,
-			'class': 'jetpack-fonts__typekit-credit'
-		} );
-		control.container.append( badge );
-	}
-
 	function hasVerticalScrollbar( $el ) {
 		return $el.length && $el[0].scrollWidth !== $el.innerWidth();
 	}
