@@ -181,10 +181,6 @@
 
 	api.JetpackFonts.providerViews.typekit = TypekitProviderView;
 
-	if ( opts.isAdmin ) {
-		api.bind( 'ready', addTypekitBadge );
-	}
-
 	function hasVerticalScrollbar( $el ) {
 		return $el.length && $el[0].scrollWidth !== $el.innerWidth();
 	}
