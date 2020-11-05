@@ -167,7 +167,7 @@ EMBED;
 	 * changes at once.
 	 */
 	public static function kit_option_updated() {
-		self::$republish_kit_on_shutdown = true;
+		self::$republish_kit_on_shutdown = false;
 	}
 
 	/**
@@ -180,35 +180,21 @@ EMBED;
 	 * domains, languages, etc.).
 	 */
 	public static function maybe_republish_kit() {
-		if ( ! self::$republish_kit_on_shutdown ) {
-			return;
-		}
-		$provider = Jetpack_Fonts::get_instance()->get_provider( 'typekit' );
-		if ( ! $provider->is_active() ) {
-			return;
-		}
-		self::maybe_create_kit();
+		return;
 	}
 
 	/**
 	 * Delete any saved kit.
 	 */
 	public static function maybe_delete_kit() {
-		self::delete_kit();
+		return;
 	}
 
 	/**
 	 * Re-create a kit if there are Typekit fonts saved.
 	 */
 	public static function maybe_create_kit() {
-		$jetpack_fonts = Jetpack_Fonts::get_instance();
-		$saved_fonts = $jetpack_fonts->get_fonts();
-		$typekit_fonts = wp_list_filter( $saved_fonts, array( 'provider' => 'typekit' ) );
-		if ( empty( $typekit_fonts ) ) {
-			return;
-		}
-		// re-saving will trigger things that need triggering
-		$jetpack_fonts->save_fonts( $saved_fonts, true );
+		return;
 	}
 
 	/**
@@ -221,22 +207,7 @@ EMBED;
 	 * @return null|WP_Error Returns null if successful or if not kit ID exists, otherwise will return a WP_Error.
 	 */
 	public static function delete_kit( $kit_id = null ) {
-		if ( ! isset( $kit_id ) ) {
-			$kit_id = self::get_kit_id();
-		}
-		if ( empty( $kit_id ) ) {
-			return;
-		}
-		$response = self::get_provider()->delete_kit( $kit_id );
-		if ( is_wp_error( $response ) ) {
-			// If the service returns a 404, the kit already doesn't exist,
-			// so we want to go down to the bottom and delete the stored
-			// kit_id that no longer exists
-			if ( 'typekit_api_404' !== $response->get_error_code() ) {
-				return $response;
-			}
-		}
-		Jetpack_Fonts::get_instance()->delete( 'typekit_kit_id' );
+		return;
 	}
 
 	/**
@@ -253,31 +224,7 @@ EMBED;
 	}
 
 	public static function enqueue_scripts() {
-		if ( ! self::get_provider()->is_active() ) {
-			return;
-		}
-		$deps = is_admin()
-			? array( 'typekit-preview', 'jetpack-fonts', 'underscore' )
-			: array( 'typekit-preview', 'jetpack-fonts-preview' );
-
-		wp_register_script( 'typekit-preview', '//use.typekit.net/previewkits/pk-v1.js', array(), '20150417', true );
-		wp_enqueue_script( 'jetpack-fonts-typekit', plugins_url( 'js/providers/typekit.js', __FILE__ ), $deps, '20150417', true );
-
-		wp_localize_script( 'jetpack-fonts-typekit', '_JetpackFontsTypekitOptions', array(
-			'authentication' => array(
-				'auth_id' => self::PREVIEWKIT_AUTH_ID,
-				'auth_token' => self::get_auth_token()
-			),
-			'isAdmin' => is_admin(),
-			'badge' => array(
-				'url' => 'https://typekit.com/?utm_source=wordpress&utm_medium=wp-plugin&utm_content=wppl110601&utm_campaign=more-info',
-				'text' => __( 'Premium Fonts by Adobe Typekit' )
-			)
-		) );
-
-		if ( is_admin() ) {
-			wp_enqueue_style( 'jetpack-fonts-typekit', plugins_url( 'css/jetpack-fonts-typekit.css', __FILE__ ), array(), '20150501', 'screen' );
-		}
+		return;
 	}
 
 	/**
@@ -340,19 +287,6 @@ EMBED;
 }
 
 add_action( 'setup_theme', array( 'Jetpack_Fonts_Typekit', 'init' ), 9 );
-add_action( 'custom-design-downgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_delete_kit' ) );
-add_action( 'custom-design-upgrade', array( 'Jetpack_Fonts_Typekit', 'maybe_create_kit' ) );
-
-// Add actions to mark kit for republishing when domain options change
-add_action( 'update_option_home', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
-add_action( 'update_option_siteurl', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
-add_action( 'wpcom_makeprimaryblog', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
-
-// Add action to mark kit for republishing when language options change
-add_action( 'update_option_lang_id', array( 'Jetpack_Fonts_Typekit', 'kit_option_updated' ) );
-
-// Add action to republish the kit on shutdown if any options have changed
-add_action( 'shutdown', array( 'Jetpack_Fonts_Typekit', 'maybe_republish_kit' ) );
 
 // Hey wp-cli is fun
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
