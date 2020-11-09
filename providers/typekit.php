@@ -63,30 +63,14 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 			require __DIR__ . '/../typekit-api.php';
 		}
 
-		$this->ids_to_populate  = array( 'placeholder' ); // Need at least one item in whitelist or plugin whitelists everything.
+		$this->ids_to_populate = array( 'typekit_deprecated' ); // Need at least one item in whitelist or plugin whitelists everything.
 
 		add_filter( 'jetpack_fonts_whitelist_' . $this->id, array( $this, 'default_whitelist' ) );
 		add_filter( 'jetpack_fonts_font_families_css', array( $this, 'add_typekit_fallback_css' ), 10, 2 );
 	}
 
 	public function default_whitelist( $whitelist ) {
-		$whitelist = array_diff( $this->ids_to_populate, $this->retired_font_ids );
-		// ensure that currently-set-but-otherwise-retired fonts still show
-		$deprecated_fonts = $this->manager->get( 'deprecated_typekit_fonts' );
-		if ( is_array( $deprecated_fonts ) ) {
-			$set_fonts = $deprecated_fonts;
-		} else {
-			$set_fonts = wp_list_filter( $this->manager->get_fonts(), array( 'provider' => $this->id ) );
-		}
-		$set_fonts = wp_list_pluck( $set_fonts, 'id' );
-		if ( ! isset( $_COOKIE['preview-google-fonts'] ) && ! isset( $_GET['enable-google-fonts-preview'] ) ) {
-			foreach ( $set_fonts as $id ) {
-				if ( ! in_array( $id, $whitelist ) && in_array( $id, $this->retired_font_ids ) ) {
-					$whitelist[] = $id;
-				}
-			}
-		}
-		return $whitelist;
+		return array( 'typekit_deprecated' );
 	}
 
 	public function is_active() {
