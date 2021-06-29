@@ -21,3 +21,17 @@ function wpcomsh_pre_transient_jetpack_akismet_key_is_valid( $_false ) {
     return 'valid';
 }
 add_filter( 'pre_transient_jetpack_akismet_key_is_valid', 'wpcomsh_pre_transient_jetpack_akismet_key_is_valid' );
+
+// We disallow facebook-for-woocommerce full batch API sync because of large option DB churn
+// Related: https://facebookforwooextension.wordpress.com/2021/06/17/incident-facebook-batch-api-full-product-sync-db-churn/
+// Related: https://facebookforwooextension.wordpress.com/2021/06/12/feed-issues-on-woa-site/
+function wpcomsh_disallow_fb_for_woo_full_batch_api_sync( $allow_full_sync, $product_count ) {
+	// Disable only for sites with a large number of products.
+	$max_products_for_safe_full_sync = 5000;
+	if ( $product_count > $max_products_for_safe_full_sync ) {
+		return false;
+	}
+
+	return $allow_full_sync;
+}
+add_filter( 'facebook_for_woocommerce_allow_full_batch_api_sync', 'wpcomsh_disallow_fb_for_woo_full_batch_api_sync', 10, 2 );
