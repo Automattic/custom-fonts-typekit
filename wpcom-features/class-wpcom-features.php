@@ -571,7 +571,7 @@ class WPCOM_Features {
 			self::WPCOM_PREMIUM_AND_HIGHER_PLANS,
 			self::JETPACK_PREMIUM_AND_HIGHER,
 		),
-		self::SCAN                        => array(
+		self::SCAN                          => array(
 			self::JETPACK_PREMIUM_AND_HIGHER,
 			self::JETPACK_SCAN_PLANS,
 			self::WPCOM_BUSINESS_AND_HIGHER_PLANS,
@@ -582,7 +582,7 @@ class WPCOM_Features {
 		 * SCAN_MANAGED - Scan results are managed internally by Atomic guild HEs and not shown in user UI.
 		 * See https://code.a8c.com/D57207.
 		 */
-		self::SCAN_MANAGED                   => array(
+		self::SCAN_MANAGED                  => array(
 			self::WPCOM_BUSINESS_AND_HIGHER_PLANS,
 			self::WPCOM_PRO_PLANS,
 		),

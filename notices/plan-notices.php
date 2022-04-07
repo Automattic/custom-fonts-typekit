@@ -1,5 +1,11 @@
 <?php
 /**
+ * Plan notices file.
+ *
+ * @package wpcomsh
+ */
+
+/**
  * This section controls expiration and autorenewal messaging in WP-Admin on Atomic sites. There are similar functions for WPCOM Simple Sites.
  *
  * Simple Site WP-Admin: https://opengrok.a8c.com/source/xref/trunk/wp-content/admin-plugins/plan-renew-prompt.php?r=225047#20
@@ -107,6 +113,6 @@ function wpcomsh_plan_notices() {
 		$domain
 	);
 
-	printf( '<div class="notice notice-warning"><p>%s</p></div>', $message );
+	printf( '<div class="notice notice-warning"><p>%s</p></div>', wp_kses_post( $message ) );
 }
 add_action( 'admin_notices', 'wpcomsh_plan_notices' );
