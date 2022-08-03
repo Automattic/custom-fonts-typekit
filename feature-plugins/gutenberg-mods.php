@@ -191,3 +191,30 @@ if ( version_compare( get_bloginfo( 'version' ), '5.8.2', '<' ) && 30 === has_ac
 	remove_action( 'enqueue_block_assets', 'enqueue_block_styles_assets', 30 );
 	add_action( 'enqueue_block_assets', 'gutenberg_enqueue_block_styles_assets', 30 );
 }
+
+/**
+ * Disable the Widgets Block Editor screen feature.
+ *
+ * @see https://code.a8c.com/D48850
+ * @see https://github.com/WordPress/gutenberg/pull/24843
+ */
+add_filter( 'gutenberg_use_widgets_block_editor', '__return_false', 100 );
+
+/**
+ * Disables the Conversation and Dialogue blocks.
+ *
+ * @see https://managep2.wordpress.com/2021/02/15/anchor-conversation-block-launch-or-not
+ *
+ * @param array $extensions List of Jetpack blocks.
+ * @return array
+ */
+function wpcomsh_disable_anchor_blocks( $extensions ) {
+	return array_diff(
+		$extensions,
+		array(
+			'conversation',
+			'dialogue',
+		)
+	);
+}
+add_filter( 'jetpack_set_available_extensions', 'wpcomsh_disable_anchor_blocks' );
