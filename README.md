@@ -297,7 +297,7 @@ The navigation sidebar in the [WordPress.com Editing Toolkit](https://wordpress.
 
 ### Coming Soon
 
-Coming Soon mode and associated functionality is contained within the [WordPress.com Editing Toolkit](https://wordpress.org/plugins/full-site-editing/) and is enabled using a filter. Coming Soon allows users to hide their site behind a Coming Soon page from the site settings page of Calypso.
+[Coming Soon](https://fieldguide.automattic.com/coming-soon-public-by-default/) mode is provided via the [jetpack-mu-wpcom package](https://fieldguide.automattic.com/developing-jetpack/jetpack-mu-wpcom/) and enabled using a filter. Coming Soon allows users to hide their site behind a Coming Soon page from the site settings page of Calypso.
 
 ### Nav Unification
 
