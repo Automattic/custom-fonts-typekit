@@ -1,6 +1,6 @@
 {
   "name": "automattic/custom-fonts-typekit",
-  "version": "v1.0.8",
+  "version": "v2.0.0",
   "require-dev": {
     "10up/wp_mock": "dev-master"
   }
