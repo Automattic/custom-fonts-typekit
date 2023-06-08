@@ -285,7 +285,17 @@ EMBED;
 	}
 }
 
-add_action( 'setup_theme', array( 'Jetpack_Fonts_Typekit', 'init' ), 9 );
+/**
+ * Determines if we should register Custom Fonts Typekit in WordPress based on if the active
+ * theme supports blocks or not, and if the active theme has a ruleset applied.
+ */
+if ( function_exists( 'add_action' ) ) {
+	if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() && Jetpack_Fonts::get_instance()->get_rules() ) {
+		add_action( 'setup_theme', array( 'Jetpack_Fonts_Typekit', 'init' ), 9 );
+	} elseif ( ! function_exists( 'wp_is_block_theme' ) ) {
+		add_action( 'setup_theme', array( 'Jetpack_Fonts_Typekit', 'init' ), 9 );
+	}
+}
 
 // Hey wp-cli is fun
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
