@@ -31,3 +31,7 @@ You will also need [npm](https://www.npmjs.com/).
 Then run `npm install` to be sure that all the required packages are ready.
 
 Finally run `grunt test` to run the tests.
+
+## License
+
+custom-fonts-typekit is licensed under [GNU General Public License v2 (or later)](./LICENSE.txt)
