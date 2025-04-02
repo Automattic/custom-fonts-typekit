@@ -53,6 +53,12 @@ class Jetpack_Typekit_Font_Provider extends Jetpack_Font_Provider {
 	);
 
 	/**
+	 * The Jetpack Fonts manager instance.
+	 * @var Jetpack_Fonts
+	 */
+	public $manager;
+
+	/**
 	 * Constructor
 	 * @param Jetpack_Fonts $custom_fonts Manager instance
 	 */
