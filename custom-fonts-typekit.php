@@ -3,7 +3,7 @@
 Plugin Name: Custom Fonts Typekit
 Plugin URI: http://automattic.com/
 Description: Adds a Typekit provider to the custom-fonts plugin
-Version: 2.0.1
+Version: 2.0.2
 License: GPL2+
 Author: Automattic
 Author URI: http://automattic.com/
