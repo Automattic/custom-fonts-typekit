@@ -85,6 +85,34 @@ class Typekit_Fonts_Command extends WP_CLI_Command {
 	}
 
 	/**
+	 * Delete the kit associated with the current site, or any kit.
+	 *
+	 * @subcommand delete-kit
+	 *
+	 * @synopsis [--id=<kit-id>]
+	 */
+	public function delete_kit( $args, $assoc_args ) {
+		$provider = $this->provider();
+		if ( isset( $assoc_args['id'] ) ) {
+			$kit_id = $assoc_args['id'];
+		} else {
+			$kit_id = $provider->get_kit_id();
+			if ( ! $kit_id ) {
+				return WP_CLI::error( 'You did not provide a kit id and the current site doesn\'t have one.' );
+			}
+		}
+
+		$ret = $provider->delete_kit( $kit_id );
+		if ( is_wp_error( $ret ) ) {
+			WP_CLI::print_value( $ret );
+			WP_CLI::error( 'Deletion failure. Info above.' );
+		} else {
+			$provider->delete( 'kit_id' );
+			WP_CLI::success( "Kit {$kit_id} successfully deleted" );
+		}
+	}
+
+	/**
 	 * Check if the currently published kit matches the saved font values
 	 *
 	 * @subcommand check-kit
@@ -100,7 +128,9 @@ class Typekit_Fonts_Command extends WP_CLI_Command {
 			// No saved fonts
 			if ( $kit_data ) {
 				// orphaned kit
-				return WP_CLI::warning( 'No Typekit fonts set, but there is a kit.' );
+				WP_CLI::error( 'No Typekit fonts set, but there is a kit.' );
+				WP_Cli::line( sprintf( "To fix, use:\nwp --url=%s typekit delete-kit", preg_replace( '/^https?:\/\//', '', home_url() ) ) );
+				return;
 			} else {
 				// no kit
 				return WP_CLI::success( 'No Typekit fonts set and no kit. Looks good.' );
@@ -115,11 +145,11 @@ class Typekit_Fonts_Command extends WP_CLI_Command {
 					return;
 				} else {
 					$this->print_data( $kit_data, $typekit_fonts );
-					WP_CLI::warning( 'The saved Typekit fonts and the kit are mistmatched. The data is above.' );
+					WP_CLI::error( 'The saved Typekit fonts and the kit are mistmatched. The data is above.' );
 					return $this->print_fixer();
 				}
 			} else {
-				WP_CLI::warning( 'There are saved Typekit fonts, but no kit published.' );
+				WP_CLI::error( 'There are saved Typekit fonts, but no kit published.' );
 				return $this->print_fixer();
 			}
 		}
